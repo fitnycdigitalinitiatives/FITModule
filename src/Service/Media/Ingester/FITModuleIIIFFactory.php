@@ -2,7 +2,7 @@
 namespace FITModule\Service\Media\Ingester;
 
 use FITModule\Media\Ingester\FITModuleIIIF;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Zend\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 
 class FITModuleIIIFFactory implements FactoryInterface
