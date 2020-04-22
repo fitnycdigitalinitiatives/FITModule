@@ -1,8 +1,13 @@
 <?php
 return [
-  'media_ingesters' => [
-      'factories' => [
-          'iiif' => Service\Media\Ingester\FITModuleIIIFFactory::class,
-      ],
-  ],
+    'media_ingesters' => [
+        'factories' => [
+            'mymodule_tweet' => Service\Media\Ingester\TweetFactory::class,
+        ],
+    ],
+    'media_renderers' => [
+        'invokables' => [
+            'mymodule_tweet' => Media\Renderer\Tweet::class,
+        ],
+    ],
 ];
