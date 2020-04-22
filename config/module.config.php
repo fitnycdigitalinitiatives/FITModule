@@ -1,4 +1,6 @@
 <?php
+namespace FITModule;
+
 return [
   'media_ingesters' => [
       'factories' => [
