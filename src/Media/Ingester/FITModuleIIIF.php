@@ -3,6 +3,7 @@ namespace FITModule\Media\Ingester;
 
 use Omeka\Api\Request;
 use Omeka\Entity\Media;
+use Omeka\Media\Ingester\IngesterInterface;
 use Omeka\File\Downloader;
 use Omeka\Stdlib\ErrorStore;
 use Zend\Form\Element\Url as UrlElement;
