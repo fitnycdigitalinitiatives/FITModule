@@ -10,7 +10,7 @@ use Laminas\Http\Client as HttpClient;
 use Laminas\Uri\Http as HttpUri;
 use Laminas\View\Renderer\PhpRenderer;
 
-class IIIF implements IngesterInterface
+class FITModuleIIIF implements IngesterInterface
 {
     /**
      * @var HttpClient

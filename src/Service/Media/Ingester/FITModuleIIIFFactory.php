@@ -5,7 +5,7 @@ use FITModule\Media\Ingester\FITModuleIIIF;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Interop\Container\ContainerInterface;
 
-class IIIFFactory implements FactoryInterface
+class FITModuleIIIFFactory implements FactoryInterface
 {
     /**
      * Create the IIIF media ingester service.
