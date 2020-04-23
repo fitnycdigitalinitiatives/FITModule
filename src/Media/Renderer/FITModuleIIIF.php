@@ -10,20 +10,17 @@ class FITModuleIIIF implements RendererInterface
     public function render(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
         $IIIFInfoJson = $media->source();
-        $view->headScript()->appendFile($view->assetUrl('vendor/openseadragon/openseadragon.min.js', 'Omeka'));
-        $prefixUrl = $view->assetUrl('vendor/openseadragon/images/', 'Omeka', false, false);
+        $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js');
         $noscript = $view->translate('OpenSeadragon is not available unless JavaScript is enabled.');
         $image =
-            '<div class="openseadragon" id="iiif-' . $media->id() . '" style="height: 400px;"></div>
+            '<div class="openseadragon-frame">
+              <div class="openseadragon" id="iiif-' . $media->id() . '"></div>
+            </div>
             <script type="text/javascript">
                 var viewer = OpenSeadragon({
                     id: "iiif-'.$media->id().'",
-                    prefixUrl: "'. $prefixUrl . '",
-                    showNavigator: true,
-                    navigatorSizeRatio: 0.1,
-                    minZoomImageRatio: 0.8,
-                    maxZoomPixelRatio: 10,
-                    controlsFadeDelay: 1000,
+                    prefixUrl: "https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/",
                     tileSources: "'. $IIIFInfoJson .'"
                 });
             </script>
