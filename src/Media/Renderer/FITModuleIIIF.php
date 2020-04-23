@@ -26,6 +26,7 @@ class FITModuleIIIF implements RendererInterface
                 viewer.addHandler("add-item-failed", function(event) {
                   alert("Derp! Invalid IIIF Endpoint. Please delete this media and use a IIIF endpoint that leads to a valid info.json file.");
                   viewer.destroy();
+                  $(".openseadragon-frame").remove();
                 });
             </script>
             <noscript>
