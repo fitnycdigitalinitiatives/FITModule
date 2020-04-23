@@ -5,7 +5,7 @@ use Omeka\Api\Representation\MediaRepresentation;
 use Omeka\Media\Renderer\RendererInterface;
 use Zend\View\Renderer\PhpRenderer;
 
-class IIIF implements RendererInterface
+class FITModuleIIIF implements RendererInterface
 {
     public function render(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
