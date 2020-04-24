@@ -24,7 +24,8 @@ class FITModuleIIIF implements RendererInterface
                     tileSources: "'. $IIIFInfoJson .'"
                 });
                 viewer.addHandler("add-item-failed", function(event) {
-                  alert("Derp! Invalid IIIF Endpoint. Please delete this media and use a IIIF endpoint that leads to a valid info.json file.");
+                  $("#iiif-' . $media->id() . '").parent().remove();
+                  console.log("' . $view . '")
                 });
             </script>
             <noscript>
