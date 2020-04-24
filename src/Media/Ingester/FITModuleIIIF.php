@@ -4,31 +4,13 @@ namespace FITModule\Media\Ingester;
 use Omeka\Api\Request;
 use Omeka\Entity\Media;
 use Omeka\Media\Ingester\IngesterInterface;
-use Omeka\File\Downloader;
 use Omeka\Stdlib\ErrorStore;
 use Zend\Form\Element\Url as UrlElement;
-use Zend\Http\Client as HttpClient;
 use Zend\Uri\Http as HttpUri;
 use Zend\View\Renderer\PhpRenderer;
 
 class FITModuleIIIF implements IngesterInterface
 {
-    /**
-     * @var HttpClient
-     */
-    protected $httpClient;
-
-    /**
-     * @var Downloader
-     */
-    protected $downloader;
-
-    public function __construct(HttpClient $httpClient, Downloader $downloader)
-    {
-        $this->httpClient = $httpClient;
-        $this->downloader = $downloader;
-    }
-
     public function getLabel()
     {
         return 'IIIF image'; // @translate
@@ -46,9 +28,7 @@ class FITModuleIIIF implements IngesterInterface
             $errorStore->addError('o:source', 'No IIIF image URL specified');
             return;
         }
-        $source = $data['o:source'];
         //Skip loading info.json file because we only need to load on render
-
 
         // Skip Media Ingest/Thumbnail Creation because we are doing that separately
     }
