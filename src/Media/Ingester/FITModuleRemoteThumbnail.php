@@ -9,23 +9,23 @@ use Zend\Form\Element\Url as UrlElement;
 use Zend\Uri\Http as HttpUri;
 use Zend\View\Renderer\PhpRenderer;
 
-class FITModuleIIIF implements IngesterInterface
+class FITModuleRemoteThumbnail implements IngesterInterface
 {
     public function getLabel()
     {
-        return 'IIIF image'; // @translate
+        return 'Remote Thumbnail'; // @translate
     }
 
     public function getRenderer()
     {
-        return 'iiif';
+        return 'remote_thumbnail';
     }
 
     public function ingest(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
         if (!isset($data['o:source'])) {
-            $errorStore->addError('o:source', 'No IIIF image URL specified');
+            $errorStore->addError('o:source', 'No URL specified');
             return;
         }
         //Skip loading info.json file because we only need to load on render
@@ -37,18 +37,13 @@ class FITModuleIIIF implements IngesterInterface
     {
         $urlInput = new UrlElement('o:media[__index__][o:source]');
         $urlInput->setOptions([
-            'label' => 'IIIF image URL', // @translate
+            'label' => 'Image URL', // @translate
             'info' => 'URL for the image to embed.', // @translate
         ]);
         $urlInput->setAttributes([
             'required' => true,
         ]);
-        $urlThumb = new UrlElement('o:media[__index__][o:thumbnailUrl]');
-        $urlThumb->setOptions([
-            'label' => 'Thumbnail URL', // @translate
-            'info' => 'Remote URL for the thumbnail.', // @translate
-        ]);
-        return $view->formRow($urlInput) . $view->formRow($urlThumb);
+        return $view->formRow($urlInput);
     }
 
     //Don't need to validate
