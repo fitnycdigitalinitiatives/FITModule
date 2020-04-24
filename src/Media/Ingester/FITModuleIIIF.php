@@ -43,12 +43,7 @@ class FITModuleIIIF implements IngesterInterface
         $urlInput->setAttributes([
             'required' => true,
         ]);
-        $urlThumb = new UrlElement('o:media[__index__][o:thumbnailUrl]');
-        $urlThumb->setOptions([
-            'label' => 'Thumbnail URL', // @translate
-            'info' => 'Remote URL for the thumbnail.', // @translate
-        ]);
-        return $view->formRow($urlInput) . $view->formRow($urlThumb);
+        return $view->formRow($urlInput);
     }
 
     //Don't need to validate
