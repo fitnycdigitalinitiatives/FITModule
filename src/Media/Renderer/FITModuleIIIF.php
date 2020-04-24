@@ -25,7 +25,7 @@ class FITModuleIIIF implements RendererInterface
                 });
                 viewer.addHandler("add-item-failed", function(event) {
                   $("#iiif-' . $media->id() . '").parent().remove();
-                  console.log("' . $view . '")
+                  console.log("' . var_dump($view) . '")
                 });
             </script>
             <noscript>
