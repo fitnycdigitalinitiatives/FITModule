@@ -1,0 +1,12 @@
+<?php
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+?>
+<?php foreach ($media->mediaData() as $key => $value): ?>
+  <div class="meta-group">
+    <h4><?php echo $translate(ucfirst($key)); ?></h4>
+    <div class="value">
+      <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>      
+    </div>
+  </div>
+<?php endforeach; ?>
