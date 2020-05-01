@@ -2,6 +2,11 @@
 namespace FITModule;
 
 return [
+  'data_types' => [
+      'invokables' => [
+          'uri' => DataType\FITModuleUri::class,
+      ],
+  ],
   'media_ingesters' => [
       'invokables' => [
           'image' => Media\Ingester\FITModuleImage::class,
