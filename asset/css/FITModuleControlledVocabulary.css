@@ -1,0 +1,29 @@
+[data-data-type="controlled_vocabulary"] .input-body {
+  border: 1px solid #dfdfdf;
+}
+
+[data-data-type="controlled_vocabulary"] .input:first-child {
+  border-bottom: 1px solid #dfdfdf;
+}
+
+[data-data-type="controlled_vocabulary"] .input {
+  position: relative;
+  clear: both;
+}
+
+[data-data-type="controlled_vocabulary"] label {
+  padding: 6px 0 6px 6px;
+  z-index: 1;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.35);
+  width: auto;
+  display: flex;
+}
+
+[data-data-type="controlled_vocabulary"] .input-body input.value, [data-data-type="controlled_vocabulary"] textarea.value-label {
+  margin: -6px 0 -6px 6px;
+  height: 36px;
+  border: 0;
+  padding: 6px;
+  font-weight: normal;
+}

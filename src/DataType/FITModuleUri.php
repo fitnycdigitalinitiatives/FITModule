@@ -21,7 +21,7 @@ class FITModuleUri extends AbstractDataType
 
     public function form(PhpRenderer $view)
     {
-        return $view->partial('common/data-type/uri');
+        return $view->partial('common/data-type/FITModuleUri');
     }
 
     public function isValid(array $valueObject)
@@ -37,11 +37,12 @@ class FITModuleUri extends AbstractDataType
 
     public function hydrate(array $valueObject, Value $value, AbstractEntityAdapter $adapter)
     {
-        $value->setUri($valueObject['@id']);
-        if (isset($valueObject['o:label'])) {
-            $value->setValue($valueObject['o:label']);
+        //Label is required, URI is additional so that can be added without one if necessary
+        $value->setValue($valueObject['o:label']);
+        if (isset($valueObject['@id'])) {
+            $value->setUri($valueObject['@id']);
         } else {
-            $value->setValue(null); // set default
+            $value->setUri(null); // set default
         }
         $value->setLang(null); // set default
         $value->setValueResource(null); // set default
@@ -60,7 +61,7 @@ class FITModuleUri extends AbstractDataType
             if (!$uriLabel) {
                 return $uri;
             } else {
-                return '<span title="' . $uriLabel . '">' . $uri . '</span>';
+                return $uriLabel . ': ' . $uri;
             }
         }
     }

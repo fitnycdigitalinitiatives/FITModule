@@ -5,6 +5,7 @@ return [
   'data_types' => [
       'invokables' => [
           'uri' => DataType\FITModuleUri::class,
+          'controlled_vocabulary' => DataType\FITModuleControlledVocabulary::class,
       ],
   ],
   'media_ingesters' => [
