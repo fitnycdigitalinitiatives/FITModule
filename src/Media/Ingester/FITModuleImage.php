@@ -34,7 +34,11 @@ class FITModuleImage implements MutableIngesterInterface
     public function ingest(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $mediaData = ['IIIF' => $data['IIIF'], 'master' => $data['master'], 'access' => $data['access'], 'thumbnail' => $data['thumbnail']];
+        $iiif = isset($data['IIIF']) ? $data['IIIF'] : '';
+        $master = isset($data['master']) ? $data['master'] : '';
+        $access = isset($data['access']) ? $data['access'] : '';
+        $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
+        $mediaData = ['IIIF' => $iiif, 'master' => $master, 'access' => $access, 'thumbnail' => $thumbnail];
         $media->setData($mediaData);
         $media->setMediaType('image');
     }
