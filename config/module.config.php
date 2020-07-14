@@ -10,17 +10,18 @@ return [
   ],
   'media_ingesters' => [
       'invokables' => [
-          'image' => Media\Ingester\FITModuleImage::class,
+          'remoteImage' => Media\Ingester\FITModuleRemoteImage::class,
       ],
   ],
   'media_renderers' => [
       'invokables' => [
-          'image' => Media\Renderer\FITModuleImage::class,
+          'remoteImage' => Media\Renderer\FITModuleRemoteImage::class,
       ],
   ],
   'view_helpers' => [
     'invokables' => [
         'thumbnail' => View\Helper\FITModuleThumbnail::class,
+        's3presigned' => View\Helper\FITModuleS3Presigned::class,
     ],
   ],
   'view_manager' => [

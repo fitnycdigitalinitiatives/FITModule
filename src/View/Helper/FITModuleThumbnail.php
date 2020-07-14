@@ -26,7 +26,7 @@ class FITModuleThumbnail extends AbstractHtmlElement
 
         $thumbnailURL = '';
 
-        if ($primaryMedia->ingester() == 'image') {
+        if ($primaryMedia->ingester() == 'remoteImage') {
             $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
         }
 

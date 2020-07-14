@@ -1,12 +1,32 @@
 <?php
+
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 ?>
 <?php foreach ($media->mediaData() as $key => $value): ?>
-  <div class="meta-group">
-    <h4><?php echo $translate(ucfirst($key)); ?></h4>
-    <div class="value">
-      <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>      
+  <?php if ($value): ?>
+    <div class="meta-group more-meta-group">
+      <h4><?php echo $translate(ucfirst($key)); ?></h4>
+      <?php if ($key == "access" || $key == "master"): ?>
+      <div class="value">
+        <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+        <small>S3 Object URL (Not directly accessible)</small>
+          <button class="button" id="download">
+            Download file
+          </button>
+          <button class="button" id="url">
+            Get temporary URL
+          </button>
+        <?php if (isset($_POST['presigned'])): ?>
+          <div id="presigned" data-presigned="<?php echo $this->s3presigned($escape($value)); ?>">
+          </div>
+        <?php endif;?>
+      </div>
+      <?php else:?>
+        <div class="value">
+          <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+        </div>
+      <?php endif;?>
     </div>
-  </div>
+  <?php endif;?>
 <?php endforeach; ?>
