@@ -9,18 +9,22 @@ $escape = $this->plugin('escapeHtml');
       <h4><?php echo $translate(ucfirst($key)); ?></h4>
       <?php if ($key == "access" || $key == "master"): ?>
       <div class="value">
-        <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
         <small>S3 Object URL (Not directly accessible)</small>
-          <button class="button" id="download">
-            Download file
-          </button>
-          <button class="button" id="url">
-            Get temporary URL
-          </button>
-        <?php if (isset($_POST['presigned'])): ?>
-          <div id="presigned" data-presigned="<?php echo $this->s3presigned($escape($value)); ?>">
-          </div>
+        <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+      </div>
+      <div class="get_presigned">
+        <button class="button" id="download" data-file-type="<?php echo $key; ?>">
+          <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
+        </button>
+        <button class="button" id="url" data-file-type="<?php echo $key; ?>">
+          <i class="fas fa-link fa-lg" title="Get link for temporary acccess"><span class="sr-only">Get link for temporary acccess</span></i>
+        </button>
+      <?php if (isset($_POST['presigned'])): ?>
+        <?php if ($_POST['presigned'] == $key): ?>
+        <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value)); ?>">
+        </div>
         <?php endif;?>
+      <?php endif;?>
       </div>
       <?php else:?>
         <div class="value">

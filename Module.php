@@ -73,6 +73,7 @@ class Module extends AbstractModule
                     $assetUrl = $view->plugin('assetUrl');
                     $view->headLink()->appendStylesheet($assetUrl('css/FITModuleMoreMediaMeta.css', 'FITModule'));
                     $view->headScript()->appendFile($assetUrl('js/FITModuleS3Presigned.js', 'FITModule'), 'text/javascript', ['defer' => 'defer']);
+                    $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js', 'text/javascript', ['defer' => 'defer']);
                     echo $event->getTarget()->partial('common/more-media-meta');
                 }
             }
