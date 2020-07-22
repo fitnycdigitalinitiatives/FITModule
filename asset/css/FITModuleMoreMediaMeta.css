@@ -46,3 +46,8 @@
   height: 36px;
   box-shadow: none;
 }
+
+.sidebar .meta-group.more-meta-group .value:not(:last-child) {
+  border-bottom: none;
+  padding-bottom: 6px;
+}

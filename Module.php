@@ -68,7 +68,7 @@ class Module extends AbstractModule
             'Omeka\Controller\Admin\Media',
             'view.show.sidebar',
             function (Event $event) {
-                if ($event->getTarget()->media->ingester() == 'remoteImage') {
+                if (($event->getTarget()->media->ingester() == 'remoteImage') || ($event->getTarget()->media->ingester() == 'remoteVideo')) {
                     $view = $event->getTarget();
                     $assetUrl = $view->plugin('assetUrl');
                     $view->headLink()->appendStylesheet($assetUrl('css/FITModuleMoreMediaMeta.css', 'FITModule'));

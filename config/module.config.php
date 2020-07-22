@@ -11,11 +11,13 @@ return [
   'media_ingesters' => [
       'invokables' => [
           'remoteImage' => Media\Ingester\FITModuleRemoteImage::class,
+          'remoteVideo' => Media\Ingester\FITModuleRemoteVideo::class,
       ],
   ],
   'media_renderers' => [
       'invokables' => [
           'remoteImage' => Media\Renderer\FITModuleRemoteImage::class,
+          'remoteVideo' => Media\Renderer\FITModuleRemoteVideo::class,
       ],
   ],
   'view_helpers' => [

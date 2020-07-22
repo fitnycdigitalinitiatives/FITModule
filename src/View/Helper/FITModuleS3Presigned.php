@@ -29,12 +29,16 @@ class FITModuleS3Presigned extends AbstractHelper
                 'secret' => $view->setting('fit_module_aws_secret_key'),
             ],
         ]);
-        $cmd = $s3Client->getCommand('GetObject', [
-          'Bucket' => $bucket,
-          'Key' => $key
-        ]);
-        $request = $s3Client->createPresignedRequest($cmd, '+60 minutes');
-        $presignedUrl = (string)$request->getUri();
-        return $presignedUrl;
+        if ($s3Client->doesObjectExist($bucket, $key)) {
+            $cmd = $s3Client->getCommand('GetObject', [
+            'Bucket' => $bucket,
+            'Key' => $key
+          ]);
+            $request = $s3Client->createPresignedRequest($cmd, '+60 minutes');
+            $presignedUrl = (string)$request->getUri();
+            return $presignedUrl;
+        } else {
+            return "error";
+        }
     }
 }

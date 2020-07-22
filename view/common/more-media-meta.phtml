@@ -2,33 +2,41 @@
 
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
+$hyperlink = $this->plugin('hyperlink');
 ?>
 <?php foreach ($media->mediaData() as $key => $value): ?>
   <?php if ($value): ?>
     <div class="meta-group more-meta-group">
-      <h4><?php echo $translate(ucfirst($key)); ?></h4>
       <?php if ($key == "access" || $key == "master"): ?>
-      <div class="value">
-        <small>S3 Object URL (Not directly accessible)</small>
-        <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
-      </div>
-      <div class="get_presigned">
-        <button class="button" id="download" data-file-type="<?php echo $key; ?>">
-          <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
-        </button>
-        <button class="button" id="url" data-file-type="<?php echo $key; ?>">
-          <i class="fas fa-link fa-lg" title="Get link for temporary acccess"><span class="sr-only">Get link for temporary acccess</span></i>
-        </button>
-      <?php if (isset($_POST['presigned'])): ?>
-        <?php if ($_POST['presigned'] == $key): ?>
-        <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value)); ?>">
-        </div>
+        <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
+          <h4><?php echo $translate(ucfirst($key)); ?></h4>
+          <div class="value">
+            <small>S3 Object URL (Not directly accessible)</small>
+            <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+          </div>
+          <div class="get_presigned">
+            <button class="button" id="download" data-file-type="<?php echo $key; ?>">
+              <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
+            </button>
+            <button class="button" id="url" data-file-type="<?php echo $key; ?>">
+              <i class="fas fa-link fa-lg" title="Get link for temporary acccess"><span class="sr-only">Get link for temporary acccess</span></i>
+            </button>
+            <?php if (isset($_POST['presigned'])): ?>
+              <?php if ($_POST['presigned'] == $key): ?>
+              <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value)); ?>">
+              </div>
+              <?php endif;?>
+            <?php endif;?>
+          </div>
         <?php endif;?>
-      <?php endif;?>
-      </div>
       <?php else:?>
+        <h4><?php echo $translate(ucfirst($key)); ?></h4>
         <div class="value">
-          <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+          <?php if ($key == "YouTubeID"): ?>
+            <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on YouTube"><span class="sr-only">Access on YouTube</span></i>', 'https://www.youtube.com/watch?v=' . $value, ['target' => '_blank']); ?>
+          <?php else: ?>
+            <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+          <?php endif; ?>
         </div>
       <?php endif;?>
     </div>
