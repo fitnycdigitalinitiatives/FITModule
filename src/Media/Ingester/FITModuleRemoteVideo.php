@@ -14,7 +14,7 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['YouTubeID'], $media->mediaData()['master'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
+        return $this->getForm($view, $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID'], $media->mediaData()['master'], $media->mediaData()['access'], $media->mediaData()['thumbnail'], $media->mediaData()['captions']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -36,13 +36,15 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
     {
         $data = $request->getContent();
         $youtubeID = isset($data['YouTubeID']) ? $data['YouTubeID'] : '';
+        $googledriveID = isset($data['GoogleDriveID']) ? $data['GoogleDriveID'] : '';
         $master = isset($data['master']) ? $data['master'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
         if (($thumbnail == '') && ($youtubeID != '')) {
             $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
         }
-        $mediaData = ['YouTubeID' => $youtubeID, 'master' => $master, 'access' => $access, 'thumbnail' => $thumbnail];
+        $captions = isset($data['captions']) ? $data['captions'] : '';
+        $mediaData = ['YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID, 'master' => $master, 'access' => $access, 'thumbnail' => $thumbnail, 'captions' => $captions];
         $media->setData($mediaData);
         $media->setMediaType('video');
     }
@@ -53,11 +55,11 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
         if (($data['o:media']['__index__']['thumbnail'] == '') && ($data['o:media']['__index__']['YouTubeID'] != '')) {
             $data['o:media']['__index__']['thumbnail'] = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $data['o:media']['__index__']['YouTubeID']);
         }
-        $mediaData = ['YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'master' => $data['o:media']['__index__']['master'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
+        $mediaData = ['YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID'], 'master' => $data['o:media']['__index__']['master'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'captions' => $data['o:media']['__index__']['captions']];
         $media->setData($mediaData);
     }
 
-    protected function getForm(PhpRenderer $view, $youtubeID = '', $master = '', $access = '', $thumb = '')
+    protected function getForm(PhpRenderer $view, $youtubeID = '', $googledriveID = '', $master = '', $access = '', $thumb = '', $captions = '')
     {
         $youtubeIDInput = new Text('o:media[__index__][YouTubeID]');
         $youtubeIDInput->setOptions([
@@ -66,6 +68,15 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
         ]);
         $youtubeIDInput->setAttributes([
             'value' => $youtubeID,
+        ]);
+
+        $googledriveIDInput = new Text('o:media[__index__][GoogleDriveID]');
+        $googledriveIDInput->setOptions([
+            'label' => 'Google Drive Video ID', // @translate
+            'info' => 'Can be found in the URL for a video on Google Drive, e.g. for https://drive.google.com/file/d/0B4uG-Uwo1YBoeUs1b1JUNTI4WlE/view?usp=sharing or https://drive.google.com/file/d/0B4uG-Uwo1YBoeUs1b1JUNTI4WlE/preview the id is 0B4uG-Uwo1YBoeUs1b1JUNTI4WlE', // @translate
+        ]);
+        $googledriveIDInput->setAttributes([
+            'value' => $googledriveID,
         ]);
 
         $masterInput = new UrlElement('o:media[__index__][master]');
@@ -91,6 +102,14 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
         $thumbInput->setAttributes([
             'value' => $thumb,
         ]);
-        return $view->formRow($youtubeIDInput) . $view->formRow($masterInput) . $view->formRow($accessInput) . $view->formRow($thumbInput);
+
+        $captionsInput = new UrlElement('o:media[__index__][captions]');
+        $captionsInput->setOptions([
+            'label' => 'Captions file URL', // @translate
+        ]);
+        $captionsInput->setAttributes([
+            'value' => $captions,
+        ]);
+        return $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput) . $view->formRow($masterInput) . $view->formRow($accessInput) . $view->formRow($thumbInput) . $view->formRow($captionsInput);
     }
 }

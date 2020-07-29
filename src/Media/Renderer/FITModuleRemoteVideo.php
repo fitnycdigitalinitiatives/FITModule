@@ -11,9 +11,19 @@ class FITModuleRemoteVideo implements RendererInterface
     {
         $view->headLink()->appendStylesheet($view->assetUrl('css/video.css', 'FITModule'));
         $youtubeID = $media->mediaData()['YouTubeID'];
+        $googledriveID = $media->mediaData()['GoogleDriveID'];
         $thumbnail = $media->mediaData()['thumbnail'];
         if ($youtubeID != '') {
             $url = sprintf('https://www.youtube.com/embed/%s', $youtubeID);
+            $embed = sprintf(
+                '<div class="embed-responsive embed-responsive-16by9">
+                  <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
+                </div>',
+                $url
+            );
+            return $embed;
+        } elseif ($googledriveID != '') {
+            $url = sprintf('https://drive.google.com/file/d/%s/preview', $googledriveID);
             $embed = sprintf(
                 '<div class="embed-responsive embed-responsive-16by9">
                   <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>

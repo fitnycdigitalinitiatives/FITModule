@@ -34,6 +34,8 @@ $hyperlink = $this->plugin('hyperlink');
         <div class="value">
           <?php if ($key == "YouTubeID"): ?>
             <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on YouTube"><span class="sr-only">Access on YouTube</span></i>', 'https://www.youtube.com/watch?v=' . $value, ['target' => '_blank']); ?>
+          <?php elseif ($key == "GoogleDriveID"): ?>
+            <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on Google Drive"><span class="sr-only">Access on Google Drive</span></i>', 'https://drive.google.com/file/d/' . $value . '/view', ['target' => '_blank']); ?>
           <?php else: ?>
             <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
           <?php endif; ?>
