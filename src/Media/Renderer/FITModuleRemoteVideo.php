@@ -12,6 +12,8 @@ class FITModuleRemoteVideo implements RendererInterface
         $view->headLink()->appendStylesheet($view->assetUrl('css/video.css', 'FITModule'));
         $youtubeID = $media->mediaData()['YouTubeID'];
         $googledriveID = $media->mediaData()['GoogleDriveID'];
+        $accessURL = $media->mediaData()['access'];
+        $captions = $media->mediaData()['captions'];
         $thumbnail = $media->mediaData()['thumbnail'];
         if ($youtubeID != '') {
             $url = sprintf('https://www.youtube.com/embed/%s', $youtubeID);
@@ -31,6 +33,28 @@ class FITModuleRemoteVideo implements RendererInterface
                 $url
             );
             return $embed;
+        } elseif ($accessURL != '') {
+            $videoURL = $view->s3presigned($accessURL);
+            if ($captions != '') {
+                $captionURL = $view->s3presigned($captions);
+                $captionHTML = sprintf(
+                    '<track src="%s" kind="captions" label="Captions">',
+                    $captionURL
+                );
+            } else {
+                $captionHTML = '';
+            }
+            $video = sprintf(
+                '<div class="embed-responsive embed-responsive-16by9">
+                  <video class="embed-responsive-item" controls crossorigin="anonymous">
+                    <source src="%s" type="video/mp4">
+                    %s
+                  </video>
+                </div>',
+                $videoURL,
+                $captionHTML
+            );
+            return $video;
         } elseif ($thumbnail != '') {
             $image = '<img src="' . $thumbnail . '">';
             return $image;
