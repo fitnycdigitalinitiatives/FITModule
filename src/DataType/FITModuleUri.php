@@ -21,7 +21,7 @@ class FITModuleUri extends AbstractDataType
 
     public function form(PhpRenderer $view)
     {
-        return $view->partial('common/data-type/FITModuleUri');
+        return $view->partial('common/data-type/uri');
     }
 
     public function isValid(array $valueObject)

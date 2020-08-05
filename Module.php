@@ -78,36 +78,6 @@ class Module extends AbstractModule
                 }
             }
         );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Admin\Item',
-            'view.add.after',
-            [$this, 'controlledVocabularCss']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Admin\Item',
-            'view.edit.after',
-            [$this, 'controlledVocabularCss']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Admin\ItemSet',
-            'view.add.after',
-            [$this, 'controlledVocabularCss']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Admin\ItemSet',
-            'view.edit.after',
-            [$this, 'controlledVocabularCss']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Admin\Media',
-            'view.add.after',
-            [$this, 'controlledVocabularCss']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Controller\Admin\Media',
-            'view.edit.after',
-            [$this, 'controlledVocabularCss']
-        );
     }
 
     public function controlledVocabularCss(Event $event)
