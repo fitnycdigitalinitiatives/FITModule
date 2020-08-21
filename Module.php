@@ -19,7 +19,7 @@ class Module extends AbstractModule
     /** Load AWS SDK **/
     public function init(ModuleManager $moduleManager)
     {
-        require_once __DIR__ . '/vendor/aws/aws-autoloader.php';
+        require_once __DIR__ . '/vendor/autoload.php';
     }
 
     /**
@@ -68,7 +68,7 @@ class Module extends AbstractModule
             'Omeka\Controller\Admin\Media',
             'view.show.sidebar',
             function (Event $event) {
-                if (($event->getTarget()->media->ingester() == 'remoteImage') || ($event->getTarget()->media->ingester() == 'remoteVideo')) {
+                if (($event->getTarget()->media->ingester() == 'remoteImage') || ($event->getTarget()->media->ingester() == 'remoteVideo') || ($event->getTarget()->media->ingester() == 'remoteFile')) {
                     $view = $event->getTarget();
                     $assetUrl = $view->plugin('assetUrl');
                     $view->headLink()->appendStylesheet($assetUrl('css/FITModuleMoreMediaMeta.css', 'FITModule'));
