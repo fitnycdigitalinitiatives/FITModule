@@ -37,12 +37,11 @@ class FITModuleUri extends AbstractDataType
 
     public function hydrate(array $valueObject, Value $value, AbstractEntityAdapter $adapter)
     {
-        //Label is required, URI is additional so that can be added without one if necessary
-        $value->setValue($valueObject['o:label']);
-        if (isset($valueObject['@id'])) {
-            $value->setUri($valueObject['@id']);
+        $value->setUri($valueObject['@id']);
+        if (isset($valueObject['o:label'])) {
+            $value->setValue($valueObject['o:label']);
         } else {
-            $value->setUri(null); // set default
+            $value->setValue(null); // set default
         }
         $value->setLang(null); // set default
         $value->setValueResource(null); // set default
