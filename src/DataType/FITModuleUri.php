@@ -51,16 +51,50 @@ class FITModuleUri extends AbstractDataType
     {
         $uri = $value->uri();
         $uriLabel = $value->value();
+        $resource = $value->resource();
+        $property = $value->property();
+        $subpropertiesHTML = '';
+        $entityManager = $value->getServiceLocator()->get('Omeka\EntityManager');
+        if ($resource->id() && $property->id()) {
+            $dql = 'SELECT a FROM Attributes\Entity\Attributes a WHERE a.item = :item AND a.property = :property AND a.uriMatch = :uriMatch';
+            $query = $entityManager->createQuery($dql)->setParameters(array(
+                'item' => $resource->id(),
+                'property' => $property->id(),
+                'uriMatch' => $uri,
+            ));
+            $attributes = $query->getResult();
+            if ($attributes) {
+                $subpropertiesHTML = '<div class="attributes">';
+                foreach ($attributes as $key => $attribute) {
+                    foreach ($attribute->getData() as $subproperty => $subvalue) {
+                        $subpropertiesHTML .= '<div class="subproperty"><h5>' . $subproperty . '</h5><div class="value">' . $subvalue . '</div></div>';
+                    }
+                }
+                $subpropertiesHTML .= '</div>';
+            }
+        }
+        //search attribute table for same item id and property and matching value
+
+        /*if ($entity->getId()) {
+            $dql = sprintf(
+                'SELECT n FROM %s n WHERE n.resource = :resource',
+                $dataType->getEntityClass()
+            );
+            $query = $em->createQuery($dql);
+            $query->setParameter('resource', $entity);
+            $existingNumbers = $query->getResult();
+        }*/
+
         if (filter_var($uri, FILTER_VALIDATE_URL)) {
             if (!$uriLabel) {
                 $uriLabel = $uri;
             }
-            return $view->hyperlink($uriLabel, $uri, ['class' => 'uri-value-link', 'target' => '_blank']);
+            return $view->hyperlink($uriLabel, $uri, ['class' => 'uri-value-link', 'target' => '_blank']) . $subpropertiesHTML;
         } else {
             if (!$uriLabel) {
                 return $uri;
             } else {
-                return $uriLabel . ': ' . $uri;
+                return $uriLabel . ': ' . $uri . $subpropertiesHTML;
             }
         }
     }
