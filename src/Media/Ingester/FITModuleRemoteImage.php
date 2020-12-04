@@ -5,9 +5,9 @@ use Omeka\Api\Representation\MediaRepresentation;
 use Omeka\Media\Ingester\MutableIngesterInterface;
 use Omeka\Api\Request;
 use Omeka\Entity\Media;
-use Zend\Form\Element\Url as UrlElement;
+use Laminas\Form\Element\Url as UrlElement;
 use Omeka\Stdlib\ErrorStore;
-use Zend\View\Renderer\PhpRenderer;
+use Laminas\View\Renderer\PhpRenderer;
 
 class FITModuleRemoteImage implements MutableIngesterInterface
 {

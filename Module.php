@@ -5,11 +5,11 @@
 namespace FITModule;
 
 use Omeka\Module\AbstractModule;
-use Zend\View\Renderer\PhpRenderer;
-use Zend\Mvc\Controller\AbstractController;
-use Zend\EventManager\Event;
-use Zend\EventManager\SharedEventManagerInterface;
-use Zend\ModuleManager\ModuleManager;
+use Laminas\View\Renderer\PhpRenderer;
+use Laminas\Mvc\Controller\AbstractController;
+use Laminas\EventManager\Event;
+use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\ModuleManager\ModuleManager;
 use FITModule\Form\ConfigForm;
 
 class Module extends AbstractModule

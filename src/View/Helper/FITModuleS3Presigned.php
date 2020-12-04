@@ -1,7 +1,7 @@
 <?php
 namespace FITModule\View\Helper;
 
-use Zend\View\Helper\AbstractHelper;
+use Laminas\View\Helper\AbstractHelper;
 use Aws\S3\S3Client;
 use Aws\Exception\AwsException;
 
