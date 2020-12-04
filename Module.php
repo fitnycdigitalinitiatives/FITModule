@@ -79,4 +79,11 @@ class Module extends AbstractModule
             }
         );
     }
+
+    public function controlledVocabularCss(Event $event)
+    {
+        $view = $event->getTarget();
+        $assetUrl = $view->plugin('assetUrl');
+        $view->headLink()->appendStylesheet($assetUrl('css/FITModuleControlledVocabulary.css', 'FITModule'));
+    }
 }
