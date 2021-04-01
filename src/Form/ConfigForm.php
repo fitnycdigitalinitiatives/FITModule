@@ -9,6 +9,16 @@ class ConfigForm extends Form
     public function init()
     {
         $this->add([
+          'name' => 's3_connection',
+          'type' => Element\Checkbox::class,
+          'options' => [
+              'label' => 'Activate Remote Connection AWS S3', // @translate
+          ],
+          'attributes' => [
+              'id' => 's3_connection',
+          ],
+      ]);
+        $this->add([
             'name' => 'aws_key',
             'type' => Element\Text::class,
             'options' => [

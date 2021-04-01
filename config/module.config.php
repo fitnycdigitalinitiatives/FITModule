@@ -19,6 +19,15 @@ return [
           'remoteImage' => Media\Renderer\FITModuleRemoteImage::class,
           'remoteVideo' => Media\Renderer\FITModuleRemoteVideo::class,
           'remoteFile' => Media\Renderer\FITModuleRemoteFile::class,
+          'youtube' => Media\Renderer\FITModuleYoutube::class,
+      ],
+  ],
+  'file_renderers' => [
+      'invokables' => [
+          'pdf' => Media\FileRenderer\PDFRenderer::class,
+      ],
+      'aliases' => [
+          'application/pdf' => 'pdf',
       ],
   ],
   'view_helpers' => [

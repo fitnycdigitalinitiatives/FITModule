@@ -1710,7 +1710,7 @@ exports.PDFViewerApplication = PDFViewerApplication;
 let validateFileURL;
 {
   //Only will display files from our S3 endpoint
-  const ACCEPTED_FILE_ORIGINS = ["https://9f6b04d3-146c-41cd-b827-1e4281d978df.s3.amazonaws.com"];
+  const ACCEPTED_FILE_ORIGINS = ["https://9f6b04d3-146c-41cd-b827-1e4281d978df.s3.amazonaws.com", "http://localhost"];
 
   validateFileURL = function (file) {
     if (file === undefined) {

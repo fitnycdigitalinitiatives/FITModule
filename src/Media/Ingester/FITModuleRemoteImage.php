@@ -13,7 +13,7 @@ class FITModuleRemoteImage implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['IIIF'], $media->mediaData()['master'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
+        return $this->getForm($view, $media->mediaData()['iiif'], $media->mediaData()['master'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -34,11 +34,11 @@ class FITModuleRemoteImage implements MutableIngesterInterface
     public function ingest(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $iiif = isset($data['IIIF']) ? $data['IIIF'] : '';
+        $iiif = isset($data['iiif']) ? $data['iiif'] : '';
         $master = isset($data['master']) ? $data['master'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
-        $mediaData = ['IIIF' => $iiif, 'master' => $master, 'access' => $access, 'thumbnail' => $thumbnail];
+        $mediaData = ['iiif' => $iiif, 'master' => $master, 'access' => $access, 'thumbnail' => $thumbnail];
         $media->setData($mediaData);
         $media->setMediaType('image');
     }
@@ -46,13 +46,13 @@ class FITModuleRemoteImage implements MutableIngesterInterface
     public function update(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $mediaData = ['IIIF' => $data['o:media']['__index__']['IIIF'], 'master' => $data['o:media']['__index__']['master'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
+        $mediaData = ['iiif' => $data['o:media']['__index__']['iiif'], 'master' => $data['o:media']['__index__']['master'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
         $media->setData($mediaData);
     }
 
     protected function getForm(PhpRenderer $view, $iiif = '', $master = '', $access = '', $thumb = '')
     {
-        $iiifInput = new UrlElement('o:media[__index__][IIIF]');
+        $iiifInput = new UrlElement('o:media[__index__][iiif]');
         $iiifInput->setOptions([
             'label' => 'Image IIIF endpoint', // @translate
             'info' => 'URL for info.json file', // @translate

@@ -20,6 +20,12 @@ class FITModuleS3Presigned extends AbstractHelper
         $bucket = explode(".", $parsed_url["host"])[0];
         $view = $this->getView();
 
+        // Check if S3 Connection is turned on
+        if (!$view->setting('fit_module_s3_connection')) {
+            //if it isn't activated, just return the original url because it's probably not s3
+            return $url;
+        }
+
         // Set up AWS Client
         $s3Client = new S3Client([
             'version'     => 'latest',
