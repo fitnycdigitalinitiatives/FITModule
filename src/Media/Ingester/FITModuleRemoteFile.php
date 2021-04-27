@@ -13,7 +13,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['preservation'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
+        return $this->getForm($view, $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -34,11 +34,11 @@ class FITModuleRemoteFile implements MutableIngesterInterface
     public function ingest(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $preservation = isset($data['preservation']) ? $data['preservation'] : '';
+        $archival = isset($data['archival']) ? $data['archival'] : '';
         $replica = isset($data['replica']) ? $data['replica'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
-        $mediaData = ['preservation' => $preservation, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail];
+        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail];
         $media->setData($mediaData);
         if ($access != '') {
             $mimes = new \Mimey\MimeTypes;
@@ -52,7 +52,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
     public function update(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $mediaData = ['preservation' => $data['o:media']['__index__']['preservation'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
+        $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
         $media->setData($mediaData);
         if ($data['o:media']['__index__']['access'] != '') {
             $mimes = new \Mimey\MimeTypes;
@@ -63,19 +63,19 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         }
     }
 
-    protected function getForm(PhpRenderer $view, $preservation = '', $replica = '', $access = '', $thumb = '')
+    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $thumb = '')
     {
-        $preservationInput = new UrlElement('o:media[__index__][preservation]');
-        $preservationInput->setOptions([
-            'label' => 'Preservation file URL', // @translate
+        $archivalInput = new UrlElement('o:media[__index__][archival]');
+        $archivalInput->setOptions([
+            'label' => 'Archival package URL', // @translate
         ]);
-        $preservationInput->setAttributes([
-            'value' => $preservation,
+        $archivalInput->setAttributes([
+            'value' => $archival,
         ]);
 
         $replicaInput = new UrlElement('o:media[__index__][replica]');
         $replicaInput->setOptions([
-            'label' => 'Replica file URL', // @translate
+            'label' => 'Replica package URL', // @translate
         ]);
         $replicaInput->setAttributes([
             'value' => $replica,
@@ -96,6 +96,6 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $thumbInput->setAttributes([
             'value' => $thumb,
         ]);
-        return $view->formRow($preservationInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput);
+        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput);
     }
 }

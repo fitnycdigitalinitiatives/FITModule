@@ -13,7 +13,7 @@ class FITModuleRemoteImage implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['iiif'], $media->mediaData()['preservation'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
+        return $this->getForm($view, $media->mediaData()['iiif'], $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -35,11 +35,11 @@ class FITModuleRemoteImage implements MutableIngesterInterface
     {
         $data = $request->getContent();
         $iiif = isset($data['iiif']) ? $data['iiif'] : '';
-        $preservation = isset($data['preservation']) ? $data['preservation'] : '';
+        $archival = isset($data['archival']) ? $data['archival'] : '';
         $replica = isset($data['replica']) ? $data['replica'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
-        $mediaData = ['iiif' => $iiif, 'preservation' => $preservation, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail];
+        $mediaData = ['iiif' => $iiif, 'archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail];
         $media->setData($mediaData);
         $media->setMediaType('image');
     }
@@ -47,11 +47,11 @@ class FITModuleRemoteImage implements MutableIngesterInterface
     public function update(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $mediaData = ['iiif' => $data['o:media']['__index__']['iiif'], 'preservation' => $data['o:media']['__index__']['preservation'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
+        $mediaData = ['iiif' => $data['o:media']['__index__']['iiif'], 'archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
         $media->setData($mediaData);
     }
 
-    protected function getForm(PhpRenderer $view, $iiif = '', $preservation = '', $replica = '', $access = '', $thumb = '')
+    protected function getForm(PhpRenderer $view, $iiif = '', $archival = '', $replica = '', $access = '', $thumb = '')
     {
         $iiifInput = new UrlElement('o:media[__index__][iiif]');
         $iiifInput->setOptions([
@@ -62,17 +62,17 @@ class FITModuleRemoteImage implements MutableIngesterInterface
             'value' => $iiif,
         ]);
 
-        $preservationInput = new UrlElement('o:media[__index__][preservation]');
-        $preservationInput->setOptions([
-            'label' => 'Preservation file URL', // @translate
+        $archivalInput = new UrlElement('o:media[__index__][archival]');
+        $archivalInput->setOptions([
+            'label' => 'Archival package URL', // @translate
         ]);
-        $preservationInput->setAttributes([
-            'value' => $preservation,
+        $archivalInput->setAttributes([
+            'value' => $archival,
         ]);
 
         $replicaInput = new UrlElement('o:media[__index__][replica]');
         $replicaInput->setOptions([
-            'label' => 'Replica file URL', // @translate
+            'label' => 'Replica package URL', // @translate
         ]);
         $replicaInput->setAttributes([
             'value' => $replica,
@@ -93,6 +93,6 @@ class FITModuleRemoteImage implements MutableIngesterInterface
         $thumbInput->setAttributes([
             'value' => $thumb,
         ]);
-        return $view->formRow($iiifInput) . $view->formRow($preservationInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput);
+        return $view->formRow($iiifInput) . $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput);
     }
 }

@@ -18,6 +18,7 @@ class FITModuleS3Presigned extends AbstractHelper
         $parsed_url = parse_url($url);
         $key = ltrim($parsed_url["path"], '/');
         $bucket = explode(".", $parsed_url["host"])[0];
+        $region = explode(".", $parsed_url["host"])[2];
         $view = $this->getView();
 
         // Check if S3 Connection is turned on
@@ -29,7 +30,7 @@ class FITModuleS3Presigned extends AbstractHelper
         // Set up AWS Client
         $s3Client = new S3Client([
             'version'     => 'latest',
-            'region'      => $view->setting('fit_module_s3_region'),
+            'region'      => $region,
             'credentials' => [
                 'key'    => $view->setting('fit_module_aws_key'),
                 'secret' => $view->setting('fit_module_aws_secret_key'),

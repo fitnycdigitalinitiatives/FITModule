@@ -14,7 +14,7 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID'], $media->mediaData()['preservation'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail'], $media->mediaData()['captions']);
+        return $this->getForm($view, $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID'], $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail'], $media->mediaData()['captions']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -37,7 +37,7 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
         $data = $request->getContent();
         $youtubeID = isset($data['YouTubeID']) ? $data['YouTubeID'] : '';
         $googledriveID = isset($data['GoogleDriveID']) ? $data['GoogleDriveID'] : '';
-        $preservation = isset($data['preservation']) ? $data['preservation'] : '';
+        $archival = isset($data['archival']) ? $data['archival'] : '';
         $replica = isset($data['replica']) ? $data['replica'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
@@ -45,7 +45,7 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
             $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
         }
         $captions = isset($data['captions']) ? $data['captions'] : '';
-        $mediaData = ['YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID, 'preservation' => $preservation, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail, 'captions' => $captions];
+        $mediaData = ['YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID, 'archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail, 'captions' => $captions];
         $media->setData($mediaData);
         $media->setMediaType('video');
     }
@@ -56,11 +56,11 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
         if (($data['o:media']['__index__']['thumbnail'] == '') && ($data['o:media']['__index__']['YouTubeID'] != '')) {
             $data['o:media']['__index__']['thumbnail'] = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $data['o:media']['__index__']['YouTubeID']);
         }
-        $mediaData = ['YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID'], 'preservation' => $data['o:media']['__index__']['preservation'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'captions' => $data['o:media']['__index__']['captions']];
+        $mediaData = ['YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID'], 'archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'captions' => $data['o:media']['__index__']['captions']];
         $media->setData($mediaData);
     }
 
-    protected function getForm(PhpRenderer $view, $youtubeID = '', $googledriveID = '', $preservation = '', $replica = '', $access = '', $thumb = '', $captions = '')
+    protected function getForm(PhpRenderer $view, $youtubeID = '', $googledriveID = '', $archival = '', $replica = '', $access = '', $thumb = '', $captions = '')
     {
         $youtubeIDInput = new Text('o:media[__index__][YouTubeID]');
         $youtubeIDInput->setOptions([
@@ -80,17 +80,17 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
             'value' => $googledriveID,
         ]);
 
-        $preservationInput = new UrlElement('o:media[__index__][preservation]');
-        $preservationInput->setOptions([
-            'label' => 'Preservation file URL', // @translate
+        $archivalInput = new UrlElement('o:media[__index__][archival]');
+        $archivalInput->setOptions([
+            'label' => 'Archival package URL', // @translate
         ]);
-        $preservationInput->setAttributes([
-            'value' => $preservation,
+        $archivalInput->setAttributes([
+            'value' => $archival,
         ]);
 
         $replicaInput = new UrlElement('o:media[__index__][replica]');
         $replicaInput->setOptions([
-            'label' => 'Replica file URL', // @translate
+            'label' => 'Replica package URL', // @translate
         ]);
         $replicaInput->setAttributes([
             'value' => $replica,
@@ -119,6 +119,6 @@ class FITModuleRemoteVideo implements MutableIngesterInterface
         $captionsInput->setAttributes([
             'value' => $captions,
         ]);
-        return $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput) . $view->formRow($preservationInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput) . $view->formRow($captionsInput);
+        return $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput) . $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput) . $view->formRow($captionsInput);
     }
 }

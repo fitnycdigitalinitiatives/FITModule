@@ -7,7 +7,7 @@ $hyperlink = $this->plugin('hyperlink');
 <?php foreach ($media->mediaData() as $key => $value): ?>
   <?php if ($value): ?>
     <div class="meta-group more-meta-group">
-      <?php if ($key == "access" || $key == "preservation" || $key == "captions"): ?>
+      <?php if ($key == "access" || $key == "archival" || $key == "captions"): ?>
         <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
           <h4><?php echo $translate(ucfirst($key)); ?></h4>
           <div class="value">
