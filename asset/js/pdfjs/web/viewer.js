@@ -1710,7 +1710,7 @@ exports.PDFViewerApplication = PDFViewerApplication;
 let validateFileURL;
 {
   //Only will display files from our S3 endpoint
-  const ACCEPTED_FILE_ORIGINS = ["https://dip-access-bucket.s3.us-east-1.amazonaws.com"];
+  const ACCEPTED_FILE_ORIGINS = ["https://dip-access-bucket.s3.us-east-1.amazonaws.com", "https://dip-access-bucket.s3.amazonaws.com"];
 
   validateFileURL = function (file) {
     if (file === undefined) {
