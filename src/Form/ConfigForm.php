@@ -38,15 +38,5 @@ class ConfigForm extends Form
                 'id' => 'aws_secret_key',
             ],
         ]);
-        $this->add([
-            'name' => 's3_region',
-            'type' => Element\Text::class,
-            'options' => [
-                'label' => 'S3 bucket region, e.g. "us-east-1".', // @translate
-            ],
-            'attributes' => [
-                'id' => 's3_region',
-            ],
-        ]);
     }
 }
