@@ -3,13 +3,30 @@
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $hyperlink = $this->plugin('hyperlink');
+$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'access' => 'Access file', 'thumbnail' => 'Thumbnail file', 'GoogleDriveID' => 'Google Drive Video ID', 'YouTubeID' => 'YouTube Video ID', 'captions' => 'Captions file', 'iiif' => 'IIIF endpoint');
+$access = $media->mediaData()['access'];
+$iiifEndpoint = $this->setting('fit_module_aws_iiif_endpoint');
+if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)) {
+    $parsed_url = parse_url($access);
+    $key = ltrim($parsed_url["path"], '/');
+    $iiif = $iiifEndpoint . str_replace("/", "%2F", $key) . "/info.json";
+}
 ?>
+<?php if (isset($iiif)): ?>
+  <div class="meta-group more-meta-group">
+    <h4>IIIF endpoint</h4>
+    <div class="value">
+      <a href="<?php echo $escape($iiif); ?>"><?php echo $escape($iiif); ?></a>
+    </div>
+  </div>
+<?php endif;?>
+
 <?php foreach ($media->mediaData() as $key => $value): ?>
   <?php if ($value): ?>
     <div class="meta-group more-meta-group">
       <?php if ($key == "access" || $key == "archival" || $key == "captions"): ?>
         <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
-          <h4><?php echo $translate(ucfirst($key)); ?></h4>
+          <h4><?php echo $labels[$key]; ?></h4>
           <div class="value">
             <small>S3 Object URL (Not directly accessible)</small>
             <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
@@ -30,13 +47,16 @@ $hyperlink = $this->plugin('hyperlink');
           </div>
         <?php endif;?>
       <?php else:?>
-        <h4><?php echo $translate(ucfirst($key)); ?></h4>
+        <h4><?php echo $labels[$key]; ?></h4>
         <div class="value">
           <?php if ($key == "YouTubeID"): ?>
             <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on YouTube"><span class="sr-only">Access on YouTube</span></i>', 'https://www.youtube.com/watch?v=' . $value, ['target' => '_blank']); ?>
           <?php elseif ($key == "GoogleDriveID"): ?>
             <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on Google Drive"><span class="sr-only">Access on Google Drive</span></i>', 'https://drive.google.com/file/d/' . $value . '/view', ['target' => '_blank']); ?>
           <?php else: ?>
+            <?php if ($key == "replica"): ?>
+              <small>S3 Glacier objects are only accessible upon request (please contact admin)</small>
+            <?php endif;?>
             <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
           <?php endif; ?>
         </div>

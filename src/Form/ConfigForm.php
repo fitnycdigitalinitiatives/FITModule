@@ -38,5 +38,15 @@ class ConfigForm extends Form
                 'id' => 'aws_secret_key',
             ],
         ]);
+        $this->add([
+            'name' => 'aws_iiif_endpoint',
+            'type' => Element\Url::class,
+            'options' => [
+                'label' => 'AWS Image Server IIIF Endpoint', // @translate
+            ],
+            'attributes' => [
+                'id' => 'aws_iiif_endpoint',
+            ],
+        ]);
     }
 }

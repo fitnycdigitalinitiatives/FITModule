@@ -41,6 +41,7 @@ class Module extends AbstractModule
             's3_connection' => $settings->get('fit_module_s3_connection'),
             'aws_key' => $settings->get('fit_module_aws_key'),
             'aws_secret_key' => $settings->get('fit_module_aws_secret_key'),
+            'aws_iiif_endpoint' => $settings->get('fit_module_aws_iiif_endpoint'),
         ]);
         return $renderer->formCollection($form);
     }
@@ -59,6 +60,7 @@ class Module extends AbstractModule
         $settings->set('fit_module_s3_connection', $formData['s3_connection']);
         $settings->set('fit_module_aws_key', $formData['aws_key']);
         $settings->set('fit_module_aws_secret_key', $formData['aws_secret_key']);
+        $settings->set('fit_module_aws_iiif_endpoint', $formData['aws_iiif_endpoint']);
         return true;
     }
 
