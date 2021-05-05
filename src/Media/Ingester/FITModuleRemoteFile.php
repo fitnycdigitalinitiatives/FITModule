@@ -40,9 +40,24 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
         $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail];
         $media->setData($mediaData);
-        if ($access != '') {
-            $mimes = new \Mimey\MimeTypes;
+        // attempt to get MIME for Media Type
+        $ext = '';
+        if (isset($data['dcterms:identifier'])) {
+            foreach ($data['dcterms:identifier'] as $key => $value) {
+                if (isset($value['o:label'])) {
+                    if ($value['o:label'] == 'archival-file') {
+                        $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
+                    }
+                }
+            }
+        }
+        if (($access != '') && ($ext == '')) {
             $ext = pathinfo($access, PATHINFO_EXTENSION);
+        }
+        if ($ext != '') {
+            $builder = \Mimey\MimeMappingBuilder::create();
+            $builder->add('image/jp2', 'jp2');
+            $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
         } else {
             $media->setMediaType(null);
@@ -54,9 +69,24 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $data = $request->getContent();
         $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
         $media->setData($mediaData);
-        if ($data['o:media']['__index__']['access'] != '') {
-            $mimes = new \Mimey\MimeTypes;
+        // attempt to get MIME for Media Type
+        $ext = '';
+        if (isset($data['dcterms:identifier'])) {
+            foreach ($data['dcterms:identifier'] as $key => $value) {
+                if (isset($value['o:label'])) {
+                    if ($value['o:label'] == 'archival-file') {
+                        $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
+                    }
+                }
+            }
+        }
+        if (($data['o:media']['__index__']['access'] != '') && ($ext == '')) {
             $ext = pathinfo($data['o:media']['__index__']['access'], PATHINFO_EXTENSION);
+        }
+        if ($ext != '') {
+            $builder = \Mimey\MimeMappingBuilder::create();
+            $builder->add('image/jp2', 'jp2');
+            $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
         } else {
             $media->setMediaType(null);
