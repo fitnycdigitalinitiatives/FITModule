@@ -5,6 +5,7 @@ use Omeka\Api\Representation\MediaRepresentation;
 use Omeka\Media\Ingester\MutableIngesterInterface;
 use Omeka\Api\Request;
 use Omeka\Entity\Media;
+use Laminas\Form\Element\Text;
 use Laminas\Form\Element\Url as UrlElement;
 use Omeka\Stdlib\ErrorStore;
 use Laminas\View\Renderer\PhpRenderer;
@@ -13,7 +14,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail']);
+        return $this->getForm($view, $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail'], $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -38,7 +39,13 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $replica = isset($data['replica']) ? $data['replica'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
-        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail];
+        $youtubeID = isset($data['YouTubeID']) ? $data['YouTubeID'] : '';
+        $googledriveID = isset($data['GoogleDriveID']) ? $data['GoogleDriveID'] : '';
+        // try using YouTube thumbnail if not already available
+        if (($thumbnail == '') && ($youtubeID != '')) {
+            $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
+        }
+        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
         $ext = '';
@@ -59,6 +66,10 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             $builder->add('image/jp2', 'jp2');
             $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
+        }
+        // probably a video if it has a YouTube id but doesn't have other info
+        elseif ($youtubeID != '') {
+            $media->setMediaType('video');
         } else {
             $media->setMediaType(null);
         }
@@ -67,7 +78,11 @@ class FITModuleRemoteFile implements MutableIngesterInterface
     public function update(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
-        $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail']];
+        // try using YouTube thumbnail if not already available
+        if (($data['o:media']['__index__']['thumbnail'] == '') && ($data['o:media']['__index__']['YouTubeID'] != '')) {
+            $data['o:media']['__index__']['thumbnail'] = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $data['o:media']['__index__']['YouTubeID']);
+        }
+        $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID']];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
         $ext = '';
@@ -88,12 +103,14 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             $builder->add('image/jp2', 'jp2');
             $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
+        } elseif ($data['o:media']['__index__']['YouTubeID'] != '') {
+            $media->setMediaType('video');
         } else {
             $media->setMediaType(null);
         }
     }
 
-    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $thumb = '')
+    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $thumb = '', $youtubeID = '', $googledriveID = '')
     {
         $archivalInput = new UrlElement('o:media[__index__][archival]');
         $archivalInput->setOptions([
@@ -126,6 +143,24 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $thumbInput->setAttributes([
             'value' => $thumb,
         ]);
-        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput);
+
+        $youtubeIDInput = new Text('o:media[__index__][YouTubeID]');
+        $youtubeIDInput->setOptions([
+            'label' => 'YouTube Video ID', // @translate
+            'info' => 'Can be found in the URL for a video, e.g. for https://www.youtube.com/watch?v=6kCgnnXH2B0 or https://youtu.be/6kCgnnXH2B0 the id is 6kCgnnXH2B0', // @translate
+        ]);
+        $youtubeIDInput->setAttributes([
+            'value' => $youtubeID,
+        ]);
+
+        $googledriveIDInput = new Text('o:media[__index__][GoogleDriveID]');
+        $googledriveIDInput->setOptions([
+            'label' => 'Google Drive Video ID', // @translate
+            'info' => 'Can be found in the URL for a video on Google Drive, e.g. for https://drive.google.com/file/d/0B4uG-Uwo1YBoeUs1b1JUNTI4WlE/view?usp=sharing or https://drive.google.com/file/d/0B4uG-Uwo1YBoeUs1b1JUNTI4WlE/preview the id is 0B4uG-Uwo1YBoeUs1b1JUNTI4WlE', // @translate
+        ]);
+        $googledriveIDInput->setAttributes([
+            'value' => $googledriveID,
+        ]);
+        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput) . $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput);
     }
 }
