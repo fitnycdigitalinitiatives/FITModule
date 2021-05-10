@@ -52,7 +52,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if (isset($data['dcterms:identifier'])) {
             foreach ($data['dcterms:identifier'] as $key => $value) {
                 if (isset($value['o:label'])) {
-                    if ($value['o:label'] == 'archival-file') {
+                    if ($value['o:label'] == 'original-file') {
                         $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
                     }
                 }
@@ -64,6 +64,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if ($ext != '') {
             $builder = \Mimey\MimeMappingBuilder::create();
             $builder->add('image/jp2', 'jp2');
+            $builder->add('text/vtt', 'vtt');
             $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
         }
@@ -89,7 +90,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if (isset($data['dcterms:identifier'])) {
             foreach ($data['dcterms:identifier'] as $key => $value) {
                 if (isset($value['o:label'])) {
-                    if ($value['o:label'] == 'archival-file') {
+                    if ($value['o:label'] == 'original-file') {
                         $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
                     }
                 }
@@ -101,6 +102,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if ($ext != '') {
             $builder = \Mimey\MimeMappingBuilder::create();
             $builder->add('image/jp2', 'jp2');
+            $builder->add('text/vtt', 'vtt');
             $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
         } elseif ($data['o:media']['__index__']['YouTubeID'] != '') {
