@@ -11,38 +11,54 @@ class FITModuleRemoteFile implements RendererInterface
     {
         $accessURL = $media->mediaData()['access'];
         $mediaType = $media->mediaType();
+        $iiifEndpoint = $view->setting('fit_module_aws_iiif_endpoint');
 
         // image
-        if ((strpos($media->mediaType(), 'image') === 0) && ($accessURL != '')) {
-            // code...
+        if ((strpos($media->mediaType(), 'image') === 0) && ($accessURL != '') && ($iiifEndpoint != '')) {
+            return $this->remote_image($view, $media, $accessURL, $iiifEndpoint);
         }
-        // video
-        elseif (strpos($media->mediaType(), 'video') === 0) {
-            return $this->remote_video($view, $media);
-        }
-        // audio
-        elseif ((strpos($media->mediaType(), 'audio') === 0) && ($accessURL != '')) {
-            // code...
+        // video and audio
+        elseif ((strpos($media->mediaType(), 'video') === 0) || (strpos($media->mediaType(), 'audio') === 0)) {
+            return $this->remote_video_audio($view, $media);
         }
         // pdf
         elseif (($mediaType == "application/pdf") && ($accessURL != '')) {
-            // code...
+            return $this->remote_pdf($view, $media, $accessURL);
         } else {
             return $this->remote_fallback($view, $media, $accessURL);
         }
     }
 
-    public function remote_image(PhpRenderer $view, MediaRepresentation $media, $accessURL = '')
+    public function remote_image(PhpRenderer $view, MediaRepresentation $media, $accessURL = '', $iiifEndpoint = '')
     {
-        return "I am an image";
+        $parsed_url = parse_url($accessURL);
+        $key = ltrim($parsed_url["path"], '/');
+        $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", $key) . "/info.json";
+        $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
+        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
+        $view->headScript()->appendFile($view->assetUrl('js/seadragon-view.js', 'FITModule'), 'text/javascript');
+        $noscript = $view->translate('OpenSeadragon is not available unless JavaScript is enabled.');
+        $image =
+        '<div class="openseadragon-frame">
+          <div class="loader"></div>
+          <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '"></div>
+        </div>
+        <noscript>
+            <p>' . $noscript . '</p>
+        </noscript>'
+    ;
+        return $image;
     }
 
-    public function remote_video(PhpRenderer $view, MediaRepresentation $media)
+    public function remote_video_audio(PhpRenderer $view, MediaRepresentation $media)
     {
-        $view->headLink()->appendStylesheet($view->assetUrl('css/video.css', 'FITModule'));
+        $view->headLink()->appendStylesheet('https://vjs.zencdn.net/7.11.4/video-js.css');
+        $view->headLink()->appendStylesheet($view->assetUrl('css/audioVideo.css', 'FITModule'));
+        $view->headScript()->appendFile('https://vjs.zencdn.net/7.11.4/video.min.js', 'text/javascript', ['defer' => 'defer']);
         $youtubeID = $media->mediaData()['YouTubeID'];
         $googledriveID = $media->mediaData()['GoogleDriveID'];
         $accessURL = $media->mediaData()['access'];
+
         if ($youtubeID != '') {
             $url = sprintf('https://www.youtube.com/embed/%s', $youtubeID);
             $embed = sprintf(
@@ -95,13 +111,21 @@ class FITModuleRemoteFile implements RendererInterface
                     }
                 }
             }
+            // check if audio file
+            $poster = '';
+            $ext = pathinfo($accessURL, PATHINFO_EXTENSION);
+            $mimes = new \Mimey\MimeTypes;
+            if (strpos($mimes->getMimeType($ext), 'audio') === 0) {
+                $poster = 'poster="' . $view->assetUrl('img/Speaker_Icon.svg', 'FITModule') . '"';
+            }
             $video = sprintf(
                 '<div class="embed-responsive embed-responsive-16by9">
-                <video class="embed-responsive-item" controls crossorigin="anonymous">
-                  <source src="%s" type="video/mp4">
+                <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none"}\'>
+                  <source src="%s">
                   %s
                 </video>
               </div>',
+                $poster,
                 $videoURL,
                 $captionHTML
             );
@@ -111,19 +135,10 @@ class FITModuleRemoteFile implements RendererInterface
         }
     }
 
-    public function remote_audio(PhpRenderer $view, MediaRepresentation $media, $accessURL = '')
-    {
-        return sprintf(
-            '<audio src="%s" controls>%s</audio>',
-            $accessURL,
-            $view->hyperlink('Audio file', $view->s3presigned($accessURL))
-        );
-    }
-
     public function remote_pdf(PhpRenderer $view, MediaRepresentation $media, $accessURL = '')
     {
         $view->headLink()->appendStylesheet($view->assetUrl('css/pdf.css', 'FITModule'));
-        $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js');
+        $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js', 'text/javascript');
         $pdfURL = $view->s3presigned($accessURL);
         $pdfViewer =
       '<div id="results" class="hidden"></div>
@@ -141,7 +156,7 @@ class FITModuleRemoteFile implements RendererInterface
             page: 2
           },
           forcePDFJS: true,
-          PDFJS_URL: "/modules/FITModule/asset/js/pdfjs/web/viewer.html"
+          PDFJS_URL: "' . $view->assetUrl('js/pdfjs/web/viewer.html', 'FITModule', false, false) . '"
         };
 
         var myPDF = PDFObject.embed("' . $pdfURL . '", "#pdf-' . $media->id() . '", options);
@@ -158,7 +173,7 @@ class FITModuleRemoteFile implements RendererInterface
             return $hyperlink->raw($thumbnail, $view->s3presigned($accessURL));
         } elseif ($googledriveID != '') {
             $driveURL = 'https://drive.google.com/file/d/' . $googledriveID . '/view?usp=sharing';
-            return $hyperlink->raw($thumbnail, $view->s3presigned($accessURL));
+            return $hyperlink->raw($thumbnail, $driveURL);
         } else {
             return $thumbnail;
         }
