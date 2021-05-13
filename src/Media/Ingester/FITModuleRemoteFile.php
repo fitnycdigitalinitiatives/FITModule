@@ -14,7 +14,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['thumbnail'], $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID']);
+        return $this->getForm($view, $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['mets'], $media->mediaData()['thumbnail'], $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID']);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -38,6 +38,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $archival = isset($data['archival']) ? $data['archival'] : '';
         $replica = isset($data['replica']) ? $data['replica'] : '';
         $access = isset($data['access']) ? $data['access'] : '';
+        $mets = isset($data['mets']) ? $data['mets'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
         $youtubeID = isset($data['YouTubeID']) ? $data['YouTubeID'] : '';
         $googledriveID = isset($data['GoogleDriveID']) ? $data['GoogleDriveID'] : '';
@@ -45,7 +46,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if (($thumbnail == '') && ($youtubeID != '')) {
             $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
         }
-        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID];
+        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'mets' => $mets, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
         $ext = '';
@@ -83,7 +84,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if (($data['o:media']['__index__']['thumbnail'] == '') && ($data['o:media']['__index__']['YouTubeID'] != '')) {
             $data['o:media']['__index__']['thumbnail'] = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $data['o:media']['__index__']['YouTubeID']);
         }
-        $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID']];
+        $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'mets' => $data['o:media']['__index__']['mets'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID']];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
         $ext = '';
@@ -112,7 +113,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         }
     }
 
-    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $thumb = '', $youtubeID = '', $googledriveID = '')
+    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $mets = '', $thumb = '', $youtubeID = '', $googledriveID = '')
     {
         $archivalInput = new UrlElement('o:media[__index__][archival]');
         $archivalInput->setOptions([
@@ -136,6 +137,14 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         ]);
         $accessInput->setAttributes([
             'value' => $access,
+        ]);
+
+        $metsInput = new UrlElement('o:media[__index__][mets]');
+        $metsInput->setOptions([
+            'label' => 'METS file URL', // @translate
+        ]);
+        $metsInput->setAttributes([
+            'value' => $mets,
         ]);
 
         $thumbInput = new UrlElement('o:media[__index__][thumbnail]');
@@ -163,6 +172,6 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $googledriveIDInput->setAttributes([
             'value' => $googledriveID,
         ]);
-        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($thumbInput) . $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput);
+        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($metsInput) . $view->formRow($thumbInput) . $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput);
     }
 }
