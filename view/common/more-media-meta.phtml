@@ -3,7 +3,7 @@
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $hyperlink = $this->plugin('hyperlink');
-$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'access' => 'Access file', 'thumbnail' => 'Thumbnail file', 'GoogleDriveID' => 'Google Drive Video ID', 'YouTubeID' => 'YouTube Video ID', 'captions' => 'Captions file', 'iiif' => 'IIIF endpoint');
+$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'access' => 'Access file', 'mets' => 'METS file', 'thumbnail' => 'Thumbnail file', 'GoogleDriveID' => 'Google Drive Video ID', 'YouTubeID' => 'YouTube Video ID', 'captions' => 'Captions file', 'iiif' => 'IIIF endpoint');
 $access = $media->mediaData()['access'];
 $iiifEndpoint = $this->setting('fit_module_aws_iiif_endpoint');
 if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)) {
@@ -24,7 +24,7 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
 <?php foreach ($media->mediaData() as $key => $value): ?>
   <?php if ($value): ?>
     <div class="meta-group more-meta-group">
-      <?php if ($key == "access" || $key == "archival" || $key == "captions"): ?>
+      <?php if ($key == "access" || $key == "archival" || $key == "mets" || $key == "captions"): ?>
         <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
           <h4><?php echo $labels[$key]; ?></h4>
           <div class="value">
