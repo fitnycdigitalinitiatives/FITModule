@@ -48,5 +48,11 @@ class ConfigForm extends Form
                 'id' => 'aws_iiif_endpoint',
             ],
         ]);
+
+        $inputFilter = $this->getInputFilter();
+        $inputFilter->add([
+                'name' => 'aws_iiif_endpoint',
+                'required' => false,
+            ]);
     }
 }

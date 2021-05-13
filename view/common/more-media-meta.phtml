@@ -55,7 +55,7 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
             <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on Google Drive"><span class="sr-only">Access on Google Drive</span></i>', 'https://drive.google.com/file/d/' . $value . '/view', ['target' => '_blank']); ?>
           <?php else: ?>
             <?php if ($key == "replica"): ?>
-              <small>S3 Glacier objects are only accessible upon request (please contact admin)</small>
+              <small>S3 Glacier objects are only accessible upon request (please contact administrator for assistance)</small>
             <?php endif;?>
             <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
           <?php endif; ?>

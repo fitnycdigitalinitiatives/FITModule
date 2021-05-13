@@ -16,7 +16,14 @@ $(document).ready(function() {
       tileSources: iiifEndpoint
     });
     viewer.addHandler("add-item-failed", function(event) {
-      $(currentViewer).parent().replaceWith("<b>This IIIF resource failed to load. The info.json file may be invalid.</b>");
+      $(currentViewer).parent().children('.loader').remove();
+      $(currentViewer).css({
+        "display": "flex",
+        "align-items": "center",
+        "justify-content": "center",
+        "color": '#fff'
+      });
+      $(currentViewer).empty().append("<b>This resource failed to load. For more assistance, please contact an administrator.</b>");
     });
     viewer.world.addHandler('add-item', function(event) {
       var tiledImage = event.item;
