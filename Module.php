@@ -104,7 +104,7 @@ class Module extends AbstractModule
         $resource = $event->getTarget();
         $primaryMedia = $resource->primaryMedia();
         if ($primaryMedia) {
-            if ($primaryMedia->ingester() == 'remoteImage' || $primaryMedia->ingester() == 'remoteVideo' || $primaryMedia->ingester() == 'remoteFile') {
+            if ($primaryMedia->ingester() == 'remoteFile') {
                 $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
                 if ($thumbnailURL) {
                     $jsonLd = $event->getParam('jsonLd');
