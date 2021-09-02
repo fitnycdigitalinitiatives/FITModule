@@ -43,10 +43,14 @@ class FITModuleS3Presigned extends AbstractHelper
                         'secret' => $view->setting('fit_module_aws_secret_key'),
                     ],
                 ]);
-                $cmd = $s3Client->getCommand('GetObject', [
+                $params = [
                   'Bucket' => $bucket,
                   'Key' => $key
-                ]);
+                ];
+                if (pathinfo($key, PATHINFO_EXTENSION) == 'pdf') {
+                    $params['ResponseContentType'] = 'application/pdf';
+                }
+                $cmd = $s3Client->getCommand('GetObject', $params);
                 $request = $s3Client->createPresignedRequest($cmd, '+60 minutes');
                 $presignedUrl = (string)$request->getUri();
                 return $presignedUrl;

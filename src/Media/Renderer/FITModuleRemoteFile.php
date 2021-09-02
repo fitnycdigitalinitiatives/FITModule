@@ -140,22 +140,12 @@ class FITModuleRemoteFile implements RendererInterface
         $view->headLink()->appendStylesheet($view->assetUrl('css/pdf.css', 'FITModule'));
         $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js', 'text/javascript');
         $pdfURL = $view->s3presigned($accessURL);
+        $thumbnail = $view->thumbnail($media, 'medium');
         $pdfViewer =
-      '<div id="results" class="hidden"></div>
-
-        <div id="pdf-' . $media->id() . '"></div>
+        '<div id="pdf-' . $media->id() . '"></div>
 
         <script>
         var options = {
-          pdfOpenParams: {
-            navpanes: 0,
-            toolbar: 0,
-            statusbar: 0,
-            view: "FitV",
-            pagemode: "thumbs",
-            page: 2
-          },
-          forcePDFJS: true,
           PDFJS_URL: "' . $view->assetUrl('js/pdfjs/web/viewer.html', 'FITModule', false, false) . '"
         };
 
