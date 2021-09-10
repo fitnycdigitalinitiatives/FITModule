@@ -138,18 +138,26 @@ class FITModuleRemoteFile implements RendererInterface
     public function remote_pdf(PhpRenderer $view, MediaRepresentation $media, $accessURL = '')
     {
         $view->headLink()->appendStylesheet($view->assetUrl('css/pdf.css', 'FITModule'));
-        $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.1.1/pdfobject.min.js', 'text/javascript');
+        $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.6/pdfobject.min.js', 'text/javascript');
         $pdfURL = $view->s3presigned($accessURL);
         $thumbnail = $view->thumbnail($media, 'medium');
+        $title = $media->displayTitle();
         $pdfViewer =
-        '<div id="pdf-' . $media->id() . '"></div>
+        '<div class="pdf-container">
+          <div class="loader"></div>
+          <div id="pdf-' . $media->id() . '"></div>
+        </div>
 
         <script>
         var options = {
+          title: "' . $title . '",
           PDFJS_URL: "' . $view->assetUrl('js/pdfjs/web/viewer.html', 'FITModule', false, false) . '"
         };
 
         var myPDF = PDFObject.embed("' . $pdfURL . '", "#pdf-' . $media->id() . '", options);
+        $(myPDF).on( "load", function() {
+          $(".pdf-container .loader").remove();
+        })
         </script>';
         return $pdfViewer;
     }
