@@ -33,21 +33,25 @@ class FITModuleRemoteFile implements RendererInterface
     {
         $parsed_url = parse_url($accessURL);
         $key = ltrim($parsed_url["path"], '/');
-        $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", $key) . "/info.json";
-        $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
-        $view->headScript()->appendFile('//cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
-        $view->headScript()->appendFile($view->assetUrl('js/seadragon-view.js', 'FITModule'), 'text/javascript');
-        $noscript = $view->translate('OpenSeadragon is not available unless JavaScript is enabled.');
-        $image =
-        '<div class="openseadragon-frame">
-          <div class="loader"></div>
-          <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '"></div>
-        </div>
-        <noscript>
-            <p>' . $noscript . '</p>
-        </noscript>'
-    ;
-        return $image;
+        $extension = pathinfo($key, PATHINFO_EXTENSION);
+        if (($extension == 'tif') || ($extension == 'tiff')) {
+            $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
+            $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
+            $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
+            $view->headScript()->appendFile($view->assetUrl('js/seadragon-view.js', 'FITModule'), 'text/javascript');
+            $noscript = $view->translate('OpenSeadragon is not available unless JavaScript is enabled.');
+            $image =
+            '<div class="openseadragon-frame">
+              <div class="loader"></div>
+              <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '"></div>
+            </div>
+            <noscript>
+                <p>' . $noscript . '</p>
+            </noscript>';
+            return $image;
+        } else {
+            return $this->remote_fallback($view, $media, $accessURL);
+        }
     }
 
     public function remote_video_audio(PhpRenderer $view, MediaRepresentation $media)
@@ -151,6 +155,7 @@ class FITModuleRemoteFile implements RendererInterface
         <script>
         var options = {
           title: "' . $title . '",
+          forcePDFJS: true,
           PDFJS_URL: "' . $view->assetUrl('js/pdfjs/web/viewer.html', 'FITModule', false, false) . '"
         };
 

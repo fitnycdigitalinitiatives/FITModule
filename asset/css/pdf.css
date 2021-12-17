@@ -50,10 +50,10 @@
 .pdfobject-container:before {
   display: block;
   content: "";
-  padding-top: 100%;
+  padding-top: 75%;
 }
 
-.pdfobject-container embed {
+.pdfobject-container embed, .pdfobject-container iframe {
   position: absolute;
   top: 0;
   bottom: 0;

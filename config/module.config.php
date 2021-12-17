@@ -37,4 +37,14 @@ return [
             dirname(__DIR__) . '/view',
         ],
     ],
+    'thumbnails' => [
+        'fallbacks' => [
+            'fallbacks' => [
+                'Image' => ['thumbnails/image.png', 'Omeka'],
+                'Still Image' => ['thumbnails/image.png', 'Omeka'],
+                'Moving Image' => ['thumbnails/video.png', 'Omeka'],
+                'Sound' => ['thumbnails/audio.png', 'Omeka'],
+            ],
+        ],
+    ],
 ];

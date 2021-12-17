@@ -51,11 +51,14 @@ class FITModuleUri extends AbstractDataType
     {
         $uri = $value->uri();
         $uriLabel = $value->value();
+        $hyperlink = $view->plugin('hyperlink');
         if (filter_var($uri, FILTER_VALIDATE_URL)) {
             if (!$uriLabel) {
                 $uriLabel = $uri;
             }
-            return $view->hyperlink($uriLabel, $uri, ['class' => 'uri-value-link', 'target' => '_blank']);
+            $icon = '<i class="fas fa-external-link-alt" aria-hidden="true" title="External link"></i>';
+
+            return $uriLabel . $hyperlink->raw($icon, $uri, ['style' => 'margin-left:.5em', 'target' => '_blank', 'aria-label' => 'External link']);
         } else {
             if (!$uriLabel) {
                 return $uri;

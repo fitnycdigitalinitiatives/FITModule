@@ -9,6 +9,7 @@ use Laminas\View\Renderer\PhpRenderer;
 use Laminas\Mvc\Controller\AbstractController;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
 use FITModule\Form\ConfigForm;
 
@@ -20,6 +21,36 @@ class Module extends AbstractModule
     public function init(ModuleManager $moduleManager)
     {
         require_once __DIR__ . '/vendor/autoload.php';
+        $events = $moduleManager->getEventManager();
+
+        // Registering a listener at default priority, 1, which will trigger
+        // after the ConfigListener merges config.
+        $events->attach(ModuleEvent::EVENT_MERGE_CONFIG, array($this, 'onMergeConfig'));
+    }
+
+
+    // Need to unmerge thumbnail fallbacks
+    public function onMergeConfig(ModuleEvent $e)
+    {
+        $configListener = $e->getConfigListener();
+        $config = $configListener->getMergedConfig(false);
+
+        // Modify the configuration; here, we'll remove a specific key:
+        if (isset($config['thumbnails']['fallbacks']['default']) && (count($config['thumbnails']['fallbacks']['default']) > 2)) {
+            $config['thumbnails']['fallbacks']['default'] = array_slice($config['thumbnails']['fallbacks']['default'], 2);
+        }
+        if (isset($config['thumbnails']['fallbacks']['fallbacks']['image']) && (count($config['thumbnails']['fallbacks']['fallbacks']['image']) > 2)) {
+            $config['thumbnails']['fallbacks']['fallbacks']['image'] = array_slice($config['thumbnails']['fallbacks']['fallbacks']['image'], 2);
+        }
+        if (isset($config['thumbnails']['fallbacks']['fallbacks']['video']) && (count($config['thumbnails']['fallbacks']['fallbacks']['video']) > 2)) {
+            $config['thumbnails']['fallbacks']['fallbacks']['video'] = array_slice($config['thumbnails']['fallbacks']['fallbacks']['video'], 2);
+        }
+        if (isset($config['thumbnails']['fallbacks']['fallbacks']['audio']) && (count($config['thumbnails']['fallbacks']['fallbacks']['audio']) > 2)) {
+            $config['thumbnails']['fallbacks']['fallbacks']['audio'] = array_slice($config['thumbnails']['fallbacks']['fallbacks']['audio'], 2);
+        }
+
+        // Pass the changed configuration back to the listener:
+        $configListener->setMergedConfig($config);
     }
 
     /**

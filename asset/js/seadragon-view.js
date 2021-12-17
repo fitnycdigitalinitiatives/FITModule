@@ -4,7 +4,7 @@ $(document).ready(function() {
     var currentViewerID = currentViewer.attr('id');
     var recordID = $(this).data('record_id');
     var recordName = $(this).data('record_name');
-    var iiifEndpoint = $(this).data('infojson');;
+    var iiifEndpoint = $(this).data('infojson');
     var viewer = OpenSeadragon({
       id: currentViewerID,
       prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/',

@@ -28,7 +28,7 @@ class FITModuleYoutube implements RendererInterface
         }
 
         // Compose the YouTube embed URL and build the markup.
-        $view->headLink()->appendStylesheet($view->assetUrl('css/video.css', 'FITModule'));
+        $view->headLink()->appendStylesheet($view->assetUrl('css/audioVideo.css', 'FITModule'));
         $data = $media->mediaData();
         $url = new HttpUri(sprintf('https://www.youtube.com/embed/%s', $data['id']));
         $query = [];
