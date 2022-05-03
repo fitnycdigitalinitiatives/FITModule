@@ -117,6 +117,19 @@ class Module extends AbstractModule
             'rep.resource.json',
             [$this, 'attachRemoteMetadataJson']
         );
+        // Add relators to contributor values
+        $sharedEventManager->attach(
+            'Omeka\Api\Representation\ValueRepresentation',
+            'rep.value.html',
+            [$this, 'contributorRelators'],
+            -1
+        );
+        // Remove relators from annotations so they are not duplicated
+        $sharedEventManager->attach(
+            'Omeka\Api\Representation\ValueAnnotationRepresentation',
+            'rep.resource.value_annotation_display_values',
+            [$this, 'removeContributorRelators']
+        );
     }
 
     public function displayRemoteMetadataSidebar(Event $event)
@@ -147,6 +160,70 @@ class Module extends AbstractModule
                     $event->setParam('jsonLd', $jsonLd);
                 }
             }
+        }
+    }
+
+    /**
+     * Add the relators data to the resource's display values.
+     *
+     * Event $event
+     */
+    public function contributorRelators($event)
+    {
+        // Check if this is a site request
+        $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
+        if ($routeMatch->getParam('__SITE__')) {
+            $value = $event->getTarget();
+            // Only check values that are dcterms:contributor
+            if ($value->property()->term() == "dcterms:contributor") {
+                if ($valueAnnotation = $value->valueAnnotation()) {
+                    foreach ($valueAnnotation->values() as $term => $propertyData) {
+                        if ($propertyData['property']->term() == "bf:role") {
+                            $relatorList = [];
+                            $relatorString = '';
+                            foreach ($propertyData['values'] as $annotationValue) {
+                                array_push($relatorList, $annotationValue);
+                            }
+                            if ($relatorList) {
+                                $relatorString = ' (' . implode(", ", $relatorList) . ')';
+                                $params = $event->getParams();
+                                $html = $params['html'];
+                                // case with no link tags
+                                if (strpos($html, "<a") === false) {
+                                    $html = $html . $relatorString;
+                                }
+                                // case where value is inside link tag
+                                elseif (strpos($html, "<a") == 0) {
+                                    // resource links need to be inside of span because of icon
+                                    if ($value->type() == "resource") {
+                                        $pos = strpos($html, "</span>");
+                                        $html = substr_replace($html, $relatorString, $pos, 0);
+                                    } else {
+                                        $pos = strpos($html, "</a>");
+                                        $html = substr_replace($html, $relatorString, $pos, 0);
+                                    }
+                                }
+                                // case where value proceeds link tags
+                                elseif ($pos = strpos($html, "<a")) {
+                                    $html = substr_replace($html, $relatorString, $pos, 0);
+                                }
+                                $event->setParam('html', "$html");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function removeContributorRelators($event)
+    {
+        // Check if this is a site request
+        $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
+        if ($routeMatch->getParam('__SITE__')) {
+            $values = $event->getParam('values');
+            unset($values["bf:role"]);
+            $event->setParam('values', $values);
         }
     }
 }
