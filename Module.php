@@ -130,6 +130,12 @@ class Module extends AbstractModule
             'rep.resource.value_annotation_display_values',
             [$this, 'removeContributorRelators']
         );
+        // Add twitter and facebook meta
+        $sharedEventManager->attach(
+            'Omeka\Controller\Site\Item',
+            'view.show.before',
+            [$this, 'addSocialMeta']
+        );
     }
 
     public function displayRemoteMetadataSidebar(Event $event)
@@ -168,7 +174,7 @@ class Module extends AbstractModule
      *
      * Event $event
      */
-    public function contributorRelators($event)
+    public function contributorRelators(Event $event)
     {
         // Check if this is a site request
         $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
@@ -216,7 +222,7 @@ class Module extends AbstractModule
         }
     }
 
-    public function removeContributorRelators($event)
+    public function removeContributorRelators(Event $event)
     {
         // Check if this is a site request
         $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
@@ -225,5 +231,35 @@ class Module extends AbstractModule
             unset($values["bf:role"]);
             $event->setParam('values', $values);
         }
+    }
+
+    public function addSocialMeta(Event $event)
+    {
+        $item = $event->getTarget()->item;
+        $view = $event->getTarget();
+        $escape = $view->plugin('escapeHtml');
+        $view->headMeta()->setProperty('og:url', $escape($item->url()));
+        $view->headMeta()->setProperty('og:title', $item->displayTitle());
+        $view->headMeta()->setProperty('og:type', 'article');
+        if ($item->thumbnail()) {
+            $view->headMeta()->setProperty('og:image', $thumbnail->assetUrl());
+            $view->headMeta()->setProperty('twitter:image', $thumbnail->assetUrl());
+        } elseif (($primaryMedia = $item->primaryMedia()) && ($primaryMedia->ingester() == 'remoteFile') && ($thumbnailURL = $primaryMedia->mediaData()['thumbnail'])) {
+            $view->headMeta()->setProperty('og:image', $thumbnailURL);
+            $view->headMeta()->setProperty('twitter:image', $thumbnailURL);
+        } elseif (($primaryMedia = $item->primaryMedia()) && ($primaryMedia->thumbnailUrl('medium'))) {
+            $view->headMeta()->setProperty('og:image', $thumbnailURL);
+            $view->headMeta()->setProperty('twitter:image', $thumbnailURL);
+        }
+        if ($item->value('dcterms:contributor')) {
+            $view->headMeta()->setProperty('og:article:author', $item->value('dcterms:contributor'));
+        }
+        if ($item->value('dcterms:abstract')) {
+            $view->headMeta()->setProperty('og:description', $item->value('dcterms:abstract'));
+            $view->headMeta()->setProperty('twitter:description', $item->value('dcterms:abstract'));
+        }
+        $view->headMeta()->setProperty('twitter:card', 'summary');
+        $view->headMeta()->setProperty('twitter:site', '@FITLibrary');
+        $view->headMeta()->setProperty('twitter:title', $item->displayTitle());
     }
 }
