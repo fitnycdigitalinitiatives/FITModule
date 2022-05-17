@@ -7,6 +7,11 @@ return [
           'uri' => DataType\FITModuleUri::class,
       ],
   ],
+  'block_layouts' => [
+      'invokables' => [
+          'browsePreviewCarousel' => Site\BlockLayout\BrowsePreviewCarousel::class,
+      ],
+  ],
   'media_ingesters' => [
       'invokables' => [
           'remoteFile' => Media\Ingester\FITModuleRemoteFile::class,

@@ -1,0 +1,90 @@
+<?php
+$this->headLink()->appendStylesheet('https://cdn.jsdelivr.net/npm/glider-js@1.7.7/glider.min.css', 'screen', null, ['integrity' => 'sha256-o2HrB5EL5AdkNI2+9n8NzI0p6VflIDQiimYGrayGE30=', 'crossorigin' => 'anonymous']);
+$this->headScript()->appendFile('https://cdn.jsdelivr.net/npm/glider-js@1.7.7/glider.min.js', 'text/javascript', ['integrity' => 'sha256-3/0U+/cLec+S2/6Gu2VYTzbA/2gaBACu5f7fGacrvAY=', 'crossorigin' => 'anonymous']);
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+?>
+<div class="col-12 browse-preview">
+  <?php if ($this->heading): ?>
+  <h2 class="mb-4"><?php echo $this->heading; ?></h2>
+  <?php endif; ?>
+  <?php if ($filter): ?>
+    <?php // check if solr/search module is activated by checking if the helper is present?>
+    <?php if ($this->getHelperPluginManager()->has('getFacetsForBrowse')): ?>
+      <?php $facetsForBrowse = $this->getFacetsForBrowse($searchQuery, null); ?>
+      <?php if ($facetsForBrowse['facets']): ?>
+        <!-- filter  -->
+        <button id="filter-button" class="btn btn-fit-pink floating-action mb-4" type="button" data-bs-toggle="offcanvas" data-bs-target="#searchFilters" aria-controls="searchFilters" aria-label="Filter results">
+          <span class="action-container">
+            <i class="fas fa-filter" aria-hidden="true" title="Filter results">
+            </i>
+            Filter results
+          </span>
+        </button>
+        <div class="offcanvas offcanvas-start shadow border-end-0" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="searchFilters" aria-labelledby="searchFiltersLabel">
+          <div class="offcanvas-header border-bottom">
+            <h3 class="offcanvas-title" id="searchFiltersLabel"><?php echo $this->translate('Search Filters'); ?></h3>
+            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body p-0">
+            <?php echo $this->partial('search/facets', ['facets' => $facetsForBrowse['facets'], 'dateFacetStats' => $facetsForBrowse['dateFacetStats'], 'queryParams' => []]); ?>
+          </div>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+  <?php endif; ?>
+
+  <div class="row align-items-center justify-content-around">
+
+    <div class="col-auto order-first pe-0"><button class="btn-arrow btnPrevious border-0 bg-transparent text-secondary" type="button" aria-label="Previous">
+      <i class="fas fa-chevron-left" aria-hidden="true" title="Previous">
+      </i>
+    </button>
+    </div>
+    <div class="col-auto order-last ps-0">
+      <button class="btn-arrow btnNext border-0 bg-transparent text-secondary" type="button" aria-label="Next">
+        <i class="fas fa-chevron-right" aria-hidden="true" title="Next">
+        </i>
+      </button>
+    </div>
+    <div class="col overflow-hidden px-0">
+      <div class="glider">
+      <?php
+      $showThumbnail = in_array('thumbnail', $this->components);
+      $showHeading = in_array('resource-heading', $this->components);
+      $showBody = in_array('resource-body', $this->components);
+      $headingTerm = $this->siteSetting('browse_heading_property_term');
+      $bodyTerm = $this->siteSetting('browse_body_property_term');
+
+      $filterLocale = (bool) $this->siteSetting('filter_locale_values');
+      $lang = $this->lang();
+
+      foreach ($this->resources as $resource):
+      $heading = $headingTerm ? $resource->value($headingTerm, ['default' => $translate('[Untitled]')]) : $resource->displayTitle(null, ($filterLocale ? $lang : null));
+      $body = $bodyTerm ? $resource->value($bodyTerm) : $resource->displayDescription(null, ($filterLocale ? $lang : null));
+      ?>
+        <div class="card border-0 px-3 px-xl-4">
+          <?php echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['class' => 'browse-thumbnail shadow-sm rounded', 'alt' => $heading]), null, ['class' => 'card-img']); ?>
+          <div class="card-body overflow-hidden">
+            <h3 class="resource-title"><?php echo $resource->link($heading, null, ['class'=> 'text-dark text-decoration-none']); ?></h3>
+          </div>
+        </div>
+      <?php endforeach; ?>
+      </div>
+    </div>
+  </div>
+  <?php
+  if ($this->linkText):
+      echo $this->hyperlink(
+          $this->linkText,
+          $this->url(
+              'site/resource',
+              ['controller' => $this->resourceType, 'action' => 'browse'],
+              ['query' => $this->query],
+              true
+          ),
+          ['class' => 'float-end me-5']
+      );
+  endif;
+  ?>
+</div>
