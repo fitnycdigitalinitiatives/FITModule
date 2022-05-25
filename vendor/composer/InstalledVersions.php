@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => 'ad787cfdaf01147738922536216a70774bc2d554',
+    'reference' => 'a70bf4063a27c0d0e6fe8df64dbb3f72e61f1229',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => 'ad787cfdaf01147738922536216a70774bc2d554',
+      'reference' => 'a70bf4063a27c0d0e6fe8df64dbb3f72e61f1229',
     ),
     'aws/aws-sdk-php' => 
     array (
@@ -54,21 +54,21 @@ private static $installed = array (
     ),
     'guzzlehttp/guzzle' => 
     array (
-      'pretty_version' => '7.3.0',
-      'version' => '7.3.0.0',
+      'pretty_version' => '7.4.3',
+      'version' => '7.4.3.0',
       'aliases' => 
       array (
       ),
-      'reference' => '7008573787b430c1c1f650e3722d9bba59967628',
+      'reference' => '74a8602c6faec9ef74b7a9391ac82c5e65b1cdab',
     ),
     'guzzlehttp/promises' => 
     array (
-      'pretty_version' => '1.4.1',
-      'version' => '1.4.1.0',
+      'pretty_version' => '1.5.1',
+      'version' => '1.5.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '8e7d04f1f6450fef59366c399cfad4b9383aa30d',
+      'reference' => 'fe752aedc9fd8fcca3fe7ad05d419d32998a06da',
     ),
     'guzzlehttp/psr7' => 
     array (
@@ -138,14 +138,23 @@ private static $installed = array (
       ),
       'reference' => '8f74e6da73f9df7bd965e4e123f3d8fb9acb89ba',
     ),
-    'symfony/polyfill-mbstring' => 
+    'symfony/deprecation-contracts' => 
     array (
-      'pretty_version' => 'v1.22.1',
-      'version' => '1.22.1.0',
+      'pretty_version' => 'v2.5.1',
+      'version' => '2.5.1.0',
       'aliases' => 
       array (
       ),
-      'reference' => '5232de97ee3b75b0360528dae24e73db49566ab1',
+      'reference' => 'e8b495ea28c1d97b5e0c121748d6f9b53d075c66',
+    ),
+    'symfony/polyfill-mbstring' => 
+    array (
+      'pretty_version' => 'v1.25.0',
+      'version' => '1.25.0.0',
+      'aliases' => 
+      array (
+      ),
+      'reference' => '0abb51d2f102e00a4eefcf46ba7fec406d245825',
     ),
   ),
 );
