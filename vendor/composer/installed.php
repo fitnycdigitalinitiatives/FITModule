@@ -6,7 +6,7 @@
     'aliases' => 
     array (
     ),
-    'reference' => 'a70bf4063a27c0d0e6fe8df64dbb3f72e61f1229',
+    'reference' => '373e9a22f3b88b19ca09c3a9ffe92e3e671fd9d7',
     'name' => '__root__',
   ),
   'versions' => 
@@ -18,7 +18,7 @@
       'aliases' => 
       array (
       ),
-      'reference' => 'a70bf4063a27c0d0e6fe8df64dbb3f72e61f1229',
+      'reference' => '373e9a22f3b88b19ca09c3a9ffe92e3e671fd9d7',
     ),
     'aws/aws-sdk-php' => 
     array (
@@ -31,12 +31,12 @@
     ),
     'guzzlehttp/guzzle' => 
     array (
-      'pretty_version' => '7.4.3',
-      'version' => '7.4.3.0',
+      'pretty_version' => '7.4.4',
+      'version' => '7.4.4.0',
       'aliases' => 
       array (
       ),
-      'reference' => '74a8602c6faec9ef74b7a9391ac82c5e65b1cdab',
+      'reference' => 'e3ff079b22820c2029d4c2a87796b6a0b8716ad8',
     ),
     'guzzlehttp/promises' => 
     array (
@@ -126,12 +126,12 @@
     ),
     'symfony/polyfill-mbstring' => 
     array (
-      'pretty_version' => 'v1.25.0',
-      'version' => '1.25.0.0',
+      'pretty_version' => 'v1.26.0',
+      'version' => '1.26.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '0abb51d2f102e00a4eefcf46ba7fec406d245825',
+      'reference' => '9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e',
     ),
   ),
 );
