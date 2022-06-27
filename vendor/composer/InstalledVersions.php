@@ -29,7 +29,7 @@ private static $installed = array (
     'aliases' => 
     array (
     ),
-    'reference' => '373e9a22f3b88b19ca09c3a9ffe92e3e671fd9d7',
+    'reference' => 'f6dd53dd773dbed395483e53b254ef30435c6b6f',
     'name' => '__root__',
   ),
   'versions' => 
@@ -41,7 +41,7 @@ private static $installed = array (
       'aliases' => 
       array (
       ),
-      'reference' => '373e9a22f3b88b19ca09c3a9ffe92e3e671fd9d7',
+      'reference' => 'f6dd53dd773dbed395483e53b254ef30435c6b6f',
     ),
     'aws/aws-sdk-php' => 
     array (
@@ -54,12 +54,12 @@ private static $installed = array (
     ),
     'guzzlehttp/guzzle' => 
     array (
-      'pretty_version' => '7.4.4',
-      'version' => '7.4.4.0',
+      'pretty_version' => '7.4.5',
+      'version' => '7.4.5.0',
       'aliases' => 
       array (
       ),
-      'reference' => 'e3ff079b22820c2029d4c2a87796b6a0b8716ad8',
+      'reference' => '1dd98b0564cb3f6bd16ce683cb755f94c10fbd82',
     ),
     'guzzlehttp/promises' => 
     array (
@@ -72,12 +72,12 @@ private static $installed = array (
     ),
     'guzzlehttp/psr7' => 
     array (
-      'pretty_version' => '1.8.5',
-      'version' => '1.8.5.0',
+      'pretty_version' => '1.9.0',
+      'version' => '1.9.0.0',
       'aliases' => 
       array (
       ),
-      'reference' => '337e3ad8e5716c15f9657bd214d16cc5e69df268',
+      'reference' => 'e98e3e6d4f86621a9b75f623996e6bbdeb4b9318',
     ),
     'mtdowling/jmespath.php' => 
     array (
