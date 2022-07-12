@@ -7,9 +7,9 @@ $labels = array('archival' => 'Archival package', 'replica' => 'Replica package'
 $access = $media->mediaData()['access'];
 $iiifEndpoint = $this->setting('fit_module_aws_iiif_endpoint');
 if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)) {
-    $extension = pathinfo($key, PATHINFO_EXTENSION);
     $parsed_url = parse_url($access);
     $key = ltrim($parsed_url["path"], '/');
+    $extension = pathinfo($key, PATHINFO_EXTENSION);
     $iiif = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
 }
 ?>
