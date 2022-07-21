@@ -22,7 +22,7 @@ class ConfigForm extends Form
             'name' => 'aws_key',
             'type' => Element\Text::class,
             'options' => [
-                'label' => 'AWS key for S3 buckets', // @translate
+                'label' => 'AWS key for S3 buckets/DynamoDB', // @translate
             ],
             'attributes' => [
                 'id' => 'aws_key',
@@ -32,7 +32,7 @@ class ConfigForm extends Form
             'name' => 'aws_secret_key',
             'type' => Element\Text::class,
             'options' => [
-                'label' => 'AWS secret key for S3 buckets', // @translate
+                'label' => 'AWS secret key for S3 buckets/DynamoDB', // @translate
             ],
             'attributes' => [
                 'id' => 'aws_secret_key',
@@ -46,6 +46,36 @@ class ConfigForm extends Form
             ],
             'attributes' => [
                 'id' => 'aws_iiif_endpoint',
+            ],
+        ]);
+        $this->add([
+            'name' => 'iiif_secret_key',
+            'type' => Element\Text::class,
+            'options' => [
+                'label' => 'JWT secret key for access to IIIF Server', // @translate
+            ],
+            'attributes' => [
+                'id' => 'iiif_secret_key',
+            ],
+        ]);
+        $this->add([
+            'name' => 'aws_dynamodb_table',
+            'type' => Element\Text::class,
+            'options' => [
+                'label' => 'DynamoDB Table with item/media visibility info for IIIF authetication.', // @translate
+            ],
+            'attributes' => [
+                'id' => 'aws_dynamodb_table',
+            ],
+        ]);
+        $this->add([
+            'name' => 'aws_dynamodb_table_region',
+            'type' => Element\Text::class,
+            'options' => [
+                'label' => 'DynamoDB Table region, ie "us-east-1".', // @translate
+            ],
+            'attributes' => [
+                'id' => 'aws_dynamodb_table_region',
             ],
         ]);
 

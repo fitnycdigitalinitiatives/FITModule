@@ -1,6 +1,7 @@
 {
     "require": {
         "ralouphie/mimey": "^2.1",
-        "aws/aws-sdk-php": "^3.150"
+        "aws/aws-sdk-php": "^3.150",
+        "firebase/php-jwt": "^6.2"
     }
 }

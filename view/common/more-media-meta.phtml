@@ -10,7 +10,9 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
     $parsed_url = parse_url($access);
     $key = ltrim($parsed_url["path"], '/');
     $extension = pathinfo($key, PATHINFO_EXTENSION);
-    $iiif = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
+    if ($extension == 'tif') {
+        $iiif = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
+    }
 }
 ?>
 <?php if (isset($iiif)): ?>

@@ -5,7 +5,9 @@ $(document).ready(function() {
     var recordID = $(this).data('record_id');
     var recordName = $(this).data('record_name');
     var iiifEndpoint = $(this).data('infojson');
-    var viewer = OpenSeadragon({
+    console.log(iiifEndpoint);
+    var authtoken = $(this).data('authtoken');
+    var options = {
       id: currentViewerID,
       prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/',
       showNavigator: true,
@@ -14,7 +16,17 @@ $(document).ready(function() {
       maxZoomPixelRatio: 10,
       controlsFadeDelay: 1000,
       tileSources: iiifEndpoint
-    });
+    }
+    // if token exists, add ajax to the options
+    if (authtoken) {
+      options['loadTilesWithAjax'] = true;
+      options['ajaxHeaders'] = {
+        "Authorization": "Bearer " + authtoken
+      }
+    }
+    var viewer = OpenSeadragon(
+      options
+    );
     viewer.addHandler("add-item-failed", function(event) {
       $(currentViewer).parent().children('.loader').remove();
       $(currentViewer).css({

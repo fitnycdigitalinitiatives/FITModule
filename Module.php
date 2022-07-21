@@ -12,6 +12,8 @@ use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
 use FITModule\Form\ConfigForm;
+use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Exception\DynamoDbException;
 
 class Module extends AbstractModule
 {
@@ -73,6 +75,9 @@ class Module extends AbstractModule
             'aws_key' => $settings->get('fit_module_aws_key'),
             'aws_secret_key' => $settings->get('fit_module_aws_secret_key'),
             'aws_iiif_endpoint' => $settings->get('fit_module_aws_iiif_endpoint'),
+            'iiif_secret_key' => $settings->get('fit_module_iiif_secret_key'),
+            'aws_dynamodb_table' => $settings->get('fit_module_aws_dynamodb_table'),
+            'aws_dynamodb_table_region' => $settings->get('fit_module_aws_dynamodb_table_region'),
         ]);
         return $renderer->formCollection($form);
     }
@@ -92,6 +97,9 @@ class Module extends AbstractModule
         $settings->set('fit_module_aws_key', $formData['aws_key']);
         $settings->set('fit_module_aws_secret_key', $formData['aws_secret_key']);
         $settings->set('fit_module_aws_iiif_endpoint', $formData['aws_iiif_endpoint']);
+        $settings->set('fit_module_iiif_secret_key', $formData['iiif_secret_key']);
+        $settings->set('fit_module_aws_dynamodb_table', $formData['aws_dynamodb_table']);
+        $settings->set('fit_module_aws_dynamodb_table_region', $formData['aws_dynamodb_table_region']);
         return true;
     }
 
@@ -135,6 +143,27 @@ class Module extends AbstractModule
             'Omeka\Controller\Site\Item',
             'view.show.before',
             [$this, 'addSocialMeta']
+        );
+        // Update DynamoDB Table with item/media visibility
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.create.post',
+            [$this, 'updateVisibility']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\MediaAdapter',
+            'api.create.post',
+            [$this, 'updateVisibility']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.update.post',
+            [$this, 'updateVisibility']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\MediaAdapter',
+            'api.update.post',
+            [$this, 'updateVisibility']
         );
     }
 
@@ -261,5 +290,83 @@ class Module extends AbstractModule
         $view->headMeta()->setProperty('twitter:card', 'summary');
         $view->headMeta()->setProperty('twitter:site', '@FITLibrary');
         $view->headMeta()->setProperty('twitter:title', $item->displayTitle());
+    }
+
+    /**
+     * Update item/media visibility in DynamoDB table.
+     *
+     * @param Event $event
+     */
+    public function updateVisibility(Event $event)
+    {
+        $settings = $this->getServiceLocator()->get('Omeka\Settings');
+        if (($table = $settings->get('fit_module_aws_dynamodb_table')) && ($region = $settings->get('fit_module_aws_dynamodb_table_region')) && ($key = $settings->get('fit_module_aws_key')) && ($secret = $settings->get('fit_module_aws_secret_key'))) {
+            $thisResourceAdapter = $event->getTarget();
+            $response = $event->getParam('response');
+            $entity = $response->getContent();
+            $representation = $thisResourceAdapter->getRepresentation($entity);
+            if ($representation->getControllerName() == 'item') {
+                $item = $representation;
+                if ($item->media()) {
+                    $mediaSet = $item->media();
+                } else {
+                    //There isn't any media to worry about
+                    return;
+                }
+            } elseif ($representation->getControllerName() == 'media') {
+                $mediaSet = array($representation);
+                $item = $representation->item();
+            }
+            $client = new DynamoDbClient([
+                'credentials' => [
+                    'key'    => $key,
+                    'secret' => $secret,
+                ],
+                'region'  => $region,
+                'version' => 'latest'
+            ]);
+            foreach ($mediaSet as $media) {
+                if (($media->ingester() == 'remoteFile') && ($accessURL = $media->mediaData()['access'])) {
+                    $parsed_url = parse_url($accessURL);
+                    $key = ltrim($parsed_url["path"], '/');
+                    $extension = pathinfo($key, PATHINFO_EXTENSION);
+                    if ($extension == 'tif') {
+                        if (($item->isPublic()) && ($media->isPublic())) {
+                            //public
+                            try {
+                                $response = $client->putItem(array(
+                                    'TableName' => $table ,
+                                    'Item' => array(
+                                        'key'   => array('S' => $key),
+                                        'visibility'  => array('S' => 'public')
+                                    )
+                                ));
+                                if ($response['@metadata']['statusCode'] != 200) {
+                                    throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
+                                }
+                            } catch (DynamoDbException $e) {
+                                throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. " . $e->getMessage(), 1);
+                            }
+                        } else {
+                            //private
+                            try {
+                                $response = $client->putItem(array(
+                                    'TableName' => $table ,
+                                    'Item' => array(
+                                        'key'   => array('S' => $key),
+                                        'visibility'  => array('S' => 'private')
+                                    )
+                                ));
+                                if ($response['@metadata']['statusCode'] != 200) {
+                                    throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
+                                }
+                            } catch (DynamoDbException $e) {
+                                throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. " . $e->getMessage(), 1);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

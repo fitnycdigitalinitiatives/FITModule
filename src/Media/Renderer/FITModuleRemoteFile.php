@@ -4,6 +4,7 @@ namespace FITModule\Media\Renderer;
 use Omeka\Api\Representation\MediaRepresentation;
 use Omeka\Media\Renderer\RendererInterface;
 use Laminas\View\Renderer\PhpRenderer;
+use Firebase\JWT\JWT;
 
 class FITModuleRemoteFile implements RendererInterface
 {
@@ -34,7 +35,38 @@ class FITModuleRemoteFile implements RendererInterface
         $parsed_url = parse_url($accessURL);
         $key = ltrim($parsed_url["path"], '/');
         $extension = pathinfo($key, PATHINFO_EXTENSION);
-        if (($extension == 'tif') || ($extension == 'tiff')) {
+        $authorization = "";
+        $name = "Anonymous";
+        if ($view->identity()) {
+            $name = $view->identity()->getName();
+        }
+        // Create an authorization token if either the media or item is private. Authorized user will only be accessing in the first place if they have permission
+        if (!($media->isPublic()) || !($media->item()->isPublic())) {
+            $secret_key = $view->setting('fit_module_iiif_secret_key');
+            $now_seconds = time();
+            $payload = array(
+              "iss" => "https://digitalrepository.fitnyc.edu",
+              "iat" => $now_seconds,
+              "exp" => $now_seconds+(60*60),  // Maximum expiration time is one hour
+              "user" => $name,
+              "visibility" => "private"
+            );
+            $authorization = JWT::encode($payload, $secret_key, "HS256");
+        }
+        // If the item is public, include that in the JWT so the authenticator does not need to look it up in the database.
+        // else {
+        //     $secret_key = $view->setting('fit_module_iiif_secret_key');
+        //     $now_seconds = time();
+        //     $payload = array(
+        //     "iss" => "https://digitalrepository.fitnyc.edu",
+        //     "iat" => $now_seconds,
+        //     "exp" => $now_seconds+(60*60),  // Maximum expiration time is one hour
+        //     "user" => $name,
+        //     "visibility" => "public"
+        //   );
+        //     $authorization = JWT::encode($payload, $secret_key, "HS256");
+        // }
+        if ($extension == 'tif') {
             $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
             $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
             $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
@@ -43,7 +75,7 @@ class FITModuleRemoteFile implements RendererInterface
             $image =
             '<div class="openseadragon-frame">
               <div class="loader"></div>
-              <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '"></div>
+              <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-authtoken="' . $authorization . '"></div>
             </div>
             <noscript>
                 <p>' . $noscript . '</p>
