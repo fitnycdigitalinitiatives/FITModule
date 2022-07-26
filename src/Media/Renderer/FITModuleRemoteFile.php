@@ -91,14 +91,24 @@ class FITModuleRemoteFile implements RendererInterface
         $view->headLink()->appendStylesheet('https://vjs.zencdn.net/7.11.4/video-js.css');
         $view->headLink()->appendStylesheet($view->assetUrl('css/audioVideo.css', 'FITModule'));
         $view->headScript()->appendFile('https://vjs.zencdn.net/7.11.4/video.min.js', 'text/javascript', ['defer' => 'defer']);
-        $youtubeID = $media->mediaData()['YouTubeID'];
-        $googledriveID = $media->mediaData()['GoogleDriveID'];
-        $accessURL = $media->mediaData()['access'];
+        $youtubeID = array_key_exists('YouTubeID', $media->mediaData()) ? $media->mediaData()['YouTubeID'] : '';
+        $vimeoID = array_key_exists('vimeoID', $media->mediaData()) ? $media->mediaData()['vimeoID'] : '';
+        $googledriveID = array_key_exists('GoogleDriveID', $media->mediaData()) ? $media->mediaData()['GoogleDriveID'] : '';
+        $accessURL = array_key_exists('access', $media->mediaData()) ? $media->mediaData()['access'] : '';
 
         if ($youtubeID != '') {
             $url = sprintf('https://www.youtube.com/embed/%s', $youtubeID);
             $embed = sprintf(
-                '<div class="embed-responsive embed-responsive-16by9">
+                '<div class="embed-responsive embed-responsive-4by3">
+                <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
+              </div>',
+                $url
+            );
+            return $embed;
+        } elseif ($vimeoID != '') {
+            $url = sprintf('https://player.vimeo.com/video/%s', $vimeoID);
+            $embed = sprintf(
+                '<div class="embed-responsive embed-responsive-4by3">
                 <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
@@ -107,7 +117,7 @@ class FITModuleRemoteFile implements RendererInterface
         } elseif ($googledriveID != '') {
             $url = sprintf('https://drive.google.com/file/d/%s/preview', $googledriveID);
             $embed = sprintf(
-                '<div class="embed-responsive embed-responsive-16by9">
+                '<div class="embed-responsive embed-responsive-4by3">
                 <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
@@ -155,7 +165,7 @@ class FITModuleRemoteFile implements RendererInterface
                 $poster = 'poster="' . $view->assetUrl('img/Speaker_Icon.svg', 'FITModule') . '"';
             }
             $video = sprintf(
-                '<div class="embed-responsive embed-responsive-16by9">
+                '<div class="embed-responsive embed-responsive-4by3">
                 <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none"}\'>
                   <source src="%s">
                   %s

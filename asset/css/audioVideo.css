@@ -4,6 +4,7 @@
   width: 100%;
   padding: 0;
   overflow: hidden;
+  background: #000;
 }
 
 .embed-responsive::before {
@@ -11,7 +12,7 @@
   content: "";
 }
 
-.embed-responsive-16by9:before {
+.embed-responsive-4by3:before {
   padding-top: 75%;
 }
 

@@ -3,7 +3,7 @@
 $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $hyperlink = $this->plugin('hyperlink');
-$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'access' => 'Access file', 'mets' => 'METS file', 'thumbnail' => 'Thumbnail file', 'GoogleDriveID' => 'Google Drive Video ID', 'YouTubeID' => 'YouTube Video ID', 'captions' => 'Captions file', 'iiif' => 'IIIF endpoint');
+$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'access' => 'Access file', 'mets' => 'METS file', 'thumbnail' => 'Thumbnail file', 'GoogleDriveID' => 'Google Drive Video ID', 'vimeoID' => 'Vimeo Video ID', 'YouTubeID' => 'YouTube Video ID', 'captions' => 'Captions file', 'iiif' => 'IIIF endpoint');
 $access = $media->mediaData()['access'];
 $iiifEndpoint = $this->setting('fit_module_aws_iiif_endpoint');
 if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)) {
@@ -56,6 +56,8 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
             <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on YouTube"><span class="sr-only">Access on YouTube</span></i>', 'https://www.youtube.com/watch?v=' . $value, ['target' => '_blank']); ?>
           <?php elseif ($key == "GoogleDriveID"): ?>
             <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on Google Drive"><span class="sr-only">Access on Google Drive</span></i>', 'https://drive.google.com/file/d/' . $value . '/view', ['target' => '_blank']); ?>
+          <?php elseif ($key == "vimeoID"): ?>
+            <?php echo $hyperlink->raw($escape($value) . ' <i class="fas fa-external-link-alt" title="Access on Vimeo"><span class="sr-only">Access on Vimeo</span></i>', 'https://vimeo.com/' . $value, ['target' => '_blank']); ?>
           <?php else: ?>
             <?php if ($key == "replica"): ?>
               <small>S3 Glacier objects are only accessible upon request (please contact administrator for assistance)</small>

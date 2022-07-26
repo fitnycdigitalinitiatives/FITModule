@@ -14,7 +14,15 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 {
     public function updateForm(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $this->getForm($view, $media->mediaData()['archival'], $media->mediaData()['replica'], $media->mediaData()['access'], $media->mediaData()['mets'], $media->mediaData()['thumbnail'], $media->mediaData()['YouTubeID'], $media->mediaData()['GoogleDriveID']);
+        $archival = array_key_exists('archival', $media->mediaData()) ? $media->mediaData()['archival'] : '';
+        $replica = array_key_exists('replica', $media->mediaData()) ? $media->mediaData()['replica'] : '';
+        $access = array_key_exists('access', $media->mediaData()) ? $media->mediaData()['access'] : '';
+        $mets = array_key_exists('mets', $media->mediaData()) ? $media->mediaData()['mets'] : '';
+        $thumbnail = array_key_exists('thumbnail', $media->mediaData()) ? $media->mediaData()['thumbnail'] : '';
+        $YouTubeID = array_key_exists('YouTubeID', $media->mediaData()) ? $media->mediaData()['YouTubeID'] : '';
+        $vimeoID = array_key_exists('vimeoID', $media->mediaData()) ? $media->mediaData()['vimeoID'] : '';
+        $GoogleDriveID = array_key_exists('GoogleDriveID', $media->mediaData()) ? $media->mediaData()['GoogleDriveID'] : '';
+        return $this->getForm($view, $archival, $replica, $access, $mets, $thumbnail, $YouTubeID, $vimeoID, $GoogleDriveID);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -41,12 +49,13 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $mets = isset($data['mets']) ? $data['mets'] : '';
         $thumbnail = isset($data['thumbnail']) ? $data['thumbnail'] : '';
         $youtubeID = isset($data['YouTubeID']) ? $data['YouTubeID'] : '';
+        $vimeoID = isset($data['vimeoID']) ? $data['vimeoID'] : '';
         $googledriveID = isset($data['GoogleDriveID']) ? $data['GoogleDriveID'] : '';
         // try using YouTube thumbnail if not already available
         if (($thumbnail == '') && ($youtubeID != '')) {
             $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
         }
-        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'mets' => $mets, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'GoogleDriveID' => $googledriveID];
+        $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'mets' => $mets, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'vimeoID' => $vimeoID, 'GoogleDriveID' => $googledriveID];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
         $ext = '';
@@ -86,7 +95,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             if (($data['o:media']['__index__']['thumbnail'] == '') && ($data['o:media']['__index__']['YouTubeID'] != '')) {
                 $data['o:media']['__index__']['thumbnail'] = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $data['o:media']['__index__']['YouTubeID']);
             }
-            $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'mets' => $data['o:media']['__index__']['mets'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID']];
+            $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'mets' => $data['o:media']['__index__']['mets'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'vimeoID' => $data['o:media']['__index__']['vimeoID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID']];
             $media->setData($mediaData);
             // attempt to get MIME for Media Type
             $ext = '';
@@ -116,7 +125,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         }
     }
 
-    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $mets = '', $thumb = '', $youtubeID = '', $googledriveID = '')
+    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $access = '', $mets = '', $thumb = '', $youtubeID = '', $vimeoID = '', $googledriveID = '')
     {
         $archivalInput = new UrlElement('o:media[__index__][archival]');
         $archivalInput->setOptions([
@@ -167,6 +176,15 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             'value' => $youtubeID,
         ]);
 
+        $vimeoIDInput = new Text('o:media[__index__][vimeoID]');
+        $vimeoIDInput->setOptions([
+            'label' => 'Vimeo Video ID', // @translate
+            'info' => 'Can be found in the URL for a video, e.g. for https://vimeo.com/manage/videos/711791459 or https://vimeo.com/711791459 the id is 711791459', // @translate
+        ]);
+        $vimeoIDInput->setAttributes([
+            'value' => $vimeoID,
+        ]);
+
         $googledriveIDInput = new Text('o:media[__index__][GoogleDriveID]');
         $googledriveIDInput->setOptions([
             'label' => 'Google Drive Video ID', // @translate
@@ -175,6 +193,6 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $googledriveIDInput->setAttributes([
             'value' => $googledriveID,
         ]);
-        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($metsInput) . $view->formRow($thumbInput) . $view->formRow($youtubeIDInput) . $view->formRow($googledriveIDInput);
+        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($accessInput) . $view->formRow($metsInput) . $view->formRow($thumbInput) . $view->formRow($youtubeIDInput) . $view->formRow($vimeoIDInput) . $view->formRow($googledriveIDInput);
     }
 }

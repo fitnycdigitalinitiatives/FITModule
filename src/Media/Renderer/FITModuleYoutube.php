@@ -40,7 +40,7 @@ class FITModuleYoutube implements RendererInterface
         }
         $url->setQuery($query);
         $embed = sprintf(
-            '<div class="embed-responsive embed-responsive-16by9"><iframe src="%s" frameborder="0"%s></iframe></div>',
+            '<div class="embed-responsive embed-responsive-4by3"><iframe src="%s" frameborder="0"%s></iframe></div>',
             $view->escapeHtml($url),
             $options['allowfullscreen'] ? ' allowfullscreen' : ''
         );
