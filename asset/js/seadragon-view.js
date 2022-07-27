@@ -5,7 +5,6 @@ $(document).ready(function() {
     var recordID = $(this).data('record_id');
     var recordName = $(this).data('record_name');
     var iiifEndpoint = $(this).data('infojson');
-    console.log(iiifEndpoint);
     var authtoken = $(this).data('authtoken');
     var options = {
       id: currentViewerID,
