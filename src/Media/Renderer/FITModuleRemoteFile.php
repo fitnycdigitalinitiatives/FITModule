@@ -128,11 +128,11 @@ class FITModuleRemoteFile implements RendererInterface
             $captionHTML = '';
             // find caption track separately attached to item if the file name matches current file name with vtt extension
             // necessary for caption track to have the same file name as video file, ie video.mp4 and video.vtt
-            $fileName = '';
+            $referenceCode = '';
             $values = $media->value('dcterms:identifier', ['all' => true, 'type' => 'uri']);
             foreach ($values as $value) {
-                if ($value->value() == "original-file") {
-                    $fileName = pathinfo($value->uri(), PATHINFO_FILENAME);
+                if ($value->value() == "Reference Code") {
+                    $referenceCode = $value->uri();
                 }
             }
             $item = $media->item();
@@ -143,9 +143,9 @@ class FITModuleRemoteFile implements RendererInterface
                     if ($relatedAccessURL != '') {
                         $relatedValues = $relatedMedia->value('dcterms:identifier', ['all' => true, 'type' => 'uri']);
                         foreach ($relatedValues as $relatedValue) {
-                            if ($relatedValue->value() == "original-file") {
-                                $relatedFileName = pathinfo($relatedValue->uri(), PATHINFO_FILENAME);
-                                if ($relatedFileName == $fileName) {
+                            if ($relatedValue->value() == "Reference Code") {
+                                $relatedReferenceCode = $relatedValue->uri();
+                                if ($relatedReferenceCode == $referenceCode . "-captions") {
                                     $captionURL = $view->s3presigned($relatedAccessURL);
                                     $captionHTML = sprintf(
                                         '<track src="%s" kind="captions" label="Captions">',
