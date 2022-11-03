@@ -9,6 +9,8 @@ use Laminas\Form\Element\Text;
 use Laminas\Form\Element\Url as UrlElement;
 use Omeka\Stdlib\ErrorStore;
 use Laminas\View\Renderer\PhpRenderer;
+use Laminas\Http\Client as HttpClient;
+use Laminas\Uri\Http as HttpUri;
 
 class FITModuleRemoteFile implements MutableIngesterInterface
 {
@@ -55,6 +57,22 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if (($thumbnail == '') && ($youtubeID != '')) {
             $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
         }
+        if (($thumbnail == '') && ($vimeoID != '')) {
+            $vimeoURL = 'https://vimeo.com/api/oembed.json?url=https://vimeo.com/' . $vimeoID;
+            $uri = new HttpUri($vimeoURL);
+            $client = new HttpClient;
+            $client->reset();
+            $client->setUri($uri);
+            $response = $client->send();
+            if ($response->isOk()) {
+                $vimeoData = json_decode($response->getBody(), true);
+                if ($vimeoData) {
+                    if (array_key_exists("thumbnail_url", $vimeoData)) {
+                        $thumbnail = $vimeoData["thumbnail_url"];
+                    }
+                }
+            }
+        }
         $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'mets' => $mets, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'vimeoID' => $vimeoID, 'GoogleDriveID' => $googledriveID];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
@@ -78,8 +96,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
         }
-        // probably a video if it has a YouTube id but doesn't have other info
-        elseif ($youtubeID != '') {
+        // probably a video if it has a YouTube/Vimeo/Google Drive id but doesn't have other info
+        elseif (($youtubeID != '') || ($vimeoID != '') || ($googledriveID != '')) {
             $media->setMediaType('video');
         } else {
             $media->setMediaType(null);
