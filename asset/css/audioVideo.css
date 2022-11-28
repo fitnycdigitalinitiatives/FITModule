@@ -16,6 +16,10 @@
   padding-top: 75%;
 }
 
+.embed-responsive-video:before {
+  padding-top: calc(9 / 16 * 100%);
+}
+
 .embed-responsive .embed-responsive-item, .embed-responsive embed, .embed-responsive iframe, .embed-responsive object, .embed-responsive video {
   position: absolute;
   top: 0;

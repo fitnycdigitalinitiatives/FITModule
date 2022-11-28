@@ -99,7 +99,7 @@ class FITModuleRemoteFile implements RendererInterface
         if ($youtubeID != '') {
             $url = sprintf('https://www.youtube.com/embed/%s', $youtubeID);
             $embed = sprintf(
-                '<div class="embed-responsive embed-responsive-4by3">
+                '<div class="embed-responsive embed-responsive-video">
                 <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
@@ -108,7 +108,7 @@ class FITModuleRemoteFile implements RendererInterface
         } elseif ($vimeoID != '') {
             $url = sprintf('https://player.vimeo.com/video/%s', $vimeoID);
             $embed = sprintf(
-                '<div class="embed-responsive embed-responsive-4by3">
+                '<div class="embed-responsive embed-responsive-video">
                 <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
@@ -117,7 +117,7 @@ class FITModuleRemoteFile implements RendererInterface
         } elseif ($googledriveID != '') {
             $url = sprintf('https://drive.google.com/file/d/%s/preview', $googledriveID);
             $embed = sprintf(
-                '<div class="embed-responsive embed-responsive-4by3">
+                '<div class="embed-responsive embed-responsive-video">
                 <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
@@ -165,7 +165,7 @@ class FITModuleRemoteFile implements RendererInterface
                 $poster = 'poster="' . $view->assetUrl('img/Speaker_Icon.svg', 'FITModule') . '"';
             }
             $video = sprintf(
-                '<div class="embed-responsive embed-responsive-4by3">
+                '<div class="embed-responsive embed-responsive-video">
                 <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none"}\'>
                   <source src="%s">
                   %s
