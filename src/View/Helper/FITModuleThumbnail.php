@@ -19,9 +19,20 @@ class FITModuleThumbnail extends AbstractHtmlElement
      */
     public function __invoke(AbstractRepresentation $representation, $type, array $attribs = [])
     {
-        $triggerHelper = $this->getView()->plugin('trigger');
+        $view = $this->getView();
+        $triggerHelper = $view->plugin('trigger');
         $thumbnail = $representation->thumbnail();
-        $primaryMedia = $representation->primaryMedia();
+        if (($representation->getControllerName() == 'item-set') && array_key_exists('__SITE__', $view->params()->fromRoute())) {
+            $item = $view->plugin('api')->searchOne('items', array('item_set_id' => $representation->id(), 'site_id' => $view->vars()->site->id()))->getContent();
+            if ($item) {
+                $primaryMedia = $item->primaryMedia();
+            } else {
+                $primaryMedia = '';
+            }
+            
+        } else {
+            $primaryMedia = $representation->primaryMedia();
+        }
         if (!$thumbnail && !$primaryMedia) {
             $services = $representation->getServiceLocator();
             $thumbnailManager = $services->get('Omeka\File\ThumbnailManager');
@@ -41,7 +52,7 @@ class FITModuleThumbnail extends AbstractHtmlElement
             $attribs = $params['attribs'];
 
             if (!isset($attribs['alt'])) {
-                $attribs['alt'] = '';
+                $attribs['alt'] = $representation->displayTitle();
             }
 
             return sprintf('<img%s>', $this->htmlAttribs($attribs));
