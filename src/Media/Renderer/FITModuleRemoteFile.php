@@ -173,7 +173,7 @@ class FITModuleRemoteFile implements RendererInterface
             }
             $video = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
-                <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none"}\'>
+                <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none", "posterImage": false}\'>
                   <source src="%s">
                   %s
                 </video>
