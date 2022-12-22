@@ -169,11 +169,11 @@ class FITModuleRemoteFile implements RendererInterface
                 $doc = new \DOMDocument();
                 $doc->loadHTML($thumbnailTag);
                 $a = $doc->getElementsByTagName('img');
-                $poster = 'poster="' . $a[0]->getAttribute('src') . '"';
+                $poster = 'poster="' . $a[0]->getAttribute('src') . '?poster=yes"';
             }
             $video = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
-                <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none", "posterImage": false}\'>
+                <video class="embed-responsive-item video-js vjs-big-play-centered" %s controls crossorigin="anonymous" data-setup=\'{"preload": "none"                                             }\'>
                   <source src="%s">
                   %s
                 </video>
