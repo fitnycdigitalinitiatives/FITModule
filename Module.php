@@ -271,8 +271,8 @@ class Module extends AbstractModule
         $view->headMeta()->setProperty('og:title', $item->displayTitle());
         $view->headMeta()->setProperty('og:type', 'article');
         if ($item->thumbnail()) {
-            $view->headMeta()->setProperty('og:image', $thumbnail->assetUrl());
-            $view->headMeta()->setProperty('twitter:image', $thumbnail->assetUrl());
+            $view->headMeta()->setProperty('og:image', $item->thumbnail()->assetUrl());
+            $view->headMeta()->setProperty('twitter:image', $item->thumbnail()->assetUrl());
         } elseif (($primaryMedia = $item->primaryMedia()) && ($primaryMedia->ingester() == 'remoteFile') && ($thumbnailURL = $primaryMedia->mediaData()['thumbnail'])) {
             $view->headMeta()->setProperty('og:image', $thumbnailURL);
             $view->headMeta()->setProperty('twitter:image', $thumbnailURL);
@@ -319,10 +319,10 @@ class Module extends AbstractModule
             }
             $client = new DynamoDbClient([
                 'credentials' => [
-                    'key'    => $key,
+                    'key' => $key,
                     'secret' => $secret,
                 ],
-                'region'  => $region,
+                'region' => $region,
                 'version' => 'latest'
             ]);
             foreach ($mediaSet as $media) {
@@ -334,13 +334,15 @@ class Module extends AbstractModule
                         if (($item->isPublic()) && ($media->isPublic())) {
                             //public
                             try {
-                                $response = $client->putItem(array(
-                                    'TableName' => $table ,
-                                    'Item' => array(
-                                        'key'   => array('S' => $key),
-                                        'visibility'  => array('S' => 'public')
+                                $response = $client->putItem(
+                                    array(
+                                        'TableName' => $table,
+                                        'Item' => array(
+                                            'key' => array('S' => $key),
+                                            'visibility' => array('S' => 'public')
+                                        )
                                     )
-                                ));
+                                );
                                 if ($response['@metadata']['statusCode'] != 200) {
                                     throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
                                 }
@@ -350,13 +352,15 @@ class Module extends AbstractModule
                         } else {
                             //private
                             try {
-                                $response = $client->putItem(array(
-                                    'TableName' => $table ,
-                                    'Item' => array(
-                                        'key'   => array('S' => $key),
-                                        'visibility'  => array('S' => 'private')
+                                $response = $client->putItem(
+                                    array(
+                                        'TableName' => $table,
+                                        'Item' => array(
+                                            'key' => array('S' => $key),
+                                            'visibility' => array('S' => 'private')
+                                        )
                                     )
-                                ));
+                                );
                                 if ($response['@metadata']['statusCode'] != 200) {
                                     throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
                                 }

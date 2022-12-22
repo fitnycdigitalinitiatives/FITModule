@@ -29,7 +29,7 @@ class FITModuleThumbnail extends AbstractHtmlElement
             } else {
                 $primaryMedia = '';
             }
-            
+
         } else {
             $primaryMedia = $representation->primaryMedia();
         }

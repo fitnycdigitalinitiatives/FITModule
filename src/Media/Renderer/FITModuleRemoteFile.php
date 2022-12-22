@@ -45,11 +45,12 @@ class FITModuleRemoteFile implements RendererInterface
             $secret_key = $view->setting('fit_module_iiif_secret_key');
             $now_seconds = time();
             $payload = array(
-              "iss" => "https://digitalrepository.fitnyc.edu",
-              "iat" => $now_seconds,
-              "exp" => $now_seconds+(60*60),  // Maximum expiration time is one hour
-              "user" => $name,
-              "visibility" => "private"
+                "iss" => "https://digitalrepository.fitnyc.edu",
+                "iat" => $now_seconds,
+                "exp" => $now_seconds + (60 * 60),
+                // Maximum expiration time is one hour
+                "user" => $name,
+                "visibility" => "private"
             );
             $authorization = JWT::encode($payload, $secret_key, "HS256");
         }
@@ -73,13 +74,13 @@ class FITModuleRemoteFile implements RendererInterface
             $view->headScript()->appendFile($view->assetUrl('js/seadragon-view.js', 'FITModule'), 'text/javascript');
             $noscript = $view->translate('OpenSeadragon is not available unless JavaScript is enabled.');
             $image =
-            '<div class="openseadragon-frame">
-              <div class="loader"></div>
-              <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-authtoken="' . $authorization . '"></div>
-            </div>
-            <noscript>
-                <p>' . $noscript . '</p>
-            </noscript>';
+                '<div class="openseadragon-frame">
+                <div class="loader"></div>
+                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-authtoken="' . $authorization . '"></div>
+                </div>
+                <noscript>
+                    <p>' . $noscript . '</p>
+                </noscript>';
             return $image;
         } else {
             return $this->remote_fallback($view, $media, $accessURL);
@@ -88,9 +89,9 @@ class FITModuleRemoteFile implements RendererInterface
 
     public function remote_video_audio(PhpRenderer $view, MediaRepresentation $media)
     {
-        $view->headLink()->appendStylesheet('https://vjs.zencdn.net/7.11.4/video-js.css');
+        $view->headLink()->appendStylesheet('https://vjs.zencdn.net/7.20.3/video-js.css');
         $view->headLink()->appendStylesheet($view->assetUrl('css/audioVideo.css', 'FITModule'));
-        $view->headScript()->appendFile('https://vjs.zencdn.net/7.11.4/video.min.js', 'text/javascript', ['defer' => 'defer']);
+        $view->headScript()->appendFile('https://vjs.zencdn.net/7.20.3/video.min.js', 'text/javascript', ['defer' => 'defer']);
         $youtubeID = array_key_exists('YouTubeID', $media->mediaData()) ? $media->mediaData()['YouTubeID'] : '';
         $vimeoID = array_key_exists('vimeoID', $media->mediaData()) ? $media->mediaData()['vimeoID'] : '';
         $googledriveID = array_key_exists('GoogleDriveID', $media->mediaData()) ? $media->mediaData()['GoogleDriveID'] : '';
@@ -163,6 +164,12 @@ class FITModuleRemoteFile implements RendererInterface
             $mimes = new \Mimey\MimeTypes;
             if (strpos($mimes->getMimeType($ext), 'audio') === 0) {
                 $poster = 'poster="' . $view->assetUrl('img/Speaker_Icon.svg', 'FITModule') . '"';
+            } else {
+                $thumbnailTag = $view->thumbnail($media, 'medium');
+                $doc = new \DOMDocument();
+                $doc->loadHTML($thumbnailTag);
+                $a = $doc->getElementsByTagName('img');
+                $poster = 'poster="' . $a[0]->getAttribute('src') . '"';
             }
             $video = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
@@ -189,7 +196,7 @@ class FITModuleRemoteFile implements RendererInterface
         $thumbnail = $view->thumbnail($media, 'medium');
         $title = $media->displayTitle();
         $pdfViewer =
-        '<div class="pdf-container">
+            '<div class="pdf-container">
           <div class="loader"></div>
           <div id="pdf-' . $media->id() . '"></div>
         </div>
