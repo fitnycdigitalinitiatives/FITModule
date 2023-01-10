@@ -69,6 +69,7 @@ class FITModuleRemoteFile implements RendererInterface
         // }
         if ($extension == 'tif') {
             $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
+            $thumbnail = $media->mediaData()['thumbnail'];
             $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
             $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
             $view->headScript()->appendFile($view->assetUrl('js/seadragon-view.js', 'FITModule'), 'text/javascript');
@@ -76,7 +77,7 @@ class FITModuleRemoteFile implements RendererInterface
             $image =
                 '<div class="openseadragon-frame">
                 <div class="loader"></div>
-                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-authtoken="' . $authorization . '"></div>
+                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-thumbnail="' . $thumbnail . '" data-authtoken="' . $authorization . '"></div>
                 </div>
                 <noscript>
                     <p>' . $noscript . '</p>
