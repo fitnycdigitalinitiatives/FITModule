@@ -1,0 +1,45 @@
+<?php
+use Omeka\Api\Exception\NotFoundException;
+
+$escape = $this->plugin('escapeHtml');
+$this->headLink()->appendStylesheet($this->assetUrl('css/image-video-transition.css', 'FITModule'));
+$this->headScript()->appendFile($this->assetUrl('js/image-video-transition.js', 'FITModule'));
+$itemLink = "";
+if ($itemLinkId) {
+    $api = $this->plugin('api');
+    try {
+        $itemRepresentation = $api->read('items', $itemLinkId)->getContent();
+        if ($itemRepresentation->siteUrl()) {
+            $itemLink = $itemRepresentation->siteUrl();
+        }
+    } catch (NotFoundException $e) {
+        $itemLink = "";
+    }
+}
+
+?>
+
+<?php if (($image = $attachments[0]['asset']) && ($videoURL)): ?>
+    <div id="image-video-transition-container" class="col-12">
+        <div id="image-video-transition" class="carousel slide carousel-fade" data-video-src="<?php echo $videoURL; ?>"
+            data-video-link="<?php echo $itemLink; ?>">
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="<?php echo $image->assetUrl(); ?>" class="d-block w-100"
+                        alt="<?php echo $image->altText(); ?>">
+                </div>
+            </div>
+            <div class="caption-body d-sm-none">
+                <div class="card-text fw-bold text-white">
+                    <?php echo $escape($caption); ?>
+                </div>
+            </div>
+            <div class="caption-overlay d-none d-sm-flex">
+                <div class="card-text">
+                    <?php echo $escape($caption); ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<?php endif; ?>
