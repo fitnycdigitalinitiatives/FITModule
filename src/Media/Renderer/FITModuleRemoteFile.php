@@ -99,19 +99,19 @@ class FITModuleRemoteFile implements RendererInterface
         $accessURL = array_key_exists('access', $media->mediaData()) ? $media->mediaData()['access'] : '';
 
         if ($youtubeID != '') {
-            $url = sprintf('https://www.youtube.com/embed/%s', $youtubeID);
+            $url = sprintf('https://www.youtube.com/embed/%s?enablejsapi=1', $youtubeID);
             $embed = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
-                <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item youtube" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
             );
             return $embed;
         } elseif ($vimeoID != '') {
-            $url = sprintf('https://player.vimeo.com/video/%s', $vimeoID);
+            $url = sprintf('https://player.vimeo.com/video/%s?api=1', $vimeoID);
             $embed = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
-                <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item vimeo" src="%s" allowfullscreen></iframe>
               </div>',
                 $url
             );

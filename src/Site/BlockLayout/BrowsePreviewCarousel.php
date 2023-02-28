@@ -21,7 +21,6 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
     {
         $view->headLink()->prependStylesheet($view->assetUrl('css/advanced-search.css', 'Omeka'));
         $view->headScript()->appendFile($view->assetUrl('js/advanced-search.js', 'Omeka'));
-        $view->headLink()->appendStylesheet($view->assetUrl('css/query-form.css', 'Omeka'));
         $view->headScript()->appendFile($view->assetUrl('js/query-form.js', 'Omeka'));
         $view->headScript()->appendFile($view->assetUrl('js/browse-preview-block-layout.js', 'Omeka'));
     }
@@ -31,7 +30,8 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
         SiteRepresentation $site,
         SitePageRepresentation $page = null,
         SitePageBlockRepresentation $block = null
-    ) {
+    )
+    {
         $defaults = [
             'resource_type' => 'items',
             'query' => '',
@@ -49,11 +49,15 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'name' => 'o:block[__blockIndex__][o:data][resource_type]',
             'type' => Element\Select::class,
             'options' => [
-                'label' => 'Resource type', // @translate
+                'label' => 'Resource type',
+                // @translate
                 'value_options' => [
-                    'items' => 'Items',  // @translate
-                    'item_sets' => 'Item sets',  // @translate
-                    'media' => 'Media',  // @translate
+                    'items' => 'Items',
+                    // @translate
+                    'item_sets' => 'Item sets',
+                    // @translate
+                    'media' => 'Media',
+                    // @translate
                 ],
             ],
             'attributes' => [
@@ -64,8 +68,10 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'name' => 'o:block[__blockIndex__][o:data][query]',
             'type' => OmekaElement\Query::class,
             'options' => [
-                'label' => 'Search query', // @translate
-                'info' => 'Display resources using this search query', // @translate
+                'label' => 'Search query',
+                // @translate
+                'info' => 'Display resources using this search query',
+                // @translate
                 'query_resource_type' => $data['resource_type'],
                 'query_partial_excludelist' => ['common/advanced-search/site'],
             ],
@@ -74,28 +80,35 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'name' => 'o:block[__blockIndex__][o:data][limit]',
             'type' => Element\Number::class,
             'options' => [
-                'label' => 'Limit', // @translate
-                'info' => 'Maximum number of resources to display in the preview.', // @translate
+                'label' => 'Limit',
+                // @translate
+                'info' => 'Maximum number of resources to display in the preview.',
+                // @translate
             ],
         ]);
         $form->add([
             'name' => 'o:block[__blockIndex__][o:data][components]',
             'type' => Element\MultiCheckbox::class,
             'options' => [
-                'label' => 'Components', // @translate
-                'info' => 'Components to display for each resource. If not set in Site Settings, Heading defaults to resource Title and Body to resource Description', // @translate
+                'label' => 'Components',
+                // @translate
+                'info' => 'Components to display for each resource. If not set in Site Settings, Heading defaults to resource Title and Body to resource Description',
+                // @translate
                 'value_options' => [
                     [
                         'value' => 'resource-heading',
-                        'label' => 'Heading', // @translate
+                        'label' => 'Heading',
+                        // @translate
                     ],
                     [
                         'value' => 'resource-body',
-                        'label' => 'Body', // @translate
+                        'label' => 'Body',
+                        // @translate
                     ],
                     [
                         'value' => 'thumbnail',
-                        'label' => 'Thumbnail', // @translate
+                        'label' => 'Thumbnail',
+                        // @translate
                     ],
                 ],
             ],
@@ -104,8 +117,10 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'name' => 'o:block[__blockIndex__][o:data][filter]',
             'type' => Element\Checkbox::class,
             'options' => [
-                'label' => 'Include search filter button?', // @translate
-                'info' => 'If solr search is enabled, include button to filter results. Note: use only once per page or will break the modal', // @translate
+                'label' => 'Include search filter button?',
+                // @translate
+                'info' => 'If solr search is enabled, include button to filter results. Note: use only once per page or will break the modal',
+                // @translate
                 'checked_value' => 1,
                 'unchecked_value' => 0
             ],
@@ -114,16 +129,20 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'name' => 'o:block[__blockIndex__][o:data][heading]',
             'type' => Element\Text::class,
             'options' => [
-                'label' => 'Preview title', // @translate
-                'info' => 'Heading above resource list, if any.', // @translate
+                'label' => 'Preview title',
+                // @translate
+                'info' => 'Heading above resource list, if any.',
+                // @translate
             ],
         ]);
         $form->add([
             'name' => 'o:block[__blockIndex__][o:data][link-text]',
             'type' => Element\Text::class,
             'options' => [
-                'label' => 'Link text', // @translate
-                'info' => 'Text for link to full browse view, if any.', // @translate
+                'label' => 'Link text',
+                // @translate
+                'info' => 'Text for link to full browse view, if any.',
+                // @translate
             ],
         ]);
 
