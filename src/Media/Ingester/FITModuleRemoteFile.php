@@ -82,6 +82,9 @@ class FITModuleRemoteFile implements MutableIngesterInterface
                 if (isset($value['o:label'])) {
                     if ($value['o:label'] == 'original-file') {
                         $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
+                        if (($ext == "gz") && substr_compare($value['@id'], ".warc.gz", -strlen(".warc.gz")) === 0) {
+                            $ext = "warc.gz";
+                        }
                     }
                 }
             }
@@ -93,6 +96,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             $builder = \Mimey\MimeMappingBuilder::create();
             $builder->add('image/jp2', 'jp2');
             $builder->add('text/vtt', 'vtt');
+            $builder->add('application/warc', 'warc');
+            $builder->add('application/warc', 'warc.gz');
             $mimes = new \Mimey\MimeTypes($builder->getMapping());
             $media->setMediaType($mimes->getMimeType($ext));
         }
@@ -187,7 +192,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 
         $youtubeIDInput = new Text('o:media[__index__][YouTubeID]');
         $youtubeIDInput->setOptions([
-            'label' => 'YouTube Video ID', // @translate
+            'label' => 'YouTube Video ID',
+            // @translate
             'info' => 'Can be found in the URL for a video, e.g. for https://www.youtube.com/watch?v=6kCgnnXH2B0 or https://youtu.be/6kCgnnXH2B0 the id is 6kCgnnXH2B0', // @translate
         ]);
         $youtubeIDInput->setAttributes([
@@ -196,7 +202,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 
         $vimeoIDInput = new Text('o:media[__index__][vimeoID]');
         $vimeoIDInput->setOptions([
-            'label' => 'Vimeo Video ID', // @translate
+            'label' => 'Vimeo Video ID',
+            // @translate
             'info' => 'Can be found in the URL for a video, e.g. for https://vimeo.com/manage/videos/711791459 or https://vimeo.com/711791459 the id is 711791459', // @translate
         ]);
         $vimeoIDInput->setAttributes([
@@ -205,7 +212,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
 
         $googledriveIDInput = new Text('o:media[__index__][GoogleDriveID]');
         $googledriveIDInput->setOptions([
-            'label' => 'Google Drive Video ID', // @translate
+            'label' => 'Google Drive Video ID',
+            // @translate
             'info' => 'Can be found in the URL for a video on Google Drive, e.g. for https://drive.google.com/file/d/0B4uG-Uwo1YBoeUs1b1JUNTI4WlE/view?usp=sharing or https://drive.google.com/file/d/0B4uG-Uwo1YBoeUs1b1JUNTI4WlE/preview the id is 0B4uG-Uwo1YBoeUs1b1JUNTI4WlE', // @translate
         ]);
         $googledriveIDInput->setAttributes([
