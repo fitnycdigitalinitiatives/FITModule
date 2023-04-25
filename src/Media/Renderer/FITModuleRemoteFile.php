@@ -116,16 +116,19 @@ class FITModuleRemoteFile implements RendererInterface
                 $url
             );
             return $embed;
-        } elseif ($googledriveID != '') {
-            $url = sprintf('https://drive.google.com/file/d/%s/preview', $googledriveID);
-            $embed = sprintf(
-                '<div class="embed-responsive embed-responsive-video">
-                <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
-              </div>',
-                $url
-            );
-            return $embed;
-        } elseif ($accessURL != '') {
+        }
+        // ignore google drive for rendering because there are too many permission issues
+        // elseif ($googledriveID != '') {
+        //     $url = sprintf('https://drive.google.com/file/d/%s/preview', $googledriveID);
+        //     $embed = sprintf(
+        //         '<div class="embed-responsive embed-responsive-video">
+        //         <iframe class="embed-responsive-item" src="%s" allowfullscreen></iframe>
+        //       </div>',
+        //         $url
+        //     );
+        //     return $embed;
+        // } 
+        elseif ($accessURL != '') {
             $videoURL = $view->s3presigned($accessURL);
             $captionHTML = '';
             // find caption track separately attached to item if the file name matches current file name with vtt extension
