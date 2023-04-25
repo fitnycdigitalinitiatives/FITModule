@@ -36,23 +36,23 @@ class FITModuleS3Presigned extends AbstractHelper
 
                 // Set up AWS Client
                 $s3Client = new S3Client([
-                    'version'     => 'latest',
-                    'region'      => $region,
+                    'version' => 'latest',
+                    'region' => $region,
                     'credentials' => [
-                        'key'    => $view->setting('fit_module_aws_key'),
+                        'key' => $view->setting('fit_module_aws_key'),
                         'secret' => $view->setting('fit_module_aws_secret_key'),
                     ],
                 ]);
                 $params = [
-                  'Bucket' => $bucket,
-                  'Key' => $key
+                    'Bucket' => $bucket,
+                    'Key' => $key
                 ];
                 if (pathinfo($key, PATHINFO_EXTENSION) == 'pdf') {
                     $params['ResponseContentType'] = 'application/pdf';
                 }
                 $cmd = $s3Client->getCommand('GetObject', $params);
-                $request = $s3Client->createPresignedRequest($cmd, '+60 minutes');
-                $presignedUrl = (string)$request->getUri();
+                $request = $s3Client->createPresignedRequest($cmd, '+180 minutes');
+                $presignedUrl = (string) $request->getUri();
                 return $presignedUrl;
             } else {
                 return $url;
