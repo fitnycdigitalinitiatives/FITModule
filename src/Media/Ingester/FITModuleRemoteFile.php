@@ -55,7 +55,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         $googledriveID = isset($data['GoogleDriveID']) ? $data['GoogleDriveID'] : '';
         // try using YouTube thumbnail if not already available
         if (($thumbnail == '') && ($youtubeID != '')) {
-            $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
+            $thumbnail = sprintf('https://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
         }
         if (($thumbnail == '') && ($vimeoID != '')) {
             $vimeoURL = 'https://vimeo.com/api/oembed.json?url=https://vimeo.com/' . $vimeoID;
