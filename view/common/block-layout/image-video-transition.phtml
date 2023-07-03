@@ -19,7 +19,7 @@ if ($itemLinkId) {
 
 ?>
 
-<?php if (($image = $attachments[0]['asset']) && ($videoURL)): ?>
+<?php if (($attachments) && ($image = $attachments[0]['asset']) && ($videoURL)): ?>
     <div id="image-video-transition-container" class="col-12">
         <div id="image-video-transition" class="carousel slide carousel-fade" data-video-src="<?php echo $videoURL; ?>"
             data-video-link="<?php echo $itemLink; ?>">

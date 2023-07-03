@@ -68,7 +68,7 @@ class FITModuleRemoteFile implements RendererInterface
         //     $authorization = JWT::encode($payload, $secret_key, "HS256");
         // }
         if ($extension == 'tif') {
-            $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", rtrim($key, "." . $extension)) . "/info.json";
+            $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", substr($key, 0, -4)) . "/info.json";
             $thumbnail = $media->mediaData()['thumbnail'];
             $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
             $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
