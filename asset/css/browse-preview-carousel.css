@@ -10,6 +10,10 @@
     cursor: default;
 }
 
+.page .browse-preview .glider {
+    scrollbar-width: none;
+}
+
 .page .browse-preview .glider .glider-track {
     align-items: center;
 }
