@@ -20,7 +20,7 @@ $escape = $this->plugin('escapeHtml');
         <?php // check if solr/search module is activated by checking if the helper is present?>
         <?php if ($this->getHelperPluginManager()->has('getFacetsForBrowse')): ?>
           <?php $facetsForBrowse = $this->getFacetsForBrowse($searchQuery, null); ?>
-          <?php if ($facetsForBrowse['facets']): ?>
+          <?php if ($facetsForBrowse && $facetsForBrowse['facets']): ?>
             <div class="col-auto">
               <!-- filter  -->
               <button id="filter-button" class="btn btn-fit-pink floating-action icon-only" type="button"
