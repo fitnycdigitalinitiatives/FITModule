@@ -30,8 +30,7 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
         SiteRepresentation $site,
         SitePageRepresentation $page = null,
         SitePageBlockRepresentation $block = null
-    )
-    {
+    ) {
         $defaults = [
             'resource_type' => 'items',
             'query' => '',
@@ -121,8 +120,8 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
                 // @translate
                 'info' => 'If solr search is enabled, include button to filter results. Note: use only once per page or will break the modal',
                 // @translate
-                'checked_value' => 1,
-                'unchecked_value' => 0
+                'checked_value' => '1',
+                'unchecked_value' => '0'
             ],
         ]);
         $form->add([
