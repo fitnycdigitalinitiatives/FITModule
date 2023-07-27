@@ -11,6 +11,7 @@ use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
+use Laminas\View\Model\ViewModel;
 use FITModule\Form\ConfigForm;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Exception\DynamoDbException;
@@ -164,6 +165,18 @@ class Module extends AbstractModule
             'Omeka\Api\Adapter\MediaAdapter',
             'api.update.post',
             [$this, 'updateVisibility']
+        );
+        // Update iiif presentation thumbnail
+        $sharedEventManager->attach(
+            '*',
+            'iiif_presentation.3.item.manifest',
+            [$this, 'updateIiifThumbnail']
+        );
+        // Hide items not on site
+        $sharedEventManager->attach(
+            'Omeka\Controller\Site\Item',
+            'view.show.before',
+            [$this, 'hideItemsOnSite']
         );
     }
 
@@ -371,6 +384,51 @@ class Module extends AbstractModule
                     }
                 }
             }
+        }
+    }
+
+    public function updateIiifThumbnail(Event $event)
+    {
+        $manifest = $event->getParam('manifest');
+        $item = $event->getParam('item');
+        if ($item) {
+            $primaryMedia = $item->primaryMedia();
+            if ($primaryMedia) {
+                if ($primaryMedia->ingester() == 'remoteFile') {
+                    $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
+                    if ($thumbnailURL) {
+                        $manifest['thumbnail'] = [
+                            [
+                                'id' => $thumbnailURL,
+                                'type' => 'Image'
+                            ]
+                        ];
+                        $event->setParam('manifest', $manifest);
+                    }
+                }
+            }
+        }
+    }
+
+    public function hideItemsOnSite(Event $event)
+    {
+        $view = $event->getTarget();
+        $item = $view->item;
+        $sites = $item->sites();
+        $currentSite = $view->currentSite();
+        if (!$sites || !in_array($currentSite, $sites)) {
+            $model = new ViewModel;
+            $model->setTemplate('error/404');
+            $model->setVariable('message', 'This item is not available on this site.');
+            $viewRenderer = $this->getServiceLocator()->get('Application')->getServiceManager()->get('ViewRenderer');
+            $content = $viewRenderer->render($model);
+            $parentModel = $view->ViewModel()->getCurrent();
+            $parentModel->setTemplate('layout/layout');
+            $parentModel->setVariable('content', $content);
+            $parentModel->setVariable('site', $currentSite);
+            echo $viewRenderer->render($parentModel);
+            http_response_code(404); //Added the line of code as per suggested in the comment by B1NARY
+            exit();
         }
     }
 }

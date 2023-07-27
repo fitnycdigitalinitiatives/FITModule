@@ -15,11 +15,11 @@ class FITModuleRemoteFile implements RendererInterface
         $iiifEndpoint = $view->setting('fit_module_aws_iiif_endpoint');
 
         // image
-        if ((strpos($media->mediaType(), 'image') === 0) && ($accessURL != '') && ($iiifEndpoint != '')) {
+        if ((strpos($mediaType, 'image') === 0) && ($accessURL != '') && ($iiifEndpoint != '')) {
             return $this->remote_image($view, $media, $accessURL, $iiifEndpoint);
         }
         // video and audio
-        elseif ((strpos($media->mediaType(), 'video') === 0) || (strpos($media->mediaType(), 'audio') === 0)) {
+        elseif ((strpos($mediaType, 'video') === 0) || (strpos($media->mediaType(), 'audio') === 0)) {
             return $this->remote_video_audio($view, $media);
         }
         // pdf
