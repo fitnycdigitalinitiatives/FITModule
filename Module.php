@@ -168,9 +168,14 @@ class Module extends AbstractModule
         );
         // Update iiif presentation thumbnail
         $sharedEventManager->attach(
-            '*',
+            'IiifPresentation\v3\Controller\ItemController',
             'iiif_presentation.3.item.manifest',
-            [$this, 'updateIiifThumbnail']
+            [$this, 'updateIiif3ThumbnailRights']
+        );
+        $sharedEventManager->attach(
+            'IiifPresentation\v2\Controller\ItemController',
+            'iiif_presentation.2.item.manifest',
+            [$this, 'updateIiif2ThumbnailRights']
         );
         // Hide items not on site
         $sharedEventManager->attach(
@@ -387,8 +392,9 @@ class Module extends AbstractModule
         }
     }
 
-    public function updateIiifThumbnail(Event $event)
+    public function updateIiif3ThumbnailRights(Event $event)
     {
+        $changed = false;
         $manifest = $event->getParam('manifest');
         $item = $event->getParam('item');
         if ($item) {
@@ -403,10 +409,80 @@ class Module extends AbstractModule
                                 'type' => 'Image'
                             ]
                         ];
-                        $event->setParam('manifest', $manifest);
+                        $changed = true;
                     }
                 }
             }
+            $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
+            $hasrights = false;
+            foreach ($rights as $rightsstatement) {
+                if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
+                    $manifest['rights'] = $rightsstatement->uri();
+                    $changed = true;
+                    $hasrights = true;
+                    break;
+                }
+            }
+            if (!$hasrights) {
+                foreach ($rights as $rightsstatement) {
+                    if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
+                        $manifest['rights'] = $rightsstatement->uri();
+                        $changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if ($changed) {
+            $event->setParam('manifest', $manifest);
+        }
+    }
+
+    public function updateIiif2ThumbnailRights(Event $event)
+    {
+        $changed = false;
+        $manifest = $event->getParam('manifest');
+        $item_id = $event->getParam('item_id');
+        $api = $this->getServiceLocator()->get('Omeka\ApiManager');
+        $item = $api->read('items', $item_id)->getContent();
+        if ($item) {
+            $primaryMedia = $item->primaryMedia();
+            if ($primaryMedia) {
+                if ($primaryMedia->ingester() == 'remoteFile') {
+                    $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
+                    if ($thumbnailURL) {
+                        $manifest['thumbnail'] = [
+                            [
+                                '@id' => $thumbnailURL,
+                                '@type' => 'dctypes:Image'
+                            ]
+                        ];
+                        $changed = true;
+                    }
+                }
+            }
+            $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
+            $hasrights = false;
+            foreach ($rights as $rightsstatement) {
+                if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
+                    $manifest['license'] = $rightsstatement->uri();
+                    $changed = true;
+                    $hasrights = true;
+                    break;
+                }
+            }
+            if (!$hasrights) {
+                foreach ($rights as $rightsstatement) {
+                    if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
+                        $manifest['license'] = $rightsstatement->uri();
+                        $changed = true;
+                        break;
+                    }
+                }
+            }
+        }
+        if ($changed) {
+            $event->setParam('manifest', $manifest);
         }
     }
 
