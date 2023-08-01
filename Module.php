@@ -397,39 +397,37 @@ class Module extends AbstractModule
         $changed = false;
         $manifest = $event->getParam('manifest');
         $item = $event->getParam('item');
-        if ($item) {
-            $primaryMedia = $item->primaryMedia();
-            if ($primaryMedia) {
-                if ($primaryMedia->ingester() == 'remoteFile') {
-                    $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
-                    if ($thumbnailURL) {
-                        $manifest['thumbnail'] = [
-                            [
-                                'id' => $thumbnailURL,
-                                'type' => 'Image'
-                            ]
-                        ];
-                        $changed = true;
-                    }
+        $primaryMedia = $item->primaryMedia();
+        if ($primaryMedia) {
+            if ($primaryMedia->ingester() == 'remoteFile') {
+                $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
+                if ($thumbnailURL) {
+                    $manifest['thumbnail'] = [
+                        [
+                            'id' => $thumbnailURL,
+                            'type' => 'Image'
+                        ]
+                    ];
+                    $changed = true;
                 }
             }
-            $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
-            $hasrights = false;
+        }
+        $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
+        $hasrights = false;
+        foreach ($rights as $rightsstatement) {
+            if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
+                $manifest['rights'] = $rightsstatement->uri();
+                $changed = true;
+                $hasrights = true;
+                break;
+            }
+        }
+        if (!$hasrights) {
             foreach ($rights as $rightsstatement) {
-                if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
+                if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
                     $manifest['rights'] = $rightsstatement->uri();
                     $changed = true;
-                    $hasrights = true;
                     break;
-                }
-            }
-            if (!$hasrights) {
-                foreach ($rights as $rightsstatement) {
-                    if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
-                        $manifest['rights'] = $rightsstatement->uri();
-                        $changed = true;
-                        break;
-                    }
                 }
             }
         }
@@ -442,42 +440,38 @@ class Module extends AbstractModule
     {
         $changed = false;
         $manifest = $event->getParam('manifest');
-        $item_id = $event->getParam('item_id');
-        $api = $this->getServiceLocator()->get('Omeka\ApiManager');
-        $item = $api->read('items', $item_id)->getContent();
-        if ($item) {
-            $primaryMedia = $item->primaryMedia();
-            if ($primaryMedia) {
-                if ($primaryMedia->ingester() == 'remoteFile') {
-                    $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
-                    if ($thumbnailURL) {
-                        $manifest['thumbnail'] = [
-                            [
-                                '@id' => $thumbnailURL,
-                                '@type' => 'dctypes:Image'
-                            ]
-                        ];
-                        $changed = true;
-                    }
+        $item = $event->getParam('item');
+        $primaryMedia = $item->primaryMedia();
+        if ($primaryMedia) {
+            if ($primaryMedia->ingester() == 'remoteFile') {
+                $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
+                if ($thumbnailURL) {
+                    $manifest['thumbnail'] = [
+                        [
+                            '@id' => $thumbnailURL,
+                            '@type' => 'dctypes:Image'
+                        ]
+                    ];
+                    $changed = true;
                 }
             }
-            $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
-            $hasrights = false;
+        }
+        $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
+        $hasrights = false;
+        foreach ($rights as $rightsstatement) {
+            if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
+                $manifest['license'] = $rightsstatement->uri();
+                $changed = true;
+                $hasrights = true;
+                break;
+            }
+        }
+        if (!$hasrights) {
             foreach ($rights as $rightsstatement) {
-                if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
+                if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
                     $manifest['license'] = $rightsstatement->uri();
                     $changed = true;
-                    $hasrights = true;
                     break;
-                }
-            }
-            if (!$hasrights) {
-                foreach ($rights as $rightsstatement) {
-                    if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
-                        $manifest['license'] = $rightsstatement->uri();
-                        $changed = true;
-                        break;
-                    }
                 }
             }
         }
