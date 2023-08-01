@@ -178,11 +178,11 @@ class Module extends AbstractModule
             [$this, 'updateIiif2ThumbnailRights']
         );
         // Hide items not on site
-        $sharedEventManager->attach(
-            'Omeka\Controller\Site\Item',
-            'view.show.before',
-            [$this, 'hideItemsOnSite']
-        );
+        // $sharedEventManager->attach(
+        //     'Omeka\Controller\Site\Item',
+        //     'view.show.before',
+        //     [$this, 'hideItemsOnSite']
+        // );
     }
 
     public function displayRemoteMetadataSidebar(Event $event)
@@ -480,25 +480,25 @@ class Module extends AbstractModule
         }
     }
 
-    public function hideItemsOnSite(Event $event)
-    {
-        $view = $event->getTarget();
-        $item = $view->item;
-        $sites = $item->sites();
-        $currentSite = $view->currentSite();
-        if (!$sites || !in_array($currentSite, $sites)) {
-            $model = new ViewModel;
-            $model->setTemplate('error/404');
-            $model->setVariable('message', 'This item is not available on this site.');
-            $viewRenderer = $this->getServiceLocator()->get('Application')->getServiceManager()->get('ViewRenderer');
-            $content = $viewRenderer->render($model);
-            $parentModel = $view->ViewModel()->getCurrent();
-            $parentModel->setTemplate('layout/layout');
-            $parentModel->setVariable('content', $content);
-            $parentModel->setVariable('site', $currentSite);
-            echo $viewRenderer->render($parentModel);
-            http_response_code(404); //Added the line of code as per suggested in the comment by B1NARY
-            exit();
-        }
-    }
+    // public function hideItemsOnSite(Event $event)
+    // {
+    //     $view = $event->getTarget();
+    //     $item = $view->item;
+    //     $sites = $item->sites();
+    //     $currentSite = $view->currentSite();
+    //     if (!$sites || !in_array($currentSite, $sites)) {
+    //         $model = new ViewModel;
+    //         $model->setTemplate('error/404');
+    //         $model->setVariable('message', 'This item is not available on this site.');
+    //         $viewRenderer = $this->getServiceLocator()->get('Application')->getServiceManager()->get('ViewRenderer');
+    //         $content = $viewRenderer->render($model);
+    //         $parentModel = $view->ViewModel()->getCurrent();
+    //         $parentModel->setTemplate('layout/layout');
+    //         $parentModel->setVariable('content', $content);
+    //         $parentModel->setVariable('site', $currentSite);
+    //         echo $viewRenderer->render($parentModel);
+    //         http_response_code(404); //Added the line of code as per suggested in the comment by B1NARY
+    //         exit();
+    //     }
+    // }
 }
