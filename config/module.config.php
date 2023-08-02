@@ -38,6 +38,7 @@ return [
         'invokables' => [
             'thumbnail' => View\Helper\FITModuleThumbnail::class,
             's3presigned' => View\Helper\FITModuleS3Presigned::class,
+            'miradorViewer' => View\Helper\MiradorViewer::class,
         ],
     ],
     'view_manager' => [
