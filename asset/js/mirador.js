@@ -15,7 +15,7 @@ $(document).ready(function () {
         windows: [
             {
                 manifestId: manifest,
-                thumbnailNavigationPosition: 'far-bottom',
+                thumbnailNavigationPosition: 'far-right',
             }
         ],
     };
