@@ -86,7 +86,7 @@ $escape = $this->plugin('escapeHtml');
             <?php echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['class' => 'browse-thumbnail shadow-sm rounded', 'alt' => $heading]), null, ['class' => 'card-img']); ?>
             <div class="card-body overflow-hidden">
               <h3 class="resource-title">
-                <?php echo $resource->link($heading, null, ['class' => 'text-dark text-decoration-none']); ?>
+                <?php echo $resource->link($heading, null, ['class' => 'text-dark text-decoration-none', 'title' => $heading]); ?>
               </h3>
             </div>
           </div>
