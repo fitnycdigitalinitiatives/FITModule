@@ -3,7 +3,6 @@ $(document).ready(function () {
     const authorization = $('#mirador-viewer').data('authorization');
     const canvas = $('#mirador-viewer').data('canvas');
     const options = $('#mirador-viewer').data('options');
-    console.log(options);
     const miradorConfig = {
         id: "mirador-viewer",
         workspaceControlPanel: {
