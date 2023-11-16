@@ -2,6 +2,8 @@ $(document).ready(function () {
     const manifest = $('#mirador-viewer').data('manifest');
     const authorization = $('#mirador-viewer').data('authorization');
     const canvas = $('#mirador-viewer').data('canvas');
+    const options = $('#mirador-viewer').data('options');
+    console.log(options);
     const miradorConfig = {
         id: "mirador-viewer",
         workspaceControlPanel: {
@@ -19,6 +21,15 @@ $(document).ready(function () {
             }
         ],
     };
+    if ('window' in options) {
+        Object.keys(options['window']).forEach(key => {
+            miradorConfig['window'][key] = options['window'][key];
+        });
+    }
+    if ('themes' in options) {
+        miradorConfig['themes'] = options['themes']
+    }
+
     if (authorization) {
         miradorConfig['requests'] = {
             preprocessors: [

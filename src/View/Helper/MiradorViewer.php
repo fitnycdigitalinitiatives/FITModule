@@ -39,6 +39,6 @@ class MiradorViewer extends AbstractHelper
         if ($canvasMediaID) {
             $canvas = $view->url('iiif-presentation-3/item/canvas', ['item-id' => $item->id(), 'media-id' => $canvasMediaID], ['force_canonical' => true]);
         }
-        return sprintf('<div id="mirador-viewer-frame"><div id="mirador-viewer" data-manifest="%s" data-authorization="%s" data-canvas="%s"></div></div>', $manifestId, $authorization, $canvas);
+        return sprintf('<div id="mirador-viewer-frame"><div id="mirador-viewer" data-manifest="%s" data-authorization="%s" data-canvas="%s" data-options=\'%s\'></div></div>', $manifestId, $authorization, $canvas, json_encode($options));
     }
 }
