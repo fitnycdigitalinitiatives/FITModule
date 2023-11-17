@@ -13,7 +13,7 @@ class FITModuleS3Presigned extends AbstractHelper
     /**
      * Return a presigned URL for S3 object.
      */
-    public function __invoke($url)
+    public function __invoke($url, $download = false, $title = "")
     {
         if (strpos($url, 'amazonaws') !== false) {
             $parsed_url = parse_url($url);
@@ -49,6 +49,12 @@ class FITModuleS3Presigned extends AbstractHelper
                 ];
                 if (pathinfo($key, PATHINFO_EXTENSION) == 'pdf') {
                     $params['ResponseContentType'] = 'application/pdf';
+                }
+                if ($download) {
+                    $params['ResponseContentDisposition'] = 'attachment';
+                    if ($title) {
+                        $params['ResponseContentDisposition'] = 'attachment; filename="' . $title . '"';
+                    }
                 }
                 $cmd = $s3Client->getCommand('GetObject', $params);
                 $request = $s3Client->createPresignedRequest($cmd, '+180 minutes');
