@@ -10,7 +10,7 @@ $escape = $this->plugin('escapeHtml');
   <?php if ($this->heading || $filter): ?>
     <div class="row align-items-center mb-3 browse-header">
       <?php if ($this->heading): ?>
-        <div class="col-auto pe-0">
+        <div class="col-auto">
           <h2 class="mb-0">
             <?php echo $this->heading; ?>
           </h2>
@@ -83,7 +83,7 @@ $escape = $this->plugin('escapeHtml');
           $body = $bodyTerm ? $resource->value($bodyTerm) : $resource->displayDescription(null, ($filterLocale ? $lang : null));
           ?>
           <div class="card border-0 px-sm-3 px-xl-4">
-            <?php echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['class' => 'browse-thumbnail shadow-sm rounded', 'alt' => $heading]), null, ['class' => 'card-img']); ?>
+            <?php echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['class' => 'browse-thumbnail shadow-sm', 'alt' => $heading]), null, ['class' => 'card-img', 'title' => $heading]); ?>
             <div class="card-body overflow-hidden">
               <h3 class="resource-title">
                 <?php echo $resource->link($heading, null, ['class' => 'text-dark text-decoration-none', 'title' => $heading]); ?>

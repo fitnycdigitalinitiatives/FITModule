@@ -76,8 +76,10 @@ $attachmentRowTemplate = '
             <?php endforeach; ?>
         <?php endif; ?>
         <button type="button" class="add-asset-attachment"
-            data-sidebar-content-url="<?php echo $escape($this->url('admin/default', ['controller' => 'asset', 'action' => 'sidebar-select'])); ?>"><?php
-                     echo $translate('Add Image (Ignore Asset Page Link and Caption field)'); ?></button>
+            data-sidebar-content-url="<?php echo $escape($this->url('admin/default', ['controller' => 'asset', 'action' => 'sidebar-select'])); ?>">
+            <?php
+            echo $translate('Add Image (Ignore Asset Page Link and Caption field)'); ?>
+        </button>
     </div>
     <div class="field">
         <div class="field-meta">
@@ -92,7 +94,7 @@ $attachmentRowTemplate = '
         </div>
         <div class="inputs">
             <?php $videoURL = (isset($block['videoURL'])) ? $escape($block['videoURL']) : ''; ?>
-            <input type="url" name="o:block[__blockIndex__][o:data][videoURL]" value="<?php echo $videoURL; ?>">
+            <input type="text" name="o:block[__blockIndex__][o:data][videoURL]" value="<?php echo $videoURL; ?>">
         </div>
     </div>
     <div class="field">

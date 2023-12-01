@@ -5,7 +5,7 @@ $(document).ready(function () {
             $('.glider').each(function (index) {
                 var id = 'glider-' + index;
                 $(this).parent().parent().attr('id', id);
-                new Glider(this, {
+                const gliderInstance = new Glider(this, {
                     slidesToShow: 1.5,
                     slidesToScroll: 1,
                     draggable: true,
@@ -42,6 +42,8 @@ $(document).ready(function () {
                         }
                     }]
                 });
+                $(this).fadeIn();
+                gliderInstance.refresh();
             });
 
         }
