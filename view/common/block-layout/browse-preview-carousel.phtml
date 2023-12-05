@@ -96,12 +96,14 @@ $escape = $this->plugin('escapeHtml');
   </div>
   <?php
   if ($this->linkText):
+    $query = $this->query;
+    $query["page"] = 1;
     echo $this->hyperlink(
       $this->linkText,
       $this->url(
         'site/resource',
         ['controller' => $this->resourceType, 'action' => 'browse'],
-        ['query' => $this->query],
+        ['query' => $query],
         true
       ),
       ['class' => 'float-end me-sm-5 fw-bold text-decoration-none']

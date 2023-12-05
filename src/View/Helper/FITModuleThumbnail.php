@@ -17,11 +17,14 @@ class FITModuleThumbnail extends AbstractHtmlElement
      * @param string $type
      * @param array $attribs
      */
-    public function __invoke(AbstractRepresentation $representation, $type, array $attribs = [])
+    public function __invoke(AbstractRepresentation $representation, $type, array $attribs = [], $attached = true)
     {
         $view = $this->getView();
         $triggerHelper = $view->plugin('trigger');
-        $thumbnail = $representation->thumbnail();
+        $thumbnail = null;
+        if ($attached) {
+            $thumbnail = $representation->thumbnail();
+        }
         if (($representation->getControllerName() == 'item-set') && array_key_exists('__SITE__', $view->params()->fromRoute())) {
             $item = $view->plugin('api')->searchOne('items', array('item_set_id' => $representation->id(), 'site_id' => $view->vars()->site->id()))->getContent();
             if ($item) {
