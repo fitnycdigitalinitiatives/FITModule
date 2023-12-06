@@ -1,11 +1,11 @@
-$(document).ready(function() {
-  $('.more-meta-group #url').click(function() {
+$(document).ready(function () {
+  $('.more-meta-group #url').click(function () {
     var parent = $(this).parent()
     var file_type = $(this).data("file-type");
     $.post(this.href, {
-        presigned: file_type
-      },
-      function(data, status) {
+      presigned: file_type
+    },
+      function (data, status) {
         var presignedURL = $(data).find("#presigned").data(file_type + "-presigned");
         if (presignedURL == "error") {
           var meta_value = `
@@ -33,13 +33,14 @@ $(document).ready(function() {
         }
       });
   });
-  $('.more-meta-group #download').click(function() {
+  $('.more-meta-group #download').click(function () {
     var parent = $(this).parent()
     var file_type = $(this).data("file-type");
     $.post(this.href, {
-        presigned: file_type
-      },
-      function(data, status) {
+      presigned: file_type,
+      download: true
+    },
+      function (data, status) {
         var presignedURL = $(data).find("#presigned").data(file_type + "-presigned");
         if (presignedURL == "error") {
           var meta_value = `

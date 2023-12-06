@@ -19,7 +19,9 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
   <div class="meta-group more-meta-group">
     <h4>IIIF endpoint</h4>
     <div class="value">
-      <a href="<?php echo $escape($iiif); ?>"><?php echo $escape($iiif); ?></a>
+      <a href="<?php echo $escape($iiif); ?>">
+        <?php echo $escape($iiif); ?>
+      </a>
     </div>
   </div>
 <?php endif; ?>
@@ -34,7 +36,9 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
           </h4>
           <div class="value">
             <small>S3 Object URL (Not directly accessible)</small>
-            <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+            <a href="<?php echo $escape($value); ?>">
+              <?php echo $escape($value); ?>
+            </a>
           </div>
           <div class="get_presigned">
             <button class="button" id="download" data-file-type="<?php echo $key; ?>">
@@ -46,7 +50,7 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
             </button>
             <?php if (isset($_POST['presigned'])): ?>
               <?php if ($_POST['presigned'] == $key): ?>
-                <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value)); ?>">
+                <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value), array_key_exists('download', $_POST) ? true : false); ?>">
                 </div>
               <?php endif; ?>
             <?php endif; ?>
@@ -67,7 +71,9 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
             <?php if ($key == "replica"): ?>
               <small>S3 Glacier objects are only accessible upon request (please contact administrator for assistance)</small>
             <?php endif; ?>
-            <a href="<?php echo $escape($value); ?>"><?php echo $escape($value); ?></a>
+            <a href="<?php echo $escape($value); ?>">
+              <?php echo $escape($value); ?>
+            </a>
           <?php endif; ?>
         </div>
       <?php endif; ?>
