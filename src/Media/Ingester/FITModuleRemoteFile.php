@@ -78,13 +78,25 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         // attempt to get MIME for Media Type
         $ext = '';
         if (isset($data['dcterms:identifier'])) {
+            //check for service file first
             foreach ($data['dcterms:identifier'] as $key => $value) {
-                if (isset($value['o:label'])) {
-                    if ($value['o:label'] == 'original-file') {
+                if (isset($value['o:label']) && ($value['o:label'] == 'service-file')) {
+                    $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
+                    if (($ext == "gz") && substr_compare($value['@id'], ".warc.gz", -strlen(".warc.gz")) === 0) {
+                        $ext = "warc.gz";
+                    }
+                    break;
+                }
+            }
+            //check for original file
+            if ($ext == '') {
+                foreach ($data['dcterms:identifier'] as $key => $value) {
+                    if (isset($value['o:label']) && ($value['o:label'] == 'original-file')) {
                         $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
                         if (($ext == "gz") && substr_compare($value['@id'], ".warc.gz", -strlen(".warc.gz")) === 0) {
                             $ext = "warc.gz";
                         }
+                        break;
                     }
                 }
             }
@@ -123,10 +135,25 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             // attempt to get MIME for Media Type
             $ext = '';
             if (isset($data['dcterms:identifier'])) {
+                //check for service file first
                 foreach ($data['dcterms:identifier'] as $key => $value) {
-                    if (isset($value['o:label'])) {
-                        if ($value['o:label'] == 'original-file') {
+                    if (isset($value['o:label']) && ($value['o:label'] == 'service-file')) {
+                        $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
+                        if (($ext == "gz") && substr_compare($value['@id'], ".warc.gz", -strlen(".warc.gz")) === 0) {
+                            $ext = "warc.gz";
+                        }
+                        break;
+                    }
+                }
+                //check for original file
+                if ($ext == '') {
+                    foreach ($data['dcterms:identifier'] as $key => $value) {
+                        if (isset($value['o:label']) && ($value['o:label'] == 'original-file')) {
                             $ext = pathinfo($value['@id'], PATHINFO_EXTENSION);
+                            if (($ext == "gz") && substr_compare($value['@id'], ".warc.gz", -strlen(".warc.gz")) === 0) {
+                                $ext = "warc.gz";
+                            }
+                            break;
                         }
                     }
                 }
@@ -138,6 +165,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
                 $builder = \Mimey\MimeMappingBuilder::create();
                 $builder->add('image/jp2', 'jp2');
                 $builder->add('text/vtt', 'vtt');
+                $builder->add('application/warc', 'warc');
+                $builder->add('application/warc', 'warc.gz');
                 $mimes = new \Mimey\MimeTypes($builder->getMapping());
                 $media->setMediaType($mimes->getMimeType($ext));
             } elseif ($data['o:media']['__index__']['YouTubeID'] != '') {
