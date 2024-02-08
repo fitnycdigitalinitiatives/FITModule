@@ -19,7 +19,7 @@ class FITModuleRemoteFile implements RendererInterface
             return $this->remote_image($view, $media, $accessURL, $iiifEndpoint);
         }
         // video and audio
-        elseif ((strpos($mediaType, 'video') === 0) || (strpos($media->mediaType(), 'audio') === 0)) {
+        elseif ((strpos($mediaType, 'video') === 0) || (strpos($media->mediaType(), 'audio') === 0) || (strpos($media->mediaType(), 'application/mxf') === 0)) {
             return $this->remote_video_audio($view, $media);
         }
         // pdf
