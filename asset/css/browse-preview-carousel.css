@@ -58,6 +58,10 @@
     .page .browse-preview .browse-header>*:first-child h2 {
         margin-left: calc(21px + 1rem);
     }
+
+    .page .browse-preview .browse-header>*:last-child>h2 {
+        margin-right: calc(21px + 1rem);
+    }
 }
 
 @media (min-width:768px) {
@@ -75,6 +79,10 @@
 
     .page .browse-preview .browse-header>*:first-child h2 {
         margin-left: calc(21px + 1.5rem);
+    }
+
+    .page .browse-preview .browse-header>*:last-child>h2 {
+        margin-right: calc(21px + 1.5rem);
     }
 }
 

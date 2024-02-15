@@ -1,0 +1,34 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$this->headLink()->appendStylesheet($this->assetUrl('css/aod-about.css', 'FITModule'));
+?>
+<div class="container" id="about-container">
+    <div class="row align-items-start">
+        <div class="col-12" id="about-title">
+            <h2>
+                <?php echo $escape($pageTitle); ?>
+            </h2>
+        </div>
+        <div class="col-lg-7" id="about">
+            <?php echo $html; ?>
+        </div>
+        <div class="col-lg-5" id="sidebar">
+            <?php if ($htmlContactBlock): ?>
+                <div id="contact">
+                    <h3>
+                        <?php echo $escape($contactTitle); ?>
+                    </h3>
+                    <?php echo $htmlContactBlock; ?>
+                </div>
+            <?php endif; ?>
+            <?php if ($htmlRecordBlock): ?>
+                <div id="record">
+                    <h3>
+                        <?php echo $escape($recordTitle); ?>
+                    </h3>
+                    <?php echo $htmlRecordBlock; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    </div>
+</div>

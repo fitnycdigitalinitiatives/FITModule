@@ -11,7 +11,7 @@ use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
-use Laminas\View\Model\ViewModel;
+use Laminas\Mvc\MvcEvent;
 use FITModule\Form\ConfigForm;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Exception\DynamoDbException;
@@ -54,6 +54,19 @@ class Module extends AbstractModule
 
         // Pass the changed configuration back to the listener:
         $configListener->setMergedConfig($config);
+    }
+
+    public function onBootstrap(MvcEvent $event)
+    {
+        parent::onBootstrap($event);
+
+        $acl = $this->getServiceLocator()->get('Omeka\Acl');
+        $acl->allow(
+            null,
+            [
+                'FITModule\Controller\Redirect',
+            ]
+        );
     }
 
     /**

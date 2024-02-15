@@ -2,6 +2,11 @@
 namespace FITModule;
 
 return [
+    'controllers' => [
+        'invokables' => [
+            'FITModule\Controller\Redirect' => Controller\RedirectController::class,
+        ]
+    ],
     'data_types' => [
         'invokables' => [
             'uri' => DataType\FITModuleUri::class,
@@ -13,6 +18,9 @@ return [
             'imageVideoTransition' => Site\BlockLayout\ImageVideoTransition::class,
             'itemShowcaseHeroCarousel' => Site\BlockLayout\ItemShowcaseHeroCarousel::class,
             'assetHero' => Site\BlockLayout\AssetHero::class,
+        ],
+        'factories' => [
+            'archiveOnDemandAbout' => Service\BlockLayout\ArchiveOnDemandAboutFactory::class,
         ],
     ],
     'media_ingesters' => [
@@ -79,6 +87,20 @@ return [
                                 'controller' => 'IiifViewer',
                                 'action' => 'index',
                             ],
+                        ],
+                    ],
+                    'redirect' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/items/show/:id',
+                            'defaults' => [
+                                '__NAMESPACE__' => 'FITModule\Controller',
+                                'controller' => 'Redirect',
+                                'action' => 'index',
+                            ],
+                            'constraints' => [
+                                'id' => '\d+',
+                            ]
                         ],
                     ],
                 ],

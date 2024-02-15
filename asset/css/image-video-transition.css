@@ -1,3 +1,7 @@
+.page #image-video-transition {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .5);
+}
+
 .page #image-video-transition .carousel-item {
     transition-duration: 5s;
 }
@@ -20,15 +24,16 @@
     padding: calc(21px + 1rem);
     z-index: 1;
     color: #fff;
-    background: linear-gradient(to top, #000 0, #0000 50%);
+    background: linear-gradient(to top, #000 0, #0000 75%);
     align-items: flex-end;
 }
 
 .page #image-video-transition .caption-overlay .card-text {
-    font-weight: bold;
-    font-size: 1.05rem;
-    line-height: 1.2;
-    width: 66%;
+    font-weight: 900;
+    font-size: 18px;
+    line-height: 1.3;
+    font-family: halyard-micro;
+    width: 100%;
 }
 
 .page #image-video-transition .button-list {
@@ -40,13 +45,14 @@
 
 @media (min-width:768px) {
     .page #image-video-transition .caption-overlay .card-text {
-        font-size: 1.45rem;
+        font-size: 22px;
+        width: calc(100% - 52px);
     }
 }
 
 @media (min-width:992px) {
     .page #image-video-transition .caption-overlay .card-text {
-        font-size: 1.95rem;
+        font-size: 32px;
     }
 }
 
@@ -57,7 +63,7 @@
     }
 
     .page #image-video-transition .caption-overlay .card-text {
-        font-size: 2.25rem;
+        font-size: 38px;
     }
 
     .page #image-video-transition .play-pause {
@@ -68,6 +74,6 @@
 
 @media (min-width:1400px) {
     .page #image-video-transition .caption-overlay .card-text {
-        font-size: 2.5rem;
+        font-size: 40px;
     }
 }
