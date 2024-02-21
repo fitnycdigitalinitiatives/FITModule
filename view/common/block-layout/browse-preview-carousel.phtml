@@ -17,7 +17,7 @@ $escape = $this->plugin('escapeHtml');
         </div>
       <?php endif; ?>
       <?php if ($filter): ?>
-        <?php // check if solr/search module is activated by checking if the helper is present?>
+        <?php // check if solr/search module is activated by checking if the helper is present    ?>
         <?php if ($this->getHelperPluginManager()->has('getFacetsForBrowse')): ?>
           <?php $facetsForBrowse = $this->getFacetsForBrowse($searchQuery, null); ?>
           <?php if ($facetsForBrowse && $facetsForBrowse['facets']): ?>
@@ -69,18 +69,13 @@ $escape = $this->plugin('escapeHtml');
     <div class="col overflow-hidden px-0">
       <div class="glider">
         <?php
-        $showThumbnail = in_array('thumbnail', $this->components);
-        $showHeading = in_array('resource-heading', $this->components);
-        $showBody = in_array('resource-body', $this->components);
         $headingTerm = $this->siteSetting('browse_heading_property_term');
-        $bodyTerm = $this->siteSetting('browse_body_property_term');
 
         $filterLocale = (bool) $this->siteSetting('filter_locale_values');
         $lang = $this->lang();
 
         foreach ($this->resources as $resource):
           $heading = $headingTerm ? $resource->value($headingTerm, ['default' => $translate('[Untitled]')]) : $resource->displayTitle(null, ($filterLocale ? $lang : null));
-          $body = $bodyTerm ? $resource->value($bodyTerm) : $resource->displayDescription(null, ($filterLocale ? $lang : null));
           ?>
           <div class="card border-0 px-sm-3 px-xl-4">
             <?php echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['class' => 'browse-thumbnail shadow-sm', 'alt' => $heading]), null, ['class' => 'card-img', 'title' => $heading]); ?>
@@ -96,16 +91,21 @@ $escape = $this->plugin('escapeHtml');
   </div>
   <?php
   if ($this->linkText):
-    $query = $this->query;
-    $query["page"] = 1;
-    echo $this->hyperlink(
-      $this->linkText,
-      $this->url(
+    if ($solrLink && ($this->getHelperPluginManager()->has('getSearchFormForSite'))) {
+      $url = $solrLink;
+    } else {
+      $url = $this->url(
         'site/resource',
         ['controller' => $this->resourceType, 'action' => 'browse'],
         ['query' => $query],
         true
-      ),
+      );
+    }
+    $query = $this->query;
+    $query["page"] = 1;
+    echo $this->hyperlink(
+      $this->linkText,
+      $url,
       ['class' => 'float-end me-sm-5 fw-bold text-decoration-none']
     );
   endif;

@@ -36,9 +36,9 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'query' => '',
             'heading' => '',
             'limit' => 12,
-            'components' => ['resource-heading', 'resource-body', 'thumbnail'],
             'filter' => 0,
             'link-text' => 'Browse all', // @translate
+            'solr-link' => '',
         ];
 
         $data = $block ? $block->data() + $defaults : $defaults;
@@ -86,33 +86,6 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             ],
         ]);
         $form->add([
-            'name' => 'o:block[__blockIndex__][o:data][components]',
-            'type' => Element\MultiCheckbox::class,
-            'options' => [
-                'label' => 'Components',
-                // @translate
-                'info' => 'Components to display for each resource. If not set in Site Settings, Heading defaults to resource Title and Body to resource Description',
-                // @translate
-                'value_options' => [
-                    [
-                        'value' => 'resource-heading',
-                        'label' => 'Heading',
-                        // @translate
-                    ],
-                    [
-                        'value' => 'resource-body',
-                        'label' => 'Body',
-                        // @translate
-                    ],
-                    [
-                        'value' => 'thumbnail',
-                        'label' => 'Thumbnail',
-                        // @translate
-                    ],
-                ],
-            ],
-        ]);
-        $form->add([
             'name' => 'o:block[__blockIndex__][o:data][filter]',
             'type' => Element\Checkbox::class,
             'options' => [
@@ -144,15 +117,25 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
                 // @translate
             ],
         ]);
+        $form->add([
+            'name' => 'o:block[__blockIndex__][o:data][solr-link]',
+            'type' => Element\Text::class,
+            'options' => [
+                'label' => 'Custom solr search link',
+                // @translate
+                'info' => 'Link to solr search results instead of default system search. Can be use with search by property so filtering is possible.',
+                // @translate
+            ],
+        ]);
 
         $form->setData([
             'o:block[__blockIndex__][o:data][resource_type]' => $data['resource_type'],
             'o:block[__blockIndex__][o:data][query]' => $data['query'],
             'o:block[__blockIndex__][o:data][heading]' => $data['heading'],
             'o:block[__blockIndex__][o:data][limit]' => $data['limit'],
-            'o:block[__blockIndex__][o:data][components]' => $data['components'],
             'o:block[__blockIndex__][o:data][filter]' => $data['filter'],
             'o:block[__blockIndex__][o:data][link-text]' => $data['link-text'],
+            'o:block[__blockIndex__][o:data][solr-link]' => $data['solr-link'],
         ]);
 
         return $view->formCollection($form);
@@ -180,13 +163,6 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             $query['sort_order'] = 'desc';
         }
 
-        //Show all resource components if none set
-        if (empty($block->dataValue('components'))) {
-            $components = ['resource-heading', 'resource-body', 'thumbnail'];
-        } else {
-            $components = $block->dataValue('components');
-        }
-
         $response = $view->api()->search($resourceType, $query);
         $resources = $response->getContent();
 
@@ -201,7 +177,7 @@ class BrowsePreviewCarousel extends AbstractBlockLayout
             'resources' => $resources,
             'heading' => $block->dataValue('heading'),
             'linkText' => $block->dataValue('link-text'),
-            'components' => $components,
+            'solrLink' => $block->dataValue('solr-link'),
             'filter' => $block->dataValue('filter'),
             'query' => $originalQuery,
             'searchQuery' => $query,
