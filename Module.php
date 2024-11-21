@@ -1,7 +1,9 @@
 <?php
+
 /**
  * FITModule
  */
+
 namespace FITModule;
 
 use Omeka\Module\AbstractModule;
@@ -14,7 +16,7 @@ use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\MvcEvent;
 use FITModule\Form\ConfigForm;
 use Aws\DynamoDb\DynamoDbClient;
-use Aws\DynamoDb\Exception\DynamoDbException;
+use Aws\DynamoDb\Marshaler;
 
 class Module extends AbstractModule
 {
@@ -356,50 +358,35 @@ class Module extends AbstractModule
                 'region' => $region,
                 'version' => 'latest'
             ]);
+            $batch = [];
             foreach ($mediaSet as $media) {
                 if (($media->ingester() == 'remoteFile') && ($accessURL = $media->mediaData()['access'])) {
                     $parsed_url = parse_url($accessURL);
                     $key = ltrim($parsed_url["path"], '/');
                     $extension = pathinfo($key, PATHINFO_EXTENSION);
                     if ($extension == 'tif') {
-                        if (($item->isPublic()) && ($media->isPublic())) {
-                            //public
-                            try {
-                                $response = $client->putItem(
-                                    array(
-                                        'TableName' => $table,
-                                        'Item' => array(
-                                            'key' => array('S' => $key),
-                                            'visibility' => array('S' => 'public')
-                                        )
-                                    )
-                                );
-                                if ($response['@metadata']['statusCode'] != 200) {
-                                    throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
-                                }
-                            } catch (DynamoDbException $e) {
-                                throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. " . $e->getMessage(), 1);
-                            }
-                        } else {
-                            //private
-                            try {
-                                $response = $client->putItem(
-                                    array(
-                                        'TableName' => $table,
-                                        'Item' => array(
-                                            'key' => array('S' => $key),
-                                            'visibility' => array('S' => 'private')
-                                        )
-                                    )
-                                );
-                                if ($response['@metadata']['statusCode'] != 200) {
-                                    throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
-                                }
-                            } catch (DynamoDbException $e) {
-                                throw new \Exception("Unable to write visibility to DynamoDB for " . $key . ". Please contact an administrator. " . $e->getMessage(), 1);
-                            }
-                        }
+                        $visibility = (($item->isPublic()) && ($media->isPublic())) ? 'public' : 'private';
+                        $batch[] = ['key' => $key, 'visibility' => $visibility];
                     }
+                }
+            }
+            $marshal = new Marshaler();
+            foreach (array_chunk($batch, 25) as $Items) {
+                foreach ($Items as $Item) {
+                    $BatchWrite['RequestItems'][$table][] = ['PutRequest' => ['Item' => $marshal->marshalItem($Item)]];
+                }
+                try {
+                    $response = $client->batchWriteItem($BatchWrite);
+                    if ($response['@metadata']['statusCode'] != 200) {
+                        throw new \Exception("Unable to write visibility to DynamoDB. Please contact an administrator. Status code: " . $response['@metadata']['statusCode'], 1);
+                    }
+                    if ($response["UnprocessedItems"]) {
+                        throw new \Exception("Unable to write visibility to DynamoDB. Unprocessed Items: " . json_encode($response["UnprocessedItems"]), 1);
+                    }
+
+                    $BatchWrite = [];
+                } catch (Exception $e) {
+                    throw new \Exception("Unable to write visibility to DynamoDB. Please contact an administrator. " . $e->getMessage(), 1);
                 }
             }
         }
