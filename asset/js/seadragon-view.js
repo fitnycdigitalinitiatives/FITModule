@@ -43,7 +43,7 @@ $(document).ready(function () {
 
       const options = {
         id: currentViewerID,
-        prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/build/openseadragon/images/',
+        prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@v4.1.1/build/openseadragon/images/',
         showNavigator: true,
         navigatorSizeRatio: 0.1,
         minZoomImageRatio: 1,
