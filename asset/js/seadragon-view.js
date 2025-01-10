@@ -1,10 +1,10 @@
 $(document).ready(function () {
   $('.openseadragon').each(function () {
-    const currentViewer = $(this);
-    const currentViewerID = currentViewer.attr('id');
-    const iiifEndpoint = $(this).data('infojson');
-    const authtoken = $(this).data('authtoken');
-    const thumbnail = $(this).data('thumbnail');
+    var currentViewer = $(this);
+    var currentViewerID = currentViewer.attr('id');
+    var iiifEndpoint = $(this).data('infojson');
+    var authtoken = $(this).data('authtoken');
+    var thumbnail = $(this).data('thumbnail');
 
     function removeThumbnail(tiledImage, viewer, currentViewer) {
 
@@ -22,7 +22,7 @@ $(document).ready(function () {
     }
 
     function addErrorMessage(currentViewer) {
-      const errorMessage = $(`
+      var errorMessage = $(`
         <div class="toast mx-1 bg-white fade show iiif-error" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
           <div class="toast-header bg-danger text-white">
             <strong class="me-auto">Unable to Load High-Resolution Image</strong>
@@ -40,10 +40,9 @@ $(document).ready(function () {
     }
 
     if (thumbnail) {
-
-      const options = {
+      var options = {
         id: currentViewerID,
-        prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/build/openseadragon/images/',
+        prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/',
         showNavigator: true,
         navigatorSizeRatio: 0.1,
         minZoomImageRatio: 1,
@@ -56,18 +55,25 @@ $(document).ready(function () {
           y: 0
         }
       }
+      // if token exists, add ajax to the options
+      if (authtoken) {
+        options['loadTilesWithAjax'] = true;
+        options['ajaxHeaders'] = {
+          "Authorization": "Bearer " + authtoken
+        }
+      }
 
-      const viewer = OpenSeadragon(
+      var viewer = OpenSeadragon(
         options
       );
 
       //add the iiif tiles on top of the thumbnail and remove loader
-      const iiifoptions = {
+      var iiifoptions = {
         tileSource: iiifEndpoint,
         x: 0,
         y: 0,
         success: function (event) {
-          const tiledImage = event.item;
+          var tiledImage = event.item;
           tiledImage.addHandler('fully-loaded-change', removeThumbnail(tiledImage, viewer, currentViewer));
         },
         error: function (event) {
@@ -76,39 +82,26 @@ $(document).ready(function () {
         }
       }
 
-      // if token exists, add ajax to the options
-      if (authtoken) {
-        iiifoptions['loadTilesWithAjax'] = true;
-        iiifoptions['ajaxHeaders'] = {
-          "Authorization": "Bearer " + authtoken
-        }
-      } else {
-        iiifoptions['crossOriginPolicy'] = 'Anonymous'
-      }
-
       viewer.addTiledImage(iiifoptions);
     } else {
-
-      const options = {
+      var options = {
         id: currentViewerID,
-        prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/build/openseadragon/images/',
+        prefixUrl: 'https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/images/',
         showNavigator: true,
         navigatorSizeRatio: 0.1,
         minZoomImageRatio: 0.8,
         maxZoomPixelRatio: 10,
         controlsFadeDelay: 1000,
-        tileSources: { tileSource: iiifEndpoint }
+        tileSources: iiifEndpoint
       }
       // if token exists, add ajax to the options
       if (authtoken) {
-        options.tileSources['loadTilesWithAjax'] = true;
-        options.tileSources['ajaxHeaders'] = {
+        options['loadTilesWithAjax'] = true;
+        options['ajaxHeaders'] = {
           "Authorization": "Bearer " + authtoken
         }
-      } else {
-        options.tileSources['crossOriginPolicy'] = 'Anonymous'
       }
-      const viewer = OpenSeadragon(
+      var viewer = OpenSeadragon(
         options
       );
       viewer.addHandler("add-item-failed", function (event) {
@@ -116,7 +109,7 @@ $(document).ready(function () {
         addErrorMessage(currentViewer);
       });
       viewer.world.addHandler('add-item', function (event) {
-        const tiledImage = event.item;
+        var tiledImage = event.item;
         tiledImage.addHandler('fully-loaded-change', function () {
           removeLoader(currentViewer);
         });

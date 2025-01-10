@@ -1,5 +1,4 @@
 <?php
-
 namespace FITModule\Media\Renderer;
 
 use Omeka\Api\Representation\MediaRepresentation;
@@ -72,7 +71,7 @@ class FITModuleRemoteFile implements RendererInterface
             $iiifInfoJson = $iiifEndpoint . str_replace("/", "%2F", substr($key, 0, -4)) . "/info.json";
             $thumbnail = $media->mediaData()['thumbnail'];
             $view->headLink()->appendStylesheet($view->assetUrl('css/openseadragon.css', 'FITModule'));
-            $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/openseadragon@5.0.1/build/openseadragon/openseadragon.min.js', 'text/javascript');
+            $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/openseadragon@2.4/build/openseadragon/openseadragon.min.js', 'text/javascript');
             $view->headScript()->appendFile($view->assetUrl('js/seadragon-view.js', 'FITModule'), 'text/javascript');
             $noscript = $view->translate('OpenSeadragon is not available unless JavaScript is enabled.');
             $image =
