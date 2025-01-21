@@ -1,10 +1,15 @@
 <?php
+
 namespace FITModule;
 
 return [
     'controllers' => [
         'invokables' => [
             'FITModule\Controller\Redirect' => Controller\RedirectController::class,
+            'Omeka\Controller\Site\Index' => Controller\Site\IndexController::class,
+        ],
+        'factories' => [
+            'FITModule\Controller\Site\SiteLogin' => Service\Controller\Site\SiteLoginControllerFactory::class,
         ]
     ],
     'data_types' => [
@@ -101,6 +106,28 @@ return [
                             'constraints' => [
                                 'id' => '\d+',
                             ]
+                        ],
+                    ],
+                    'site-login' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/login',
+                            'defaults' => [
+                                '__NAMESPACE__' => 'FITModule\Controller\Site',
+                                'controller' => 'SiteLogin',
+                                'action' => 'login',
+                            ],
+                        ],
+                    ],
+                    'site-logout' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/logout',
+                            'defaults' => [
+                                '__NAMESPACE__' => 'FITModule\Controller\Site',
+                                'controller' => 'SiteLogin',
+                                'action' => 'logout',
+                            ],
                         ],
                     ],
                 ],

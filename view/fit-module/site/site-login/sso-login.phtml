@@ -1,0 +1,13 @@
+<?php
+$translate = $this->plugin('translate');
+$this->htmlElement('body')->appendAttribute('class', 'login');
+?>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <h1><?php echo $translate('Log in'); ?></h1>
+            <p>Members of the FIT Community can log into their FIT Accounts by clicking the button below.</p>
+            <?php echo $this->ssoLoginLinks(['template' => 'common/sso-login-button'], $redirect_url); ?>
+        </div>
+    </div>
+</div>

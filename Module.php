@@ -11,9 +11,11 @@ use Laminas\View\Renderer\PhpRenderer;
 use Laminas\Mvc\Controller\AbstractController;
 use Laminas\EventManager\Event;
 use Laminas\EventManager\SharedEventManagerInterface;
+use Laminas\EventManager\EventInterface;
 use Laminas\ModuleManager\ModuleEvent;
 use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\MvcEvent;
+use Laminas\Session\Container;
 use FITModule\Form\ConfigForm;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
@@ -63,12 +65,20 @@ class Module extends AbstractModule
         parent::onBootstrap($event);
 
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
-        $acl->allow(
-            null,
-            [
-                'FITModule\Controller\Redirect',
-            ]
-        );
+        $acl
+            ->allow(
+                null,
+                [
+                    'FITModule\Controller\Redirect',
+                ]
+            )
+            ->allow(
+                null,
+                [
+                    'FITModule\Controller\Site\SiteLogin',
+                ]
+            )
+        ;
     }
 
     /**
@@ -192,6 +202,21 @@ class Module extends AbstractModule
             'iiif_presentation.2.item.manifest',
             [$this, 'updateIiif2ThumbnailRights']
         );
+        // Attach to restricted site setting to the site settings form
+        $sharedEventManager->attach(
+            'Omeka\Form\SiteSettingsForm',
+            'form.add_elements',
+            [
+                $this,
+                'addSiteLoginSetting',
+            ]
+        );
+
+        // Attach to the router event to redirect restricted sites to sitelogin page
+        $sharedEventManager->attach('*', MvcEvent::EVENT_ROUTE, [
+            $this,
+            'redirectToSiteLogin',
+        ]);
         // Hide items not on site
         // $sharedEventManager->attach(
         //     'Omeka\Controller\Site\Item',
@@ -477,6 +502,106 @@ class Module extends AbstractModule
         }
         if ($changed) {
             $event->setParam('manifest', $manifest);
+        }
+    }
+    /**
+     * Adds a Checkbox element to the site settings form
+     * This element is automatically handled by Omeka in the site_settings table
+     *
+     * @param EventInterface $event
+     */
+    public function addSiteLoginSetting(EventInterface $event)
+    {
+        /** @var \Omeka\Form\UserForm $form */
+        $form = $event->getTarget();
+
+        $siteSettings = $form->getSiteSettings();
+        $options = $form->getOptions();
+        $options['element_groups']['fit_module_sitelogin'] = 'Site Login';
+        $form->setOption('element_groups', $options['element_groups']);
+
+        $form->add(
+            [
+                'name' => 'fit_module_loginpage',
+                'type' => 'Checkbox',
+                'options' => [
+                    'element_group' => 'fit_module_sitelogin',
+                    'label' => 'Add login page to this site',
+                    'info' => 'Adds a login page to the site at /login.',
+                ],
+                'attributes' => [
+                    'value' => (bool) $siteSettings->get(
+                        'fit_module_sitelogin',
+                        false
+                    ),
+                ],
+            ]
+        );
+        $form->add(
+            [
+                'name' => 'fit_module_restrictedsites',
+                'type' => 'Checkbox',
+                'options' => [
+                    'element_group' => 'fit_module_sitelogin',
+                    'label' => 'Restrict access to this site to authenticated users',
+                    'info' => 'Requires site to be logged in through SSO or other autheticated user. Site visibility must be set to Visible (in Site info panel) for this feature to work properly.',
+                ],
+                'attributes' => [
+                    'value' => (bool) $siteSettings->get(
+                        'fit_module_restrictedsites',
+                        false
+                    ),
+                ],
+            ]
+        );
+        return;
+    }
+
+    /**
+     * Redirects all site requests to sitelogin route if site is restricted and
+     * user is not logged in.
+     *
+     * @param MvcEvent $event
+     * @return Response
+     */
+    public function redirectToSiteLogin(MvcEvent $event)
+    {
+        // If the user is already logged in they can continue
+        $serviceLocator = $event->getApplication()->getServiceManager();
+        $auth = $serviceLocator->get('Omeka\AuthenticationService');
+
+        if ($auth->hasIdentity()) {
+            // User is logged in.
+            return;
+        }
+
+        // Check to see if this is a site and if it is restricted
+        $routeMatch = $event->getRouteMatch();
+
+        if ($routeMatch->getParam('__SITE__')) {
+            $siteSlug = $event->getRouteMatch()->getParam('site-slug');
+            $site = $serviceLocator->get('Omeka\ApiManager')->read('sites', ['slug' => $siteSlug])->getContent();
+            $siteSettings = $serviceLocator->get('Omeka\Settings\Site');
+            $siteSettings->setTargetId($site->id());
+            $restricted = $siteSettings->get('fit_module_restrictedsites', null);
+            if ($restricted && ($routeMatch->getMatchedRouteName() != 'site/site-login')) {
+                // Redirect to login page
+                $url = $event->getRouter()->assemble(
+                    [
+                        'site-slug' => $siteSlug,
+                    ],
+                    [
+                        'name' => 'site/site-login',
+                    ]
+                );
+                $session = Container::getDefaultManager()->getStorage();
+                $session->offsetSet('redirect_url', $event->getRequest()->getUriString());
+                $response = $event->getResponse();
+                $response->getHeaders()->addHeaderLine('Location', $url);
+                $response->setStatusCode(302); // redirect
+                $response->sendHeaders();
+                return $response;
+            }
         }
     }
 
