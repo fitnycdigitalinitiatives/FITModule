@@ -13,10 +13,12 @@ class IndexController extends AbstractActionController
 
         // Redirect designer files to browse page rather than homepage
         if ($site->slug() == 'designerfiles') {
-            return $this->redirect()->toRoute('site/resource', [
-                'site-slug' => $site->slug(),
-                'controller' => 'item',
-            ]);
+            return $this->redirect()->toUrl($this->url()->fromRoute(
+                'site/search',
+                [
+                    'site-slug' => $site->slug(),
+                ]
+            ));
         }
 
         // Redirect to the configured homepage, if it exists.

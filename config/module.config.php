@@ -23,6 +23,7 @@ return [
             'imageVideoTransition' => Site\BlockLayout\ImageVideoTransition::class,
             'itemShowcaseHeroCarousel' => Site\BlockLayout\ItemShowcaseHeroCarousel::class,
             'assetHero' => Site\BlockLayout\AssetHero::class,
+            'designersBrowse' => Site\BlockLayout\DesignersBrowse::class,
         ],
         'factories' => [
             'archiveOnDemandAbout' => Service\BlockLayout\ArchiveOnDemandAboutFactory::class,
