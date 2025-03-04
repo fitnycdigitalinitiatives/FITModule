@@ -37,13 +37,7 @@ class DesignersBrowse extends AbstractBlockLayout
             $designerName = $designer->displayTitle();
             $itemCount = $designer->itemCount();
             $url = $view->url('site/search', ['site-slug' => $site->slug()], ['query' => ['limit' => ['item_set_dcterms_title' => [$designerName]]]]);
-            $wikipedia = '';
-            foreach ($designer->value('dcterms:relation', ['all' => true, 'type' => 'uri']) as $relation) {
-                if (strtolower($relation->value()) == 'wikipedia') {
-                    $wikipedia = $relation->uri();
-                }
-            }
-            $designersData[strtoupper($designerName[0])][] = ['designerName' => $designerName, 'description' => $designer->displayDescription(), 'itemCount' => $itemCount, 'url' => $url, 'wikipedia' => $wikipedia];
+            $designersData[strtoupper($designerName[0])][] = ['designerName' => $designerName, 'description' => $designer->displayDescription(), 'nationality' => $designer->value('fitcore:nationality') ? $designer->value('fitcore:nationality')->asHtml() : "", 'itemCount' => $itemCount, 'url' => $url];
         }
         return $view->partial('common/block-layout/designer-files-designer-browse', ['data' => json_encode($designersData), 'totalResults' => $totalResults]);
     }
