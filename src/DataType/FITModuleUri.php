@@ -1,4 +1,5 @@
 <?php
+
 namespace FITModule\DataType;
 
 use Omeka\Api\Adapter\AbstractEntityAdapter;
@@ -27,7 +28,8 @@ class FITModuleUri extends AbstractDataType implements ValueAnnotatingInterface
 
     public function isValid(array $valueObject)
     {
-        if (isset($valueObject['@id'])
+        if (
+            isset($valueObject['@id'])
             && is_string($valueObject['@id'])
             && '' !== trim($valueObject['@id'])
         ) {
@@ -57,9 +59,12 @@ class FITModuleUri extends AbstractDataType implements ValueAnnotatingInterface
             if (!$uriLabel) {
                 $uriLabel = $uri;
             }
-            $icon = '<i class="fas fa-external-link-alt" aria-hidden="true" title="External link"></i>';
-
-            return $uriLabel . $hyperlink->raw($icon, $uri, ['style' => 'margin-left:.5em', 'target' => '_blank', 'aria-label' => 'External link']);
+            if ($view->currentSite() && (str_contains($uri, "id.loc.gov/authorities") || str_contains($uri, "vocab.getty.edu/aat") || str_contains($uri, "vocab.getty.edu/page") || str_contains($uri, "getty.edu/vow"))) {
+                return $uriLabel;
+            } else {
+                $icon = '<i class="fas fa-external-link-alt" aria-hidden="true" title="External link"></i>';
+                return $uriLabel . $hyperlink->raw($icon, $uri, ['style' => 'margin-left:.5em', 'target' => '_blank', 'aria-label' => 'External link']);
+            }
         } else {
             if (!$uriLabel) {
                 return $uri;
@@ -83,9 +88,7 @@ class FITModuleUri extends AbstractDataType implements ValueAnnotatingInterface
         return sprintf('%s %s', $value->uri(), $value->value());
     }
 
-    public function valueAnnotationPrepareForm(PhpRenderer $view)
-    {
-    }
+    public function valueAnnotationPrepareForm(PhpRenderer $view) {}
 
     public function valueAnnotationForm(PhpRenderer $view)
     {
