@@ -37,6 +37,7 @@ class FITModuleRemoteFile implements RendererInterface
         $key = ltrim($parsed_url["path"], '/');
         $extension = pathinfo($key, PATHINFO_EXTENSION);
         $authorization = "";
+        $expiration = "";
         $name = "Anonymous";
         if ($view->identity()) {
             $name = $view->identity()->getName();
@@ -45,11 +46,12 @@ class FITModuleRemoteFile implements RendererInterface
         if (!($media->isPublic()) || !($media->item()->isPublic())) {
             $secret_key = $view->setting('fit_module_iiif_secret_key');
             $now_seconds = time();
+            // Maximum expiration time is 2 hours
+            $expiration = $now_seconds + (60 * 60 * 2);
             $payload = array(
                 "iss" => "https://digitalrepository.fitnyc.edu",
                 "iat" => $now_seconds,
-                "exp" => $now_seconds + (60 * 60),
-                // Maximum expiration time is one hour
+                "exp" => $expiration,
                 "user" => $name,
                 "visibility" => "private"
             );
@@ -78,7 +80,7 @@ class FITModuleRemoteFile implements RendererInterface
             $image =
                 '<div class="openseadragon-frame">
                 <div class="loader"></div>
-                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-thumbnail="' . $thumbnail . '" data-authtoken="' . $authorization . '"></div>
+                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-thumbnail="' . $thumbnail . '" data-authtoken="' . $authorization . '" data-expiration="' . $expiration . '"></div>
                 </div>
                 <noscript>
                     <p>' . $noscript . '</p>

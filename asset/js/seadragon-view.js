@@ -5,6 +5,7 @@ $(document).ready(function () {
     const iiifEndpoint = $(this).data('infojson');
     const authtoken = $(this).data('authtoken');
     const thumbnail = $(this).data('thumbnail');
+    const expiration = $(this).data('expiration');
 
     function removeThumbnail(tiledImage, viewer, currentViewer) {
 
@@ -28,7 +29,7 @@ $(document).ready(function () {
             <strong class="me-auto">Unable to Load High-Resolution Image</strong>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
           </div>
-                          <div class="toast-body">
+                          <div class="toast-body text-dark">
             It seems we've run into some issues loading this image. Please try reloading the page or contacting us at <a href="mailto:repository@fitnyc.edu" target="_blank">repository@fitnyc.edu</a> if you continue to receive this message.
           </div>
         </div>
@@ -37,6 +38,24 @@ $(document).ready(function () {
       $('.media.show:not(.resource) .openseadragon .toast-header .btn-close').on("click", function () {
         $(this).parents('.toast').hide();
       });
+    }
+
+    function handleExpiration(viewer) {
+      if (Date.now() >= expiration) {
+        viewer.removeAllHandlers("tile-load-failed");
+        const errorMessage = $(`
+          <div class="toast mx-1 bg-white fade show iiif-error" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false">
+            <div class="toast-header bg-danger text-white">
+              <strong class="me-auto">Unable to Load High-Resolution Image</strong>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+                            <div class="toast-body text-dark">
+              Your session has recently expired. Please try reloading the page so that you can access this image at the highest resolution. If you continue to receive this message, contact us at <a href="mailto:repository@fitnyc.edu" target="_blank">repository@fitnyc.edu</a>.
+            </div>
+          </div>
+        `);
+        $(currentViewer).append(errorMessage);
+      }
     }
 
     if (thumbnail) {
@@ -87,6 +106,11 @@ $(document).ready(function () {
       }
 
       viewer.addTiledImage(iiifoptions);
+      if (authtoken) {
+        viewer.addHandler("tile-load-failed", function (event) {
+          handleExpiration(viewer);
+        });
+      }
     } else {
 
       const options = {
@@ -121,6 +145,11 @@ $(document).ready(function () {
           removeLoader(currentViewer);
         });
       });
+      if (authtoken) {
+        viewer.addHandler("tile-load-failed", function (event) {
+          handleExpiration(viewer);
+        });
+      }
     }
   });
 });
