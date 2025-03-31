@@ -580,6 +580,10 @@ class Module extends AbstractModule
 
         if ($routeMatch->getParam('__SITE__')) {
             $siteSlug = $event->getRouteMatch()->getParam('site-slug');
+            // Allow OAI for Designer Files
+            if ($siteSlug == 'designerfiles' && $routeMatch->getMatchedRouteName() == 'site/oai-pmh') {
+                return;
+            }
             $site = $serviceLocator->get('Omeka\ApiManager')->read('sites', ['slug' => $siteSlug])->getContent();
             $siteSettings = $serviceLocator->get('Omeka\Settings\Site');
             $siteSettings->setTargetId($site->id());
