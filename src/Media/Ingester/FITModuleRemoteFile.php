@@ -1,4 +1,5 @@
 <?php
+
 namespace FITModule\Media\Ingester;
 
 use Omeka\Api\Representation\MediaRepresentation;
@@ -124,13 +125,27 @@ class FITModuleRemoteFile implements MutableIngesterInterface
     public function update(Media $media, Request $request, ErrorStore $errorStore)
     {
         $data = $request->getContent();
+        $thisMediaData = [];
+        if (isset($data['o:media']['__index__'])) {
+            $thisMediaData = $data['o:media']['__index__'];
+        } elseif (isset($data['data'])) {
+            $thisMediaData = $data['data'];
+        }
         // check to see update is to media itself of media metadata, ie batch edit, only necessary to check for presence of one remote file component
-        if (isset($data['o:media']['__index__']['archival'])) {
+        if (isset($thisMediaData['archival'])) {
+            $archival = isset($thisMediaData['archival']) ? $thisMediaData['archival'] : '';
+            $replica = isset($thisMediaData['replica']) ? $thisMediaData['replica'] : '';
+            $access = isset($thisMediaData['access']) ? $thisMediaData['access'] : '';
+            $mets = isset($thisMediaData['mets']) ? $thisMediaData['mets'] : '';
+            $thumbnail = isset($thisMediaData['thumbnail']) ? $thisMediaData['thumbnail'] : '';
+            $youtubeID = isset($thisMediaData['YouTubeID']) ? $thisMediaData['YouTubeID'] : '';
+            $vimeoID = isset($thisMediaData['vimeoID']) ? $thisMediaData['vimeoID'] : '';
+            $googledriveID = isset($thisMediaData['GoogleDriveID']) ? $thisMediaData['GoogleDriveID'] : '';
             // try using YouTube thumbnail if not already available
-            if (($data['o:media']['__index__']['thumbnail'] == '') && ($data['o:media']['__index__']['YouTubeID'] != '')) {
-                $data['o:media']['__index__']['thumbnail'] = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $data['o:media']['__index__']['YouTubeID']);
+            if (($thumbnail == '') && ($youtubeID != '')) {
+                $thumbnail = sprintf('http://img.youtube.com/vi/%s/hqdefault.jpg', $youtubeID);
             }
-            $mediaData = ['archival' => $data['o:media']['__index__']['archival'], 'replica' => $data['o:media']['__index__']['replica'], 'access' => $data['o:media']['__index__']['access'], 'mets' => $data['o:media']['__index__']['mets'], 'thumbnail' => $data['o:media']['__index__']['thumbnail'], 'YouTubeID' => $data['o:media']['__index__']['YouTubeID'], 'vimeoID' => $data['o:media']['__index__']['vimeoID'], 'GoogleDriveID' => $data['o:media']['__index__']['GoogleDriveID']];
+            $mediaData = ['archival' => $archival, 'replica' => $replica, 'access' => $access, 'mets' => $mets, 'thumbnail' => $thumbnail, 'YouTubeID' => $youtubeID, 'vimeoID' => $vimeoID, 'GoogleDriveID' => $googledriveID];
             $media->setData($mediaData);
             // attempt to get MIME for Media Type
             $ext = '';
@@ -158,8 +173,8 @@ class FITModuleRemoteFile implements MutableIngesterInterface
                     }
                 }
             }
-            if (($data['o:media']['__index__']['access'] != '') && ($ext == '')) {
-                $ext = pathinfo($data['o:media']['__index__']['access'], PATHINFO_EXTENSION);
+            if (($access != '') && ($ext == '')) {
+                $ext = pathinfo($access, PATHINFO_EXTENSION);
             }
             if ($ext != '') {
                 $builder = \Mimey\MimeMappingBuilder::create();
@@ -169,7 +184,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
                 $builder->add('application/warc', 'warc.gz');
                 $mimes = new \Mimey\MimeTypes($builder->getMapping());
                 $media->setMediaType($mimes->getMimeType($ext));
-            } elseif ($data['o:media']['__index__']['YouTubeID'] != '') {
+            } elseif ($youtubeID != '') {
                 $media->setMediaType('video');
             } else {
                 $media->setMediaType(null);
