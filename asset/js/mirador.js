@@ -5,13 +5,15 @@ $(document).ready(function () {
     const options = $('#mirador-viewer').data('options');
     const miradorConfig = {
         id: "mirador-viewer",
+        workspace: {
+            showZoomControls: true,
+        },
         workspaceControlPanel: {
             enabled: false
         },
         window: {
             allowClose: false,
             allowFullscreen: true,
-            allowMaximize: false,
         },
         windows: [
             {
