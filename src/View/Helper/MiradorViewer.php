@@ -1,4 +1,5 @@
 <?php
+
 namespace FITModule\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -14,7 +15,7 @@ class MiradorViewer extends AbstractHelper
     {
         $view = $this->getView();
         $view->headLink()->appendStylesheet($view->assetUrl('css/mirador.css', 'FITModule'));
-        $view->headScript()->appendFile('https://unpkg.com/mirador@3.3.0/dist/mirador.min.js', 'text/javascript');
+        $view->headScript()->appendFile('https://unpkg.com/mirador@3.4.3/dist/mirador.min.js', 'text/javascript');
         $view->headScript()->appendFile($view->assetUrl('js/mirador.js', 'FITModule'), 'text/javascript');
         $manifestId = $view->url('iiif-presentation-3/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true]);
         $authorization = '';

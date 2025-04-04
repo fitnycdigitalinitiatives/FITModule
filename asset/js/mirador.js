@@ -41,6 +41,10 @@ $(document).ready(function () {
                 'Authorization': `Bearer ${authorization}`
             }
         }
+    } else {
+        miradorConfig['osdConfig'] = {
+            crossOriginPolicy: 'Anonymous'
+        }
     }
     if (canvas) {
         miradorConfig['windows'][0]['canvasId'] = canvas;
