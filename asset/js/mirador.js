@@ -14,6 +14,7 @@ $(document).ready(function () {
         window: {
             allowClose: false,
             allowFullscreen: true,
+            allowMaximize: false,
         },
         windows: [
             {
