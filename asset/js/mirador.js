@@ -22,6 +22,9 @@ $(document).ready(function () {
                 thumbnailNavigationPosition: 'far-right',
             }
         ],
+        osdConfig: {
+            preserveViewport: false,
+        }
     };
     if ('window' in options) {
         Object.keys(options['window']).forEach(key => {
@@ -38,16 +41,12 @@ $(document).ready(function () {
                 (url, options) => (url.match('info.json') && { ...options, headers: { ...options.headers, "Authorization": "Bearer " + authorization } }),
             ]
         };
-        miradorConfig['osdConfig'] = {
-            loadTilesWithAjax: true,
-            ajaxHeaders: {
-                'Authorization': `Bearer ${authorization}`
-            }
-        }
+        miradorConfig['osdConfig']['loadTilesWithAjax'] = true;
+        miradorConfig['osdConfig']['ajaxHeaders'] = {
+            'Authorization': `Bearer ${authorization}`
+        };
     } else {
-        miradorConfig['osdConfig'] = {
-            crossOriginPolicy: 'Anonymous'
-        }
+        miradorConfig['osdConfig']['crossOriginPolicy'] = 'Anonymous'
     }
     if (canvas) {
         miradorConfig['windows'][0]['canvasId'] = canvas;

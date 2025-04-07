@@ -419,7 +419,6 @@ class Module extends AbstractModule
 
     public function updateIiif3ThumbnailRights(Event $event)
     {
-        $changed = false;
         $manifest = $event->getParam('manifest');
         $item = $event->getParam('item');
         $primaryMedia = $item->primaryMedia();
@@ -433,16 +432,24 @@ class Module extends AbstractModule
                             'type' => 'Image'
                         ]
                     ];
-                    $changed = true;
                 }
             }
+        }
+        // Default required statement if no rights exist
+        $manifest['requiredStatement'] = ["label" => ["en" => ["Attribution"]], "value" => ["en" => ["This resource has been made available online by the Fashion Institute of Technology Gladys Marcus Library"]]];
+        $literalRights = $item->value('dcterms:rights', ['all' => true, 'type' => 'literal']);
+        $requiredStatement = [];
+        foreach ($literalRights as $literalRight) {
+            $requiredStatement[] =  $literalRight;
+        }
+        if ($requiredStatement) {
+            $manifest['requiredStatement'] = ["label" => ["en" => ["Rights"]], "value" => ["en" => [implode(". ", $requiredStatement)]]];
         }
         $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
         $hasrights = false;
         foreach ($rights as $rightsstatement) {
             if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
                 $manifest['rights'] = $rightsstatement->uri();
-                $changed = true;
                 $hasrights = true;
                 break;
             }
@@ -451,14 +458,11 @@ class Module extends AbstractModule
             foreach ($rights as $rightsstatement) {
                 if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
                     $manifest['rights'] = $rightsstatement->uri();
-                    $changed = true;
                     break;
                 }
             }
         }
-        if ($changed) {
-            $event->setParam('manifest', $manifest);
-        }
+        $event->setParam('manifest', $manifest);
     }
 
     public function updateIiif2ThumbnailRights(Event $event)
