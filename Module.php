@@ -191,17 +191,6 @@ class Module extends AbstractModule
             'api.update.post',
             [$this, 'updateVisibility']
         );
-        // Update iiif presentation thumbnail
-        $sharedEventManager->attach(
-            'IiifPresentation\v3\Controller\ItemController',
-            'iiif_presentation.3.item.manifest',
-            [$this, 'updateIiif3ThumbnailRights']
-        );
-        $sharedEventManager->attach(
-            'IiifPresentation\v2\Controller\ItemController',
-            'iiif_presentation.2.item.manifest',
-            [$this, 'updateIiif2ThumbnailRights']
-        );
         // Attach to restricted site setting to the site settings form
         $sharedEventManager->attach(
             'Omeka\Form\SiteSettingsForm',
@@ -417,97 +406,6 @@ class Module extends AbstractModule
         }
     }
 
-    public function updateIiif3ThumbnailRights(Event $event)
-    {
-        $manifest = $event->getParam('manifest');
-        $item = $event->getParam('item');
-        $primaryMedia = $item->primaryMedia();
-        if ($primaryMedia) {
-            if ($primaryMedia->ingester() == 'remoteFile') {
-                $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
-                if ($thumbnailURL) {
-                    $manifest['thumbnail'] = [
-                        [
-                            'id' => $thumbnailURL,
-                            'type' => 'Image'
-                        ]
-                    ];
-                }
-            }
-        }
-        // Default required statement if no rights exist
-        $manifest['requiredStatement'] = ["label" => ["en" => ["Attribution"]], "value" => ["en" => ["This resource has been made available online by the Fashion Institute of Technology Gladys Marcus Library"]]];
-        $literalRights = $item->value('dcterms:rights', ['all' => true, 'type' => 'literal']);
-        $requiredStatement = [];
-        foreach ($literalRights as $literalRight) {
-            $requiredStatement[] =  $literalRight;
-        }
-        if ($requiredStatement) {
-            $manifest['requiredStatement'] = ["label" => ["en" => ["Rights"]], "value" => ["en" => [implode(". ", $requiredStatement)]]];
-        }
-        $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
-        $hasrights = false;
-        foreach ($rights as $rightsstatement) {
-            if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
-                $manifest['rights'] = $rightsstatement->uri();
-                $hasrights = true;
-                break;
-            }
-        }
-        if (!$hasrights) {
-            foreach ($rights as $rightsstatement) {
-                if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
-                    $manifest['rights'] = $rightsstatement->uri();
-                    break;
-                }
-            }
-        }
-        $event->setParam('manifest', $manifest);
-    }
-
-    public function updateIiif2ThumbnailRights(Event $event)
-    {
-        $changed = false;
-        $manifest = $event->getParam('manifest');
-        $item = $event->getParam('item');
-        $primaryMedia = $item->primaryMedia();
-        if ($primaryMedia) {
-            if ($primaryMedia->ingester() == 'remoteFile') {
-                $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
-                if ($thumbnailURL) {
-                    $manifest['thumbnail'] = [
-                        [
-                            '@id' => $thumbnailURL,
-                            '@type' => 'dctypes:Image'
-                        ]
-                    ];
-                    $changed = true;
-                }
-            }
-        }
-        $rights = $item->value('dcterms:rights', ['all' => true, 'type' => 'uri']);
-        $hasrights = false;
-        foreach ($rights as $rightsstatement) {
-            if (str_contains($rightsstatement->uri(), "creativecommons.org")) {
-                $manifest['license'] = $rightsstatement->uri();
-                $changed = true;
-                $hasrights = true;
-                break;
-            }
-        }
-        if (!$hasrights) {
-            foreach ($rights as $rightsstatement) {
-                if (str_contains($rightsstatement->uri(), "rightsstatements.org")) {
-                    $manifest['license'] = $rightsstatement->uri();
-                    $changed = true;
-                    break;
-                }
-            }
-        }
-        if ($changed) {
-            $event->setParam('manifest', $manifest);
-        }
-    }
     /**
      * Adds a Checkbox element to the site settings form
      * This element is automatically handled by Omeka in the site_settings table

@@ -70,16 +70,6 @@ return [
             ],
         ],
     ],
-    'iiif_presentation_v2_canvas_types' => [
-        'invokables' => [
-            'remoteFile' => IiifPresentation\v2\CanvasType\FITModuleRemoteFile::class,
-        ],
-    ],
-    'iiif_presentation_v3_canvas_types' => [
-        'invokables' => [
-            'remoteFile' => IiifPresentation\v3\CanvasType\FITModuleRemoteFile::class,
-        ],
-    ],
     'router' => [
         'routes' => [
             'site' => [
