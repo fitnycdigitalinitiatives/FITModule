@@ -51,5 +51,17 @@ $(document).ready(function () {
     if (canvas) {
         miradorConfig['windows'][0]['canvasId'] = canvas;
     }
-    Mirador.viewer(miradorConfig);
+    // Don't load the mirador viewer until it's visible on the page or the initial Zoom will derp
+    function onVisible(element, callback) {
+        new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.intersectionRatio > 0) {
+                    callback(element);
+                    observer.disconnect();
+                }
+            });
+        }).observe(element);
+        if (!callback) return new Promise(r => callback = r);
+    }
+    onVisible(document.querySelector("#mirador-viewer"), () => Mirador.viewer(miradorConfig));
 });

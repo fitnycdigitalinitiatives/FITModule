@@ -20,7 +20,18 @@ class MiradorViewer extends AbstractHelper
         $manifestId = $view->url('iiif-presentation-3/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true]);
         $authorization = '';
         $name = "Anonymous";
+        $private = false;
         if (!($item->isPublic())) {
+            $private = true;
+        } else {
+            foreach ($item->media() as $media) {
+                if (!($media->isPublic())) {
+                    $private = true;
+                    break;
+                }
+            }
+        }
+        if ($private) {
             if ($view->identity()) {
                 $name = $view->identity()->getName();
             }
@@ -29,8 +40,8 @@ class MiradorViewer extends AbstractHelper
             $payload = array(
                 "iss" => "https://digitalrepository.fitnyc.edu",
                 "iat" => $now_seconds,
-                "exp" => $now_seconds + (60 * 60),
-                // Maximum expiration time is one hour
+                "exp" => $now_seconds + (60 * 60 * 2),
+                // Maximum expiration time is 2 hours
                 "user" => $name,
                 "visibility" => "private"
             );

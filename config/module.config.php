@@ -32,11 +32,13 @@ return [
     'media_ingesters' => [
         'invokables' => [
             'remoteFile' => Media\Ingester\FITModuleRemoteFile::class,
+            'remoteCompoundObject' => Media\Ingester\FITModuleRemoteCompoundObject::class,
         ],
     ],
     'media_renderers' => [
         'invokables' => [
             'remoteFile' => Media\Renderer\FITModuleRemoteFile::class,
+            // 'remoteCompoundObject' => Media\Renderer\FITModuleRemoteCompoundObject::class,
             'youtube' => Media\Renderer\FITModuleYoutube::class,
         ],
     ],
@@ -53,6 +55,7 @@ return [
             'thumbnail' => View\Helper\FITModuleThumbnail::class,
             's3presigned' => View\Helper\FITModuleS3Presigned::class,
             'miradorViewer' => View\Helper\MiradorViewer::class,
+            'itemViewer' => View\Helper\ItemViewer::class,
         ],
     ],
     'view_manager' => [
