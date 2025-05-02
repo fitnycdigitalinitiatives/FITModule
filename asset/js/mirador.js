@@ -52,16 +52,16 @@ $(document).ready(function () {
         miradorConfig['windows'][0]['canvasId'] = canvas;
     }
     // Don't load the mirador viewer until it's visible on the page or the initial Zoom will derp
-    function onVisible(element, callback) {
-        new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.intersectionRatio > 0) {
-                    callback(element);
-                    observer.disconnect();
-                }
-            });
-        }).observe(element);
-        if (!callback) return new Promise(r => callback = r);
-    }
-    onVisible(document.querySelector("#mirador-viewer"), () => Mirador.viewer(miradorConfig));
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Element is visible
+                const thisViewer = Mirador.viewer(miradorConfig);
+                thisViewer.store.subscribe(() => { console.log(thisViewer.store.getState()) });
+            }
+        });
+    });
+
+    const element = document.querySelector('#mirador-viewer');
+    observer.observe(element);
 });
