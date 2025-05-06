@@ -57,7 +57,6 @@ $(document).ready(function () {
             if (entry.isIntersecting) {
                 // Element is visible
                 const thisViewer = Mirador.viewer(miradorConfig);
-                thisViewer.store.subscribe(() => { console.log(thisViewer.store.getState()) });
             }
         });
     });
