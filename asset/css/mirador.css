@@ -1,11 +1,11 @@
-#mirador-viewer-frame {
+.mirador-viewer-frame {
     position: relative;
     padding-bottom: 75%;
     height: 0;
     overflow: hidden;
 }
 
-#mirador-viewer {
+.mirador-viewer {
     position: absolute;
     top: 0;
     left: 0;
@@ -14,7 +14,23 @@
     height: 100%;
 }
 
-#mirador-viewer .openseadragon-canvas:before {
+/* reset admin header styles */
+.mirador-viewer header {
+    min-height: initial;
+    padding: initial;
+    text-align: initial;
+}
+
+/* reset admin button styles */
+.mirador-viewer button {
+    box-shadow: initial;
+}
+
+.mirador-viewer button:not(.MuiTab-root) {
+    min-height: initial;
+}
+
+.mirador-viewer .openseadragon-canvas:before {
     content: "";
     position: absolute;
     top: calc(50% - 1rem);
@@ -30,7 +46,7 @@
     z-index: 0;
 }
 
-#mirador-viewer .MuiTypography-colorPrimary {
+.mirador-viewer .MuiTypography-colorPrimary {
     color: #0036f9;
 }
 

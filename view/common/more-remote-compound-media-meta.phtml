@@ -1,0 +1,231 @@
+<?php
+
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$hyperlink = $this->plugin('hyperlink');
+$assetUrl = $this->plugin('assetUrl');
+$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'mets' => 'METS file', 'pdf' => 'PDF file', 'pdfThumbnail' => 'PDF file thumbnail', 'indexed' => 'Indexed for full-text search?');
+$component_parts = [
+    ['name' => 'dcterms:title', 'label' => 'Component Title', 'type' => 'text'],
+    ['name' => 'access', 'label' => 'Access URL', 'type' => 'url'],
+    ['name' => 'thumbnail', 'label' => 'Thumbnail URL', 'type' => 'url'],
+    ['name' => 'ocr', 'label' => 'OCR URL', 'type' => 'url'],
+    ['name' => 'exif:width', 'label' => 'Image width', 'type' => 'text'],
+    ['name' => 'exif:height', 'label' => 'Image height', 'type' => 'text'],
+];
+$mediaData = $media->mediaData();
+$iiifEndpoint = $this->setting('fit_module_aws_iiif_endpoint');
+$manifestURL = "";
+if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class)) {
+    $manifestURL = $this->url('iiif-presentation-3/media/manifest', ['media-id' => $media->id()], ['force_canonical' => true]);
+}
+?>
+<?php if ($manifestURL): ?>
+    <div class="meta-group more-meta-group">
+        <h4>IIIF Manifest</h4>
+        <div class="value">
+            <a href="<?php echo $escape($manifestURL); ?>">
+                <?php echo $escape($manifestURL); ?>
+            </a>
+        </div>
+    </div>
+<?php endif; ?>
+
+
+<?php foreach ($mediaData as $key => $value): ?>
+    <?php if ($value || $key == 'indexed') : ?>
+        <?php if ($key != 'components'): ?>
+            <div class="meta-group more-meta-group">
+                <?php if ($key == "archival" || $key == "mets" || $key == "pdf"): ?>
+                    <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
+                        <h4>
+                            <?php echo $labels[$key]; ?>
+                        </h4>
+                        <div class="value">
+                            <small>S3 Object URL (Not directly accessible)</small>
+                            <a href="<?php echo $escape($value); ?>">
+                                <?php echo $escape($value); ?>
+                            </a>
+                        </div>
+                        <div class="get_presigned">
+                            <button class="button" id="download" data-file-type="<?php echo $key; ?>">
+                                <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
+                            </button>
+                            <button class="button" id="url" data-file-type="<?php echo $key; ?>">
+                                <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
+                                        access</span></i>
+                            </button>
+                            <?php if (isset($_POST['presigned'])): ?>
+                                <?php if ($_POST['presigned'] == $key): ?>
+                                    <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value), array_key_exists('download', $_POST) ? true : false); ?>">
+                                    </div>
+                                <?php endif; ?>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
+                <?php else: ?>
+                    <h4>
+                        <?php echo $labels[$key]; ?>
+                    </h4>
+                    <div class="value">
+                        <?php if ($key == "indexed"): ?>
+                            <?php echo $value ? "True" : "False"; ?>
+                        <?php else: ?>
+                            <?php if ($key == "replica"): ?>
+                                <small>S3 Glacier objects are only accessible upon request (please contact administrator for assistance)</small>
+                            <?php endif; ?>
+                            <a href="<?php echo $escape($value); ?>">
+                                <?php echo $escape($value); ?>
+                            </a>
+                        <?php endif; ?>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+<?php endforeach; ?>
+<?php if ($mediaData['components']): ?>
+    <div class="meta-group more-meta-group">
+        <h4>
+            Components
+        </h4>
+        <?php foreach ($mediaData['components'] as $key => $component): ?>
+            <div class="component-group">
+                <div class="component-title-image">
+                    <img src="<?php echo $component['thumbnail'] ? $component['thumbnail'] : $assetUrl('thumbnails/image.png', 'Omeka'); ?>" alt="">
+                    <h5>
+                        <?php if ($component['dcterms:title']): ?>
+                            <?php echo $escape($component['dcterms:title']); ?>
+                        <?php elseif ($component['dcterms:identifier']): ?>
+                            <?php echo $escape($component['dcterms:identifier']); ?>
+                        <?php else: ?>
+                            <?php echo $escape($key); ?>
+                        <?php endif; ?>
+                    </h5>
+                </div>
+                <?php if ($access = $component['access']): ?>
+                    <?php if ($iiifEndpoint): ?>
+                        <?php
+                        $parsed_url = parse_url($access);
+                        $access_key = ltrim($parsed_url["path"], '/');
+                        $extension = pathinfo($access_key, PATHINFO_EXTENSION);
+                        if ($extension == 'tif') {
+                            $iiif = $iiifEndpoint . str_replace("/", "%2F", substr($access_key, 0, -4)) . "/info.json";
+                        }
+                        ?>
+                        <?php if (isset($iiif)): ?>
+                            <div class="component-meta">
+                                <h6>IIIF endpoint</h6>
+                                <div class="value">
+                                    <a href="<?php echo $escape($iiif); ?>">
+                                        <?php echo $escape($iiif); ?>
+                                    </a>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
+                    <?php if ($access): ?>
+                        <div class="component-meta">
+                            <h6>
+                                Access file
+                            </h6>
+                            <div class="value">
+                                <small>S3 Object URL (Not directly accessible)</small>
+                                <a href="<?php echo $escape($access); ?>">
+                                    <?php echo $escape($access); ?>
+                                </a>
+                            </div>
+                            <div class="get_presigned">
+                                <button class="button" id="download" data-file-type="access-<?php echo $key; ?>">
+                                    <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
+                                </button>
+                                <button class="button" id="url" data-file-type="access-<?php echo $key; ?>">
+                                    <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
+                                            access</span></i>
+                                </button>
+                                <?php if (isset($_POST['presigned'])): ?>
+                                    <?php if ($_POST['presigned'] == 'access-' . $key): ?>
+                                        <div id="presigned" data-access-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($access), array_key_exists('download', $_POST) ? true : false); ?>">
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($ocr = $component['ocr']): ?>
+                        <div class="component-meta">
+                            <h6>
+                                OCR file
+                            </h6>
+                            <div class="value">
+                                <small>S3 Object URL (Not directly accessible)</small>
+                                <a href="<?php echo $escape($ocr); ?>">
+                                    <?php echo $escape($ocr); ?>
+                                </a>
+                            </div>
+                            <div class="get_presigned">
+                                <button class="button" id="download" data-file-type="ocr-<?php echo $key; ?>">
+                                    <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
+                                </button>
+                                <button class="button" id="url" data-file-type="ocr-<?php echo $key; ?>">
+                                    <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
+                                            access</span></i>
+                                </button>
+                                <?php if (isset($_POST['presigned'])): ?>
+                                    <?php if ($_POST['presigned'] == 'ocr-' . $key): ?>
+                                        <div id="presigned" data-ocr-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($ocr), array_key_exists('download', $_POST) ? true : false); ?>">
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+                <?php if ($thumbnail = $component['thumbnail']): ?>
+                    <div class="component-meta">
+                        <h6>
+                            Thumbnail file
+                        </h6>
+                        <div class="value">
+                            <a href="<?php echo $escape($thumbnail); ?>">
+                                <?php echo $escape($thumbnail); ?>
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($identifier = $component['dcterms:identifier']): ?>
+                    <div class="component-meta">
+                        <h6>
+                            File name
+                        </h6>
+                        <div class="value">
+                            <?php echo $escape($identifier); ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($width = $component['exif:width']): ?>
+                    <div class="component-meta">
+                        <h6>
+                            Width
+                        </h6>
+                        <div class="value">
+                            <?php echo $escape($width); ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+                <?php if ($height = $component['exif:height']): ?>
+                    <div class="component-meta">
+                        <h6>
+                            Height
+                        </h6>
+                        <div class="value">
+                            <?php echo $escape($height); ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </div>
+        <?php endforeach; ?>
+    </div>
+<?php endif; ?>

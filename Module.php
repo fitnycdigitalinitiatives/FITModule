@@ -19,6 +19,8 @@ use Laminas\Session\Container;
 use FITModule\Form\ConfigForm;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
+use Omeka\Entity\Item;
+use Omeka\Entity\Media;
 
 class Module extends AbstractModule
 {
@@ -104,6 +106,12 @@ class Module extends AbstractModule
             'iiif_secret_key' => $settings->get('fit_module_iiif_secret_key'),
             'aws_dynamodb_table' => $settings->get('fit_module_aws_dynamodb_table'),
             'aws_dynamodb_table_region' => $settings->get('fit_module_aws_dynamodb_table_region'),
+            'solr_hostname' => $settings->get('fit_module_solr_hostname'),
+            'solr_port' => $settings->get('fit_module_solr_port'),
+            'solr_path' => $settings->get('fit_module_solr_path'),
+            'solr_connection' => $settings->get('fit_module_solr_connection'),
+            'solr_login' => $settings->get('fit_module_solr_login'),
+            'solr_password' => $settings->get('fit_module_solr_password'),
         ]);
         return $renderer->formCollection($form);
     }
@@ -126,6 +134,12 @@ class Module extends AbstractModule
         $settings->set('fit_module_iiif_secret_key', $formData['iiif_secret_key']);
         $settings->set('fit_module_aws_dynamodb_table', $formData['aws_dynamodb_table']);
         $settings->set('fit_module_aws_dynamodb_table_region', $formData['aws_dynamodb_table_region']);
+        $settings->set('fit_module_solr_hostname', $formData['solr_hostname']);
+        $settings->set('fit_module_solr_port', $formData['solr_port']);
+        $settings->set('fit_module_solr_path', $formData['solr_path']);
+        $settings->set('fit_module_solr_connection', $formData['solr_connection']);
+        $settings->set('fit_module_solr_login', $formData['solr_login']);
+        $settings->set('fit_module_solr_password', $formData['solr_password']);
         return true;
     }
 
@@ -191,6 +205,26 @@ class Module extends AbstractModule
             'api.update.post',
             [$this, 'updateVisibility']
         );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.create.post',
+            [$this, 'indexOCR']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\ItemAdapter',
+            'api.update.post',
+            [$this, 'indexOCR']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\MediaAdapter',
+            'api.create.post',
+            [$this, 'indexOCR']
+        );
+        $sharedEventManager->attach(
+            'Omeka\Api\Adapter\MediaAdapter',
+            'api.update.post',
+            [$this, 'indexOCR']
+        );
         // Attach to restricted site setting to the site settings form
         $sharedEventManager->attach(
             'Omeka\Form\SiteSettingsForm',
@@ -206,23 +240,24 @@ class Module extends AbstractModule
             $this,
             'redirectToSiteLogin',
         ]);
-        // Hide items not on site
-        // $sharedEventManager->attach(
-        //     'Omeka\Controller\Site\Item',
-        //     'view.show.before',
-        //     [$this, 'hideItemsOnSite']
-        // );
     }
 
     public function displayRemoteMetadataSidebar(Event $event)
     {
-        if (($event->getTarget()->media->ingester() == 'remoteImage') || ($event->getTarget()->media->ingester() == 'remoteVideo') || ($event->getTarget()->media->ingester() == 'remoteFile')) {
+        if ($event->getTarget()->media->ingester() == 'remoteFile') {
             $view = $event->getTarget();
             $assetUrl = $view->plugin('assetUrl');
             $view->headLink()->appendStylesheet($assetUrl('css/FITModuleMoreMediaMeta.css', 'FITModule'));
             $view->headScript()->appendFile($assetUrl('js/FITModuleS3Presigned.js', 'FITModule'), 'text/javascript', ['defer' => 'defer']);
             $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js', 'text/javascript', ['defer' => 'defer']);
-            echo $event->getTarget()->partial('common/more-media-meta');
+            echo $event->getTarget()->partial('common/more-remote-file-media-meta');
+        } elseif ($event->getTarget()->media->ingester() == 'remoteCompoundObject') {
+            $view = $event->getTarget();
+            $assetUrl = $view->plugin('assetUrl');
+            $view->headLink()->appendStylesheet($assetUrl('css/FITModuleMoreMediaMeta.css', 'FITModule'));
+            $view->headScript()->appendFile($assetUrl('js/FITModuleS3Presigned.js', 'FITModule'), 'text/javascript', ['defer' => 'defer']);
+            $view->headScript()->appendFile('https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js', 'text/javascript', ['defer' => 'defer']);
+            echo $event->getTarget()->partial('common/more-remote-compound-media-meta');
         }
     }
     public function attachRemoteMetadataJson(Event $event)
@@ -230,17 +265,25 @@ class Module extends AbstractModule
         $resource = $event->getTarget();
         $primaryMedia = $resource->primaryMedia();
         if ($primaryMedia) {
+            $thumbnailURL = "";
             if ($primaryMedia->ingester() == 'remoteFile') {
                 $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
-                if ($thumbnailURL) {
-                    $jsonLd = $event->getParam('jsonLd');
-                    $thumbnail_data['medium'] = $thumbnailURL;
-                    $jsonLd['thumbnail_display_urls'] = $thumbnail_data;
-                    if ($jsonLd['@type'] == 'o:Media') {
-                        $jsonLd['o:thumbnail_urls'] = $thumbnail_data;
+            } elseif ($primaryMedia->ingester() == 'remoteCompoundObject') {
+                foreach ($primaryMedia->mediaData()['components'] as  $component) {
+                    if ($component['thumbnail']) {
+                        $thumbnailURL = $component['thumbnail'];
+                        break;
                     }
-                    $event->setParam('jsonLd', $jsonLd);
                 }
+            }
+            if ($thumbnailURL) {
+                $jsonLd = $event->getParam('jsonLd');
+                $thumbnail_data['medium'] = $thumbnailURL;
+                $jsonLd['thumbnail_display_urls'] = $thumbnail_data;
+                if ($jsonLd['@type'] == 'o:Media') {
+                    $jsonLd['o:thumbnail_urls'] = $thumbnail_data;
+                }
+                $event->setParam('jsonLd', $jsonLd);
             }
         }
     }
@@ -407,6 +450,45 @@ class Module extends AbstractModule
     }
 
     /**
+     * Index OCR attached to remote compound objects.
+     *
+     * @param Event $event
+     */
+    public function indexOCR(Event $event)
+    {
+        $settings = $this->getServiceLocator()->get('Omeka\Settings');
+        if ($settings->get('fit_module_solr_connection')) {
+            $response = $event->getParam('response');
+            $entity = $response->getContent();
+            $mediaEntityList = [];
+            $mediaIdList = [];
+            if ($entity instanceof Item) {
+                $mediaEntityList = $entity->getMedia();
+            } elseif ($entity instanceof Media) {
+                $mediaEntityList = [$entity];
+            }
+
+            foreach ($mediaEntityList as $mediaEntity) {
+                if (($mediaEntity->getIngester() == 'remoteCompoundObject') && ($data = $mediaEntity->getData()) && (array_key_exists('indexed', $data)) && (!$data['indexed']) && $data['components']) {
+                    foreach ($data['components'] as $component) {
+                        if ($component['ocr']) {
+                            $mediaIdList[] = $mediaEntity->getId();
+                            break;
+                        }
+                    }
+                }
+            }
+            if ($mediaIdList) {
+                $jobArgs = [
+                    'mediaIdList' => $mediaIdList,
+                ];
+                $jobDispatcher = $this->getServiceLocator()->get(\Omeka\Job\Dispatcher::class);
+                $jobDispatcher->dispatch('FITModule\Job\IndexOcr', $jobArgs);
+            }
+        }
+    }
+
+    /**
      * Adds a Checkbox element to the site settings form
      * This element is automatically handled by Omeka in the site_settings table
      *
@@ -510,26 +592,4 @@ class Module extends AbstractModule
             }
         }
     }
-
-    // public function hideItemsOnSite(Event $event)
-    // {
-    //     $view = $event->getTarget();
-    //     $item = $view->item;
-    //     $sites = $item->sites();
-    //     $currentSite = $view->currentSite();
-    //     if (!$sites || !in_array($currentSite, $sites)) {
-    //         $model = new ViewModel;
-    //         $model->setTemplate('error/404');
-    //         $model->setVariable('message', 'This item is not available on this site.');
-    //         $viewRenderer = $this->getServiceLocator()->get('Application')->getServiceManager()->get('ViewRenderer');
-    //         $content = $viewRenderer->render($model);
-    //         $parentModel = $view->ViewModel()->getCurrent();
-    //         $parentModel->setTemplate('layout/layout');
-    //         $parentModel->setVariable('content', $content);
-    //         $parentModel->setVariable('site', $currentSite);
-    //         echo $viewRenderer->render($parentModel);
-    //         http_response_code(404); //Added the line of code as per suggested in the comment by B1NARY
-    //         exit();
-    //     }
-    // }
 }

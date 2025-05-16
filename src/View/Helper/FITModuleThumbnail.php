@@ -1,4 +1,5 @@
 <?php
+
 namespace FITModule\View\Helper;
 
 use Omeka\Api\Representation\AbstractRepresentation;
@@ -32,7 +33,6 @@ class FITModuleThumbnail extends AbstractHtmlElement
             } else {
                 $primaryMedia = '';
             }
-
         } else {
             $primaryMedia = $representation->primaryMedia();
         }
@@ -65,6 +65,13 @@ class FITModuleThumbnail extends AbstractHtmlElement
 
         if (($primaryMedia) && ($primaryMedia->ingester() == 'remoteFile')) {
             $thumbnailURL = $primaryMedia->mediaData()['thumbnail'];
+        } elseif (($primaryMedia) && ($primaryMedia->ingester() == 'remoteCompoundObject')) {
+            foreach ($primaryMedia->mediaData()['components'] as  $component) {
+                if ($component['thumbnail']) {
+                    $thumbnailURL = $component['thumbnail'];
+                    break;
+                }
+            }
         }
 
         if (($thumbnailURL == '') && ($primaryMedia)) {

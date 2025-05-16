@@ -38,7 +38,7 @@ return [
     'media_renderers' => [
         'invokables' => [
             'remoteFile' => Media\Renderer\FITModuleRemoteFile::class,
-            // 'remoteCompoundObject' => Media\Renderer\FITModuleRemoteCompoundObject::class,
+            'remoteCompoundObject' => Media\Renderer\FITModuleRemoteCompoundObject::class,
             'youtube' => Media\Renderer\FITModuleYoutube::class,
         ],
     ],

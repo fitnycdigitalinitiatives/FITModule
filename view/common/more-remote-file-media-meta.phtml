@@ -45,8 +45,8 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
               <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
             </button>
             <button class="button" id="url" data-file-type="<?php echo $key; ?>">
-              <i class="fas fa-link fa-lg" title="Get link for temporary acccess"><span class="sr-only">Get link for temporary
-                  acccess</span></i>
+              <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
+                  access</span></i>
             </button>
             <?php if (isset($_POST['presigned'])): ?>
               <?php if ($_POST['presigned'] == $key): ?>
