@@ -416,14 +416,28 @@ class Module extends AbstractModule
                 'version' => 'latest'
             ]);
             $batch = [];
+            $itemPublic = $item->isPublic();
             foreach ($mediaSet as $media) {
+                $mediaPublic = $media->isPublic();
                 if (($media->ingester() == 'remoteFile') && ($accessURL = $media->mediaData()['access'])) {
                     $parsed_url = parse_url($accessURL);
                     $key = ltrim($parsed_url["path"], '/');
                     $extension = pathinfo($key, PATHINFO_EXTENSION);
                     if ($extension == 'tif') {
-                        $visibility = (($item->isPublic()) && ($media->isPublic())) ? 'public' : 'private';
+                        $visibility = (($itemPublic) && ($mediaPublic)) ? 'public' : 'private';
                         $batch[] = ['key' => $key, 'visibility' => $visibility];
+                    }
+                } elseif (($media->ingester() == 'remoteCompoundObject') && ($components = $media->mediaData()['components'])) {
+                    foreach ($components as $component) {
+                        if ($component['access']) {
+                            $parsed_url = parse_url($component['access']);
+                            $key = ltrim($parsed_url["path"], '/');
+                            $extension = pathinfo($key, PATHINFO_EXTENSION);
+                            if ($extension == 'tif') {
+                                $visibility = (($itemPublic) && ($mediaPublic)) ? 'public' : 'private';
+                                $batch[] = ['key' => $key, 'visibility' => $visibility];
+                            }
+                        }
                     }
                 }
             }

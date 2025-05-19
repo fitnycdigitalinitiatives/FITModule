@@ -98,6 +98,11 @@ class IndexOcr extends AbstractJob
                     $doc->addField('ocr_text', $joined_mini_ocr_output);
                     $solrClient->addDocument($doc);
                     // $solrClient->commit();
+
+                    $media_data['indexed'] = 1;
+                    $media->setData($media_data);
+                    $em->flush();
+                    $logger->info("Updated index status for media: " . $mediaId);
                 }
             }
         }
