@@ -237,6 +237,9 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
             'value' => $indexed,
         ]);
 
+        if (!$index_offset) {
+            $index_offset = 0;
+        }
         $index_offsetInput = new Number('o:media[__index__][index_offset]');
         $index_offsetInput->setOptions([
             'label' => 'Index offset.',
