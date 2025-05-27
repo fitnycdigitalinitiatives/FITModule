@@ -8,6 +8,7 @@ use Omeka\Api\Request;
 use Omeka\Entity\Media;
 use Laminas\Form\Element\Text;
 use Laminas\Form\Element\Checkbox;
+use Laminas\Form\Element\Number;
 use Laminas\Form\Element\Url as UrlElement;
 use Omeka\Stdlib\ErrorStore;
 use Laminas\View\Renderer\PhpRenderer;
@@ -32,7 +33,8 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
         $pdf = array_key_exists('pdf', $media->mediaData()) ? $media->mediaData()['pdf'] : '';
         $pdfThumbnail = array_key_exists('pdfThumbnail', $media->mediaData()) ? $media->mediaData()['pdfThumbnail'] : '';
         $indexed = array_key_exists('indexed', $media->mediaData()) ? $media->mediaData()['indexed'] : '';
-        return $this->getForm($view, $archival, $replica, $components, $mets, $pdf, $pdfThumbnail, $indexed);
+        $index_offset = array_key_exists('index_offset', $media->mediaData()) ? $media->mediaData()['index_offset'] : 0;
+        return $this->getForm($view, $archival, $replica, $components, $mets, $pdf, $pdfThumbnail, $indexed, $index_offset);
     }
 
     public function form(PhpRenderer $view, array $options = [])
@@ -72,7 +74,8 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
         $pdf = isset($data['pdf']) ? $data['pdf'] : '';
         $pdfThumbnail = isset($data['pdfThumbnail']) ? $data['pdfThumbnail'] : '';
         $indexed = isset($data['indexed']) ? $data['indexed'] : '';
-        $mediaData = ['archival' => $archival, 'replica' => $replica, 'components' => $components, 'mets' => $mets, 'pdf' => $pdf, 'pdfThumbnail' => $pdfThumbnail, 'indexed' => $indexed];
+        $index_offset = isset($data['index_offset']) ? $data['index_offset'] : 0;
+        $mediaData = ['archival' => $archival, 'replica' => $replica, 'components' => $components, 'mets' => $mets, 'pdf' => $pdf, 'pdfThumbnail' => $pdfThumbnail, 'indexed' => $indexed, 'index_offset' => $index_offset];
         $media->setData($mediaData);
         // attempt to get MIME for Media Type
         $ext = '';
@@ -141,7 +144,8 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
             $pdf = isset($thisMediaData['pdf']) ? $thisMediaData['pdf'] : '';
             $pdfThumbnail = isset($thisMediaData['pdfThumbnail']) ? $thisMediaData['pdfThumbnail'] : '';
             $indexed = isset($thisMediaData['indexed']) ? $thisMediaData['indexed'] : '';
-            $mediaData = ['archival' => $archival, 'replica' => $replica, 'components' => $components, 'mets' => $mets, 'pdf' => $pdf, 'pdfThumbnail' => $pdfThumbnail, 'indexed' => $indexed];
+            $index_offset = isset($thisMediaData['index_offset']) ? $thisMediaData['index_offset'] : 0;
+            $mediaData = ['archival' => $archival, 'replica' => $replica, 'components' => $components, 'mets' => $mets, 'pdf' => $pdf, 'pdfThumbnail' => $pdfThumbnail, 'indexed' => $indexed, 'index_offset' => $index_offset];
             $media->setData($mediaData);
             // attempt to get MIME for Media Type
             $ext = '';
@@ -181,7 +185,7 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
         }
     }
 
-    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $components = [], $mets = '', $pdf = '', $pdfThumbnail = '', $indexed = '')
+    protected function getForm(PhpRenderer $view, $archival = '', $replica = '', $components = [], $mets = '', $pdf = '', $pdfThumbnail = '', $indexed = '', $index_offset = 0)
     {
         $view->headScript()->appendFile($view->assetUrl('js/component-media.js', 'FITModule'), 'text/javascript');
         $view->headLink()->appendStylesheet($view->assetUrl('css/component-media.css', 'FITModule'));
@@ -231,6 +235,18 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
         $indexedInput->setUncheckedValue('');
         $indexedInput->setAttributes([
             'value' => $indexed,
+        ]);
+
+        $index_offsetInput = new Number('o:media[__index__][index_offset]');
+        $index_offsetInput->setOptions([
+            'label' => 'Index offset.',
+            'info' => 'The file/page numbering should start at 1, ie 001, but some materials were digitized with the first page as 000, so in those cases an offset of 1 needs to be set for full-text search to work correctly. Leave set as 0 unless an offset is needed.',
+        ]);
+        $index_offsetInput->setAttributes([
+            'value' => $index_offset,
+            'min'  => '0',
+            'max'  => '1',
+            'step' => '1',
         ]);
         $component_template = '<div class="component" data-key="__componentIndex__"><span class="remote-sortable-handle"></span><div class="input-body">';
         foreach ($this->component_parts as $component_part) {
@@ -292,6 +308,6 @@ class FITModuleRemoteCompoundObject implements MutableIngesterInterface
             </div>
             </div>
             END;
-        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($metsInput) . $view->formRow($pdfInput) . $view->formRow($pdfThumbnailInput) . $view->formRow($indexedInput) . $components_fieldSet . '<span id="remote-component-template" data-template="' . $view->escapeHtml($component_template) . '"></span>';
+        return $view->formRow($archivalInput) . $view->formRow($replicaInput) . $view->formRow($metsInput) . $view->formRow($pdfInput) . $view->formRow($pdfThumbnailInput) . $view->formRow($indexedInput) . $view->formRow($index_offsetInput) . $components_fieldSet . '<span id="remote-component-template" data-template="' . $view->escapeHtml($component_template) . '"></span>';
     }
 }

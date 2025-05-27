@@ -4,7 +4,7 @@ $translate = $this->plugin('translate');
 $escape = $this->plugin('escapeHtml');
 $hyperlink = $this->plugin('hyperlink');
 $assetUrl = $this->plugin('assetUrl');
-$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'mets' => 'METS file', 'pdf' => 'PDF file', 'pdfThumbnail' => 'PDF file thumbnail', 'indexed' => 'Indexed for full-text search?');
+$labels = array('archival' => 'Archival package', 'replica' => 'Replica package', 'mets' => 'METS file', 'pdf' => 'PDF file', 'pdfThumbnail' => 'PDF file thumbnail', 'indexed' => 'Indexed for full-text search?', 'index_offset' => 'Index offset');
 $component_parts = [
     ['name' => 'dcterms:title', 'label' => 'Component Title', 'type' => 'text'],
     ['name' => 'access', 'label' => 'Access URL', 'type' => 'url'],
@@ -70,6 +70,8 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
                     <div class="value">
                         <?php if ($key == "indexed"): ?>
                             <?php echo $value ? "True" : "False"; ?>
+                        <?php elseif ($key == "index_offset"): ?>
+                            <?php echo $value; ?>
                         <?php else: ?>
                             <?php if ($key == "replica"): ?>
                                 <small>S3 Glacier objects are only accessible upon request (please contact administrator for assistance)</small>

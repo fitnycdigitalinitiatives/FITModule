@@ -67,20 +67,12 @@ class Module extends AbstractModule
         parent::onBootstrap($event);
 
         $acl = $this->getServiceLocator()->get('Omeka\Acl');
-        $acl
-            ->allow(
-                null,
-                [
-                    'FITModule\Controller\Redirect',
-                ]
-            )
-            ->allow(
-                null,
-                [
-                    'FITModule\Controller\Site\SiteLogin',
-                ]
-            )
-        ;
+        $acl->allow(null, [
+            'FITModule\Controller\Redirect',
+            'FITModule\Controller\Site\SiteLogin',
+            'FITModule\Controller\IiifSearch\v1\IiifSearch',
+            // 'FITModule\Controller\IiifSearch\v2\IiifSearch'
+        ]);
     }
 
     /**
@@ -366,7 +358,15 @@ class Module extends AbstractModule
         } elseif (($primaryMedia = $item->primaryMedia()) && ($primaryMedia->ingester() == 'remoteFile') && ($thumbnailURL = $primaryMedia->mediaData()['thumbnail'])) {
             $view->headMeta()->setProperty('og:image', $thumbnailURL);
             $view->headMeta()->setProperty('twitter:image', $thumbnailURL);
-        } elseif (($primaryMedia = $item->primaryMedia()) && ($primaryMedia->thumbnailUrl('medium'))) {
+        } elseif (($primaryMedia = $item->primaryMedia()) && ($primaryMedia->ingester() == 'remoteCompoundObject')) {
+            foreach ($primaryMedia->mediaData()['components'] as $component) {
+                if ($thumbnailURL = $component['thumbnail']) {
+                    $view->headMeta()->setProperty('og:image', $thumbnailURL);
+                    $view->headMeta()->setProperty('twitter:image', $thumbnailURL);
+                    break;
+                }
+            }
+        } elseif (($primaryMedia = $item->primaryMedia()) && ($thumbnailURL = $primaryMedia->thumbnailUrl('medium'))) {
             $view->headMeta()->setProperty('og:image', $thumbnailURL);
             $view->headMeta()->setProperty('twitter:image', $thumbnailURL);
         }

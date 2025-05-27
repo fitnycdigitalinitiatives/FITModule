@@ -97,6 +97,7 @@ class IndexOcr extends AbstractJob
                     }
                     $doc->addField('ocr_text', $joined_mini_ocr_output);
                     $solrClient->addDocument($doc);
+                    // May not need to commit after each ingest if auto-commit is set in the index
                     // $solrClient->commit();
 
                     $media_data['indexed'] = 1;
