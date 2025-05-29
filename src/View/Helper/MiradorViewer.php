@@ -16,6 +16,27 @@ class MiradorViewer extends AbstractHelper
     public function __invoke(AbstractResourceEntityRepresentation $resource, $canvasID = '', array $options = [])
     {
         $view = $this->getView();
+        $defaultConfig = [
+            'workspace' => [
+                'showZoomControls' => true,
+            ],
+            'workspaceControlPanel' => [
+                'enabled' => false,
+            ],
+            'window' => [
+                'hideWindowTitle' => true,
+                'allowClose' => false,
+                'allowFullscreen' => true,
+                'allowMaximize' => false,
+                'allowWindowSideBar' => false,
+            ],
+            'thumbnailNavigation' => [
+                'defaultPosition' => 'far-right',
+            ],
+            'osdConfig' => [
+                'preserveViewport' => false,
+            ],
+        ];
         if ($resource instanceof ItemRepresentation) {
             $item = $resource;
             $manifestId = $view->url('iiif-presentation-3/item/manifest', ['item-id' => $item->id()], ['force_canonical' => true]);
@@ -58,6 +79,18 @@ class MiradorViewer extends AbstractHelper
             $mediaId = $media->id();
             $item = $media->item();
             $manifestId = $view->url('iiif-presentation-3/media/manifest', ['media-id' => $media->id()], ['force_canonical' => true]);
+            if ($media->mediaData()['indexed']) {
+                $defaultConfig['window']['sideBarPanel'] = 'search';
+                $defaultConfig['window']['allowWindowSideBar'] = true;
+                $defaultConfig['window']['panels'] = [
+                    'info' => false,
+                    'attribution' => false,
+                    'canvas' => false,
+                    'annotations' => false,
+                    'search' => true,
+                    'layers' => false,
+                ];
+            }
             $uniqueID = $mediaId;
             $authorization = '';
             $name = "Anonymous";
@@ -90,9 +123,15 @@ class MiradorViewer extends AbstractHelper
         } else {
             return;
         }
+        // Override any default config from $options
+        foreach ($options as $key => $subOptions) {
+            foreach ($subOptions as $subkey => $value) {
+                $defaultConfig[$key][$subkey] = $value;
+            }
+        }
         $view->headLink()->appendStylesheet($view->assetUrl('css/mirador.css', 'FITModule'));
         $view->headScript()->appendFile('https://unpkg.com/mirador@3.4.3/dist/mirador.min.js', 'text/javascript');
         $view->headScript()->appendFile($view->assetUrl('js/mirador.js', 'FITModule'), 'text/javascript');
-        return sprintf('<div class="mirador-viewer-frame"><div class="mirador-viewer" id="mirador-%s" data-manifest="%s" data-authorization="%s" data-canvas="%s" data-options=\'%s\'></div></div>', $uniqueID, $manifestId, $authorization, $canvas, json_encode($options));
+        return sprintf('<div class="mirador-viewer-frame"><div class="mirador-viewer" id="mirador-%s" data-manifest="%s" data-authorization="%s" data-canvas="%s" data-options=\'%s\'></div></div>', $uniqueID, $manifestId, $authorization, $canvas, json_encode($defaultConfig));
     }
 }

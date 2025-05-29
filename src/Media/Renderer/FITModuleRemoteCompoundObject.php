@@ -10,8 +10,6 @@ class FITModuleRemoteCompoundObject implements RendererInterface
 {
     public function render(PhpRenderer $view, MediaRepresentation $media, array $options = [])
     {
-        return $view->miradorViewer($media, null, ['window' => [
-            'hideWindowTitle' => true,
-        ]]);
+        return $view->miradorViewer($media);
     }
 }

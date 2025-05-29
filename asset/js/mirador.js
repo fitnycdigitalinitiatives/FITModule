@@ -5,42 +5,13 @@ $(document).ready(function () {
         const manifest = currentViewer.data('manifest');
         const authorization = currentViewer.data('authorization');
         const canvas = currentViewer.data('canvas');
-        const options = currentViewer.data('options');
-        loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, options);
+        const miradorConfig = currentViewer.data('options');
+        loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, miradorConfig);
     });
 
-    function loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, options) {
-        const miradorConfig = {
-            id: currentViewerID,
-            workspace: {
-                showZoomControls: true,
-            },
-            workspaceControlPanel: {
-                enabled: false
-            },
-            window: {
-                allowClose: false,
-                allowFullscreen: true,
-                allowMaximize: false,
-            },
-            windows: [
-                {
-                    manifestId: manifest,
-                    thumbnailNavigationPosition: 'far-right',
-                }
-            ],
-            osdConfig: {
-                preserveViewport: false,
-            }
-        };
-        if ('window' in options) {
-            Object.keys(options['window']).forEach(key => {
-                miradorConfig['window'][key] = options['window'][key];
-            });
-        }
-        if ('themes' in options) {
-            miradorConfig['themes'] = options['themes']
-        }
+    function loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, miradorConfig) {
+        miradorConfig['id'] = currentViewerID;
+        miradorConfig['windows'] = [{ manifestId: manifest }];
 
         if (authorization) {
             miradorConfig['requests'] = {
