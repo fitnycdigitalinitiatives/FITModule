@@ -17,7 +17,6 @@ use Laminas\ModuleManager\ModuleManager;
 use Laminas\Mvc\MvcEvent;
 use Laminas\Session\Container;
 use FITModule\Form\ConfigForm;
-use FITModule\Job\IndexOcr as Indexer;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
 use Omeka\Entity\Item;
@@ -498,7 +497,7 @@ class Module extends AbstractModule
                     'mediaIdList' => $mediaIdList,
                 ];
                 $jobDispatcher = $this->getServiceLocator()->get(\Omeka\Job\Dispatcher::class);
-                $jobDispatcher->dispatch(Indexer::class, $jobArgs);
+                $jobDispatcher->dispatch('FITModule\Job\IndexOcr', $jobArgs);
             }
         }
     }

@@ -6,7 +6,6 @@ use Omeka\Job\AbstractJob;
 use Aws\S3\S3MultiRegionClient;
 use SolrClient;
 use SolrInputDocument;
-use SolrServerException;
 use FITModule\Job\OcrConverter\EventKind;
 use FITModule\Job\OcrConverter\BoxType;
 use FITModule\Job\OcrConverter\ParseEvent;
