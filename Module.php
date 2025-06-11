@@ -497,7 +497,7 @@ class Module extends AbstractModule
                     'mediaIdList' => $mediaIdList,
                 ];
                 $jobDispatcher = $this->getServiceLocator()->get(\Omeka\Job\Dispatcher::class);
-                $jobDispatcher->dispatch('FITModule\Job\IndexOcr', $jobArgs);
+                $jobDispatcher->dispatch(Job\IndexOcr::class, $jobArgs);
             }
         }
     }
