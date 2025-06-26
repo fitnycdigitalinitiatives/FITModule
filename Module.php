@@ -138,6 +138,11 @@ class Module extends AbstractModule
     public function attachListeners(SharedEventManagerInterface $sharedEventManager)
     {
         $sharedEventManager->attach(
+            'Omeka\Controller\Admin\Item',
+            'view.advanced_search',
+            [$this, 'chosenItemSetsSearch']
+        );
+        $sharedEventManager->attach(
             'Omeka\Controller\Admin\Media',
             'view.show.sidebar',
             [$this, 'displayRemoteMetadataSidebar']
@@ -232,6 +237,13 @@ class Module extends AbstractModule
             $this,
             'redirectToSiteLogin',
         ]);
+    }
+
+    public function chosenItemSetsSearch(Event $event)
+    {
+        $view = $event->getTarget();
+        $view->headLink()->appendStylesheet($view->assetUrl('css/chosenItemSetsSearch.css', 'FITModule'));
+        $view->headScript()->appendFile($view->assetUrl('js/chosenItemSetsSearch.js', 'FITModule'), 'text/javascript', ['defer' => 'defer']);
     }
 
     public function displayRemoteMetadataSidebar(Event $event)
