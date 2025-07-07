@@ -541,7 +541,7 @@ class Module extends AbstractModule
                 ],
                 'attributes' => [
                     'value' => (bool) $siteSettings->get(
-                        'fit_module_sitelogin',
+                        'fit_module_loginpage',
                         false
                     ),
                 ],
