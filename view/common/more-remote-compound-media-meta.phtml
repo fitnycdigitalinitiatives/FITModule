@@ -94,7 +94,7 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
         <?php foreach ($mediaData['components'] as $key => $component): ?>
             <div class="component-group">
                 <div class="component-title-image">
-                    <img src="<?php echo $component['thumbnail'] ? $component['thumbnail'] : $assetUrl('thumbnails/image.png', 'Omeka'); ?>" alt="">
+                    <img loading="lazy" src="<?php echo $component['thumbnail'] ? $component['thumbnail'] : $assetUrl('thumbnails/image.png', 'Omeka'); ?>" alt="">
                     <h5>
                         <?php if ($component['dcterms:title']): ?>
                             <?php echo $escape($component['dcterms:title']); ?>
