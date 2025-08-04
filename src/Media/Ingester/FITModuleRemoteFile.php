@@ -108,6 +108,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
         if ($ext != '') {
             $builder = \Mimey\MimeMappingBuilder::create();
             $builder->add('image/jp2', 'jp2');
+            $builder->add('image/heif', 'heic');
             $builder->add('text/vtt', 'vtt');
             $builder->add('application/warc', 'warc');
             $builder->add('application/warc', 'warc.gz');
@@ -179,6 +180,7 @@ class FITModuleRemoteFile implements MutableIngesterInterface
             if ($ext != '') {
                 $builder = \Mimey\MimeMappingBuilder::create();
                 $builder->add('image/jp2', 'jp2');
+                $builder->add('image/heif', 'heic');
                 $builder->add('text/vtt', 'vtt');
                 $builder->add('application/warc', 'warc');
                 $builder->add('application/warc', 'warc.gz');
