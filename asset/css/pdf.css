@@ -41,19 +41,18 @@
 
 .pdfobject-container {
   position: relative;
-  display: block;
   width: 100%;
-  padding: 0;
-  overflow: hidden;
+  --viewer-aspect-ratio: 75%;
 }
 
 .pdfobject-container:before {
   display: block;
   content: "";
-  padding-top: 75%;
+  padding-top: var(--viewer-aspect-ratio);
 }
 
-.pdfobject-container embed, .pdfobject-container iframe {
+.pdfobject-container embed,
+.pdfobject-container iframe {
   position: absolute;
   top: 0;
   bottom: 0;

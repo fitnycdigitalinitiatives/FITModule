@@ -40,6 +40,8 @@ $(document).ready(function () {
         minZoomImageRatio: 1,
         maxZoomPixelRatio: 10,
         controlsFadeDelay: 1000,
+        showRotationControl: true,
+        navigatorDisplayRegionColor: '#0036f9',
         tileSources: {
           type: 'image',
           url: thumbnail,

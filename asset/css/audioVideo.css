@@ -1,26 +1,17 @@
-.embed-responsive {
+.embed-responsive-video {
   position: relative;
-  display: block;
   width: 100%;
-  padding: 0;
-  overflow: hidden;
+  --viewer-aspect-ratio: calc(9 / 16 * 100%);
   background: #000;
 }
 
-.embed-responsive::before {
+.embed-responsive-video:before {
   display: block;
   content: "";
+  padding-top: var(--viewer-aspect-ratio);
 }
 
-.embed-responsive-4by3:before {
-  padding-top: 75%;
-}
-
-.embed-responsive-video:before {
-  padding-top: calc(9 / 16 * 100%);
-}
-
-.embed-responsive .embed-responsive-item, .embed-responsive embed, .embed-responsive iframe, .embed-responsive object, .embed-responsive video {
+.embed-responsive-video>* {
   position: absolute;
   top: 0;
   bottom: 0;

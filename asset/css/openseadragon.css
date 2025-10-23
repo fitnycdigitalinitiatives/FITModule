@@ -1,10 +1,15 @@
 .openseadragon-frame {
   position: relative;
-  padding-bottom: 75%;
-  height: 0;
-  overflow: hidden;
   background-color: #000;
   border-radius: 4px;
+  width: 100%;
+  --viewer-aspect-ratio: 75%;
+}
+
+.openseadragon-frame::before {
+  display: block;
+  padding-top: var(--viewer-aspect-ratio);
+  content: "";
 }
 
 .openseadragon {

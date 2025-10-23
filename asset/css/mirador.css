@@ -1,8 +1,13 @@
 .mirador-viewer-frame {
     position: relative;
-    padding-bottom: 75%;
-    height: 0;
-    overflow: hidden;
+    width: 100%;
+    --viewer-aspect-ratio: 75%;
+}
+
+.mirador-viewer-frame::before {
+    display: block;
+    padding-top: var(--viewer-aspect-ratio);
+    content: "";
 }
 
 .mirador-viewer {
