@@ -80,7 +80,8 @@ class FITModuleRemoteFile implements RendererInterface
             $image =
                 '<div class="openseadragon-frame">
                 <div class="loader"></div>
-                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-thumbnail="' . $thumbnail . '" data-authtoken="' . $authorization . '" data-expiration="' . $expiration . '"></div>
+                <div class="openseadragon" id="iiif-' . $media->id() . '" data-infojson="' . $iiifInfoJson . '" data-thumbnail="' . $thumbnail . '" data-authtoken="' . $authorization . '" data-expiration="' . $expiration . '">
+                </div>
                 </div>
                 <noscript>
                     <p>' . $noscript . '</p>
