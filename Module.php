@@ -314,8 +314,9 @@ class Module extends AbstractModule
         $routeMatch = $this->getServiceLocator()->get('Application')->getMvcEvent()->getRouteMatch();
         if ($routeMatch->getParam('__SITE__')) {
             $value = $event->getTarget();
+            $propertyTerm = $value->property()->term();
             // Only check values that are dcterms:contributor
-            if ($value->property()->term() == "dcterms:contributor") {
+            if ($propertyTerm == "dcterms:contributor") {
                 if ($valueAnnotation = $value->valueAnnotation()) {
                     foreach ($valueAnnotation->values() as $term => $propertyData) {
                         if ($propertyData['property']->term() == "bf:role") {
@@ -352,6 +353,22 @@ class Module extends AbstractModule
                         }
                     }
                 }
+            } elseif ((($propertyTerm == "fitcore:colorpalette") || ($propertyTerm == "fitcore:predominantcolor")) && ($value->type() == 'literal') && preg_match('/^#?([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/', $value)) {
+                $valueString = $value->value();
+                if (!str_starts_with($valueString, "#")) {
+                    $valueString = '#' . $valueString;
+                }
+                $params = $event->getParams();
+                $html = $params['html'];
+                $swatch = "<div class='color-swatch' style='width:1em;height:1em;background-color:$valueString' aria-label='Color swatch of value $valueString' title='Color value: $valueString'></div>";
+                // case with no link tags
+                if (strpos($html, "<a") === false) {
+                    $html = $swatch;
+                } elseif (strpos($html, "<a") == 0) {
+                    $find = '/(<a.*?>).*?(<\/a>)/';
+                    $html = preg_replace($find, '$1' . $swatch . '$2', $html);
+                }
+                $event->setParam('html', "$html");
             }
         }
     }
