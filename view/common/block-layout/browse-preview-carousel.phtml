@@ -17,7 +17,8 @@ $escape = $this->plugin('escapeHtml');
         </div>
       <?php endif; ?>
       <?php if ($filter): ?>
-        <?php // check if solr/search module is activated by checking if the helper is present    ?>
+        <?php // check if solr/search module is activated by checking if the helper is present    
+        ?>
         <?php if ($this->getHelperPluginManager()->has('getFacetsForBrowse')): ?>
           <?php $facetsForBrowse = $this->getFacetsForBrowse($searchQuery, null); ?>
           <?php if ($facetsForBrowse && $facetsForBrowse['facets']): ?>
@@ -76,7 +77,7 @@ $escape = $this->plugin('escapeHtml');
 
         foreach ($this->resources as $resource):
           $heading = $headingTerm ? $resource->value($headingTerm, ['default' => $translate('[Untitled]')]) : $resource->displayTitle(null, ($filterLocale ? $lang : null));
-          ?>
+        ?>
           <div class="card border-0 px-sm-3 px-xl-4">
             <?php echo $resource->linkRaw($this->thumbnail($resource, 'medium', ['class' => 'browse-thumbnail shadow-sm', 'alt' => $heading]), null, ['class' => 'card-img', 'title' => $heading]); ?>
             <div class="card-body overflow-hidden">
@@ -94,6 +95,11 @@ $escape = $this->plugin('escapeHtml');
     if ($solrLink && ($this->getHelperPluginManager()->has('getSearchFormForSite'))) {
       $url = $solrLink;
     } else {
+      $query = $this->query;
+      // Add page to item-sets so pagination works correctly
+      if ($this->resourceType == "item-set") {
+        $query['page'] = 1;
+      }
       $url = $this->url(
         'site/resource',
         ['controller' => $this->resourceType, 'action' => 'browse'],
@@ -101,8 +107,6 @@ $escape = $this->plugin('escapeHtml');
         true
       );
     }
-    $query = $this->query;
-    $query["page"] = 1;
     echo $this->hyperlink(
       $this->linkText,
       $url,
