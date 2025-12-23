@@ -36,6 +36,30 @@ class MiradorViewer extends AbstractHelper
             'osdConfig' => [
                 'preserveViewport' => false,
             ],
+            'themes' => [
+                'dark' => [
+                    'palette' => [
+                        'type' => 'dark',
+                        'primary' => [
+                            'main' => '#0036f9',
+                        ],
+                        'secondary' => [
+                            'main' => '#0036f9',
+                        ]
+                    ]
+                ],
+                'light' => [
+                    'palette' => [
+                        'type' => 'light',
+                        'primary' => [
+                            'main' => '#0036f9',
+                        ],
+                        'secondary' => [
+                            'main' => '#0036f9',
+                        ]
+                    ]
+                ]
+            ]
         ];
         if ($resource instanceof ItemRepresentation) {
             $item = $resource;

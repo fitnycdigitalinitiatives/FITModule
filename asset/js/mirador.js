@@ -13,6 +13,10 @@ $(document).ready(function () {
         miradorConfig['id'] = currentViewerID;
         miradorConfig['windows'] = [{ manifestId: manifest }];
 
+        if (currentViewer.closest('.mirador-dark-theme').length > 0) {
+            miradorConfig['selectedTheme'] = 'dark';
+        };
+
         if (authorization) {
             miradorConfig['requests'] = {
                 preprocessors: [
