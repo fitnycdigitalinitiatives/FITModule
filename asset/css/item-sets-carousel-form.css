@@ -1,0 +1,40 @@
+.attachment.slide {
+    flex-wrap: wrap;
+    align-items: start;
+    padding: 6px;
+}
+
+.attachment-column-l {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+    padding-top: 8px;
+}
+
+.attachment-column-r {
+    flex: 1 0 0;
+    width: 100%;
+    max-width: 100%;
+}
+
+.asset-container {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.slide-info {
+    margin: 0;
+    font-size: 12px;
+}
+
+.attachments.slides #slide-asset {
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+#asset-options .sidebar-content.slide .page-link,
+#asset-options .sidebar-content.slide .alternative-link-name,
+#asset-options .sidebar-content.slide .description {
+    display: none;
+}

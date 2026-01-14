@@ -1,0 +1,49 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+$api = $this->plugin('api');
+?>
+
+<?php if ($attachments): ?>
+    <div id="collectionCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <?php for ($i = 1; $i <= count($attachments); $i++) : ?>
+                <button type="button" data-bs-target="#collectionCarousel" data-bs-slide-to="<?php echo ($i - 1); ?>" class="<?php echo ($i == 1) ? 'active' : ''; ?>" aria-current="<?php echo ($i == 1) ? 'true' : 'false'; ?>" aria-label="Slide <?php echo $i; ?>"></button>
+            <?php endfor; ?>
+        </div>
+        <div class="carousel-inner">
+            <?php foreach ($attachments as $key => $attachment): ?>
+                <?php
+                $asset = $attachment['asset'];
+                $assetURL = $asset->assetUrl();
+                $item_set_id = $attachment['item_set_id'];
+                $item_set = $api->read('item_sets', $item_set_id)->getContent();
+                $slide_title = $attachment['slideTitle'] ? $attachment['slideTitle'] : $item_set->displayTitle();
+                $assetAlt = $asset->altText() ? $asset->altText() : $slide_title;
+                $item_set_url = $item_set->url();
+                $caption = $attachment['caption']
+                ?>
+                <div class="carousel-item <?php echo ($key === array_key_first($attachments)) ? 'active' : ''; ?>">
+                    <?php if (str_ends_with($assetURL, '.mp4')): ?>
+                        <video autoplay="" loop="" muted="" class="d-block w-100">
+                            <source src="<?php echo $assetURL; ?>">
+                        </video>
+                    <?php else: ?>
+                        <img src="<?php echo $assetURL; ?>" class="d-block w-100" alt="<?php echo $escape($assetAlt); ?>">
+                    <?php endif; ?>
+                    <div class="carousel-caption d-none d-md-block">
+                        <h5><a href="<?php echo $item_set_url; ?>"><?php echo $escape($slide_title); ?></a></h5>
+                        <p><?php echo $escape($caption); ?></p>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#collectionCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#collectionCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+<?php endif; ?>

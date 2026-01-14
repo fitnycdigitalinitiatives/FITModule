@@ -23,9 +23,10 @@ return [
     ],
     'block_layouts' => [
         'invokables' => [
+            'browsePreview' => Site\BlockLayout\BrowsePreview::class,
             'browsePreviewCarousel' => Site\BlockLayout\BrowsePreviewCarousel::class,
             'imageVideoTransition' => Site\BlockLayout\ImageVideoTransition::class,
-            'itemShowcaseHeroCarousel' => Site\BlockLayout\ItemShowcaseHeroCarousel::class,
+            'itemSetShowcaseHeroCarousel' => Site\BlockLayout\ItemSetShowcaseHeroCarousel::class,
             'assetHero' => Site\BlockLayout\AssetHero::class,
             'designersBrowse' => Site\BlockLayout\DesignersBrowse::class,
         ],
@@ -52,6 +53,23 @@ return [
         ],
         'aliases' => [
             'application/pdf' => 'pdf',
+        ],
+    ],
+    'api_assets' => [
+        'allowed_media_types' => [
+            'image/jpeg',
+            'image/png',
+            'image/gif',
+            'image/webp',
+            'video/mp4',
+        ],
+        'allowed_extensions' => [
+            'jpeg',
+            'jpg',
+            'png',
+            'gif',
+            'webp',
+            'mp4',
         ],
     ],
     'view_helpers' => [

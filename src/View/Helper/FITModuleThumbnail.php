@@ -25,9 +25,30 @@ class FITModuleThumbnail extends AbstractHtmlElement
         $thumbnail = null;
         if ($attached) {
             $thumbnail = $representation->thumbnail();
+            // Check for video assets
+            if (($representation->getControllerName() == "asset") && str_ends_with($thumbnail->assetUrl(), ".mp4")) {
+                $primaryMedia = '';
+                $services = $representation->getServiceLocator();
+                $thumbnailManager = $services->get('Omeka\File\ThumbnailManager');
+                $fallbacks = $thumbnailManager->getFallbacks();
+                $fallback = $fallbacks["Moving Image"];
+                $assetUrl = $this->getView()->plugin('assetUrl');
+                $attribs['src'] = $assetUrl($fallback[0], $fallback[1], true);
+                // Trigger attribs event
+                $params = compact('attribs', 'thumbnail', 'primaryMedia', 'representation', 'type');
+                $params = $triggerHelper('view_helper.thumbnail.attribs', $params, true);
+                $attribs = $params['attribs'];
+
+                if (!isset($attribs['alt'])) {
+                    $attribs['alt'] = $representation->altText();
+                }
+
+                return sprintf('<img%s>', $this->htmlAttribs($attribs));
+            }
         }
         if (($representation->getControllerName() == 'item-set') && array_key_exists('__SITE__', $view->params()->fromRoute())) {
-            $item = $view->plugin('api')->searchOne('items', array('item_set_id' => $representation->id(), 'site_id' => $view->vars()->site->id()))->getContent();
+            $site_id = $view->vars()->site ? $view->vars()->site->id() : $view->currentSite()->id();
+            $item = $view->plugin('api')->searchOne('items', array('item_set_id' => $representation->id(), 'site_id' => $site_id))->getContent();
             if ($item) {
                 $primaryMedia = $item->primaryMedia();
             } else {

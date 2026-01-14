@@ -1,0 +1,163 @@
+<?php
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+$attachmentRowTemplate = '<div class="attachment slide new">
+        <div class="attachment-column-l">
+            <span class="sortable-handle"></span>
+        </div>
+        <div class="attachment-column-r">
+            <div class="asset-container">
+                <div class="asset-title"><div class="thumbnail"></div>' . $translate('No asset selected') . '</div>
+                <ul class="actions">
+                    <li>' . $this->hyperlink('', '#', ['class' => 'asset-options-configure o-icon-configure button', 'title' => $translate('Open asset options'), 'aria-label' => $translate('Open asset options')]) . '</li>
+                    <li class="delete">' . $this->hyperlink('', '#', ['class' => 'o-icon-delete button', 'title' => $translate('Delete attachment'), 'aria-label' => $translate('Delete attachment')]) . '</li>
+                    <li class="undo">' . $this->hyperlink('', '#', ['class' => 'o-icon-undo button', 'title' => $translate('Restore attachment'), 'aria-label' => $translate('Restore attachment')]) . '</li>
+                </ul>
+            </div>
+            <div class="field required">
+                <div class="field-meta">
+                    <label for="o:block[__blockIndex__][o:data][__attachmentIndex__][item_set_id]">
+                        Item Set
+                    </label>
+                </div>
+                <div class="inputs">
+                    ' . html_entity_decode($this->itemSetSelect([
+    'name' => 'o:block[__blockIndex__][o:data][__attachmentIndex__][item_set_id]',
+    'options' => [
+        'empty_option' => '',
+        'disable_group_by_owner' => true,
+        'query' => ['site_id' => $siteId],
+    ],
+    'attributes' => [
+        'class' => 'chosen-select',
+        'data-placeholder' => 'Choose an item set', // @translate
+    ],
+])) . '
+                </div>
+            </div>
+            <div class="field">
+                <div class="field-meta">
+                    <label for="o:block[__blockIndex__][o:data][__attachmentIndex__][slideTitle]">
+                        Slide Title
+                    </label>
+                    <a href="#" class="expand" aria-label="Collapse" title="Collapse"></a>
+                    <div class="collapsible">
+                        <div class="field-description">Title for Carousel Slide, if blank title of collection will be used.</div>
+                    </div>
+                </div>
+                <div class="inputs">
+                    <input type="text" name="o:block[__blockIndex__][o:data][__attachmentIndex__][slideTitle]">
+                </div>
+            </div>
+            <div class="field">
+                <div class="field-meta">
+                    <label for="o:block[__blockIndex__][o:data][__attachmentIndex__][caption]">
+                        Caption
+                    </label>
+                    <a href="#" class="expand" aria-label="Collapse" title="Collapse"></a>
+                    <div class="collapsible">
+                        <div class="field-description">Title for Carousel Slide, if blank title of collection will be used.</div>
+                    </div>
+                </div>
+                <div class="inputs">
+                    <input type="text" name="o:block[__blockIndex__][o:data][__attachmentIndex__][caption]">
+                </div>
+            </div> 
+        </div>
+        <input type="hidden" class="asset asset-option" name="o:block[__blockIndex__][o:data][__attachmentIndex__][id]" disabled>
+    </div>';
+?>
+<div class="asset-attachments-form" data-site-id="<?php echo $escape($siteId); ?>" data-page-api-url="<?php echo $escape($apiUrl); ?>">
+    <a href="#" class="collapse" aria-label="<?php echo $translate('Collapse'); ?>" title="<?php echo $translate('Collapse'); ?>">
+        <h4><?php echo $translate('Slides'); ?></h4>
+    </a>
+    <div class="attachments collapsible slides" data-template="<?php echo $escape($attachmentRowTemplate); ?>">
+        <?php if ($block !== ''): ?>
+            <?php foreach ($attachments as $attachment): ?>
+                <div class="attachment slide">
+                    <div class="attachment-column-l">
+                        <span class="sortable-handle"></span>
+                    </div>
+                    <?php
+                    $asset = $attachment['asset'];
+                    $assetId = ($asset) ? $escape($asset->id()) : '';
+                    $item_set_id = (array_key_exists('item_set_id', $attachment)) ? $attachment['item_set_id'] : "";
+                    $slideTitle = (array_key_exists('slideTitle', $attachment)) ? $attachment['slideTitle'] : "";
+                    $caption = (array_key_exists('caption', $attachment)) ? $attachment['caption'] : "";
+                    ?>
+                    <div class="attachment-column-r">
+                        <div class="asset-container">
+                            <?php if ($asset): ?>
+                                <?php $thumbnail = '<div class="thumbnail">' . $this->thumbnail($asset, 'square') . '</div>'; ?>
+                                <div class="asset-title"><?php echo $thumbnail; ?><?php echo $escape($asset->name()); ?></div>
+                            <?php else: ?>
+                                <div class="asset-title">
+                                    <div class="thumbnail"></div><?php echo $translate('No asset selected'); ?>
+                                </div>
+                            <?php endif; ?>
+                            <ul class="actions">
+                                <li><?php echo $this->hyperlink('', '#', ['class' => 'asset-options-configure o-icon-configure button', 'title' => $translate('Open asset options'), 'aria-label' => $translate('Open asset options')]); ?></li>
+                                <li class="delete"><?php echo $this->hyperlink('', '#', ['class' => 'o-icon-delete button', 'title' => $translate('Delete attachment'), 'aria-label' => $translate('Delete attachment')]); ?></li>
+                                <li class="undo"><?php echo $this->hyperlink('', '#', ['class' => 'o-icon-undo button', 'title' => $translate('Restore attachment'), 'aria-label' => $translate('Restore attachment')]); ?></li>
+                            </ul>
+                        </div>
+                        <div class="field required">
+                            <div class="field-meta">
+                                <label for="o:block[__blockIndex__][o:data][__attachmentIndex__][item_set_id]">
+                                    Item Set
+                                </label>
+                            </div>
+                            <div class="inputs">
+                                <?php echo $this->itemSetSelect([
+                                    'name' => 'o:block[__blockIndex__][o:data][__attachmentIndex__][item_set_id]',
+                                    'options' => [
+                                        'empty_option' => '',
+                                        'disable_group_by_owner' => true,
+                                        'query' => ['site_id' => $siteId],
+                                    ],
+                                    'attributes' => [
+                                        'class' => 'chosen-select',
+                                        'value' => $item_set_id,
+                                        'data-placeholder' => 'Choose an item set', // @translate
+                                    ],
+                                ]); ?>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <div class="field-meta">
+                                <label for="o:block[__blockIndex__][o:data][__attachmentIndex__][slideTitle]">
+                                    Slide Title
+                                </label>
+                                <a href="#" class="expand" aria-label="Collapse" title="Collapse"></a>
+                                <div class="collapsible">
+                                    <div class="field-description">Title for Carousel Slide, if blank title of collection will be used.</div>
+                                </div>
+                            </div>
+                            <div class="inputs">
+                                <input type="text" name="o:block[__blockIndex__][o:data][__attachmentIndex__][slideTitle]" value="<?php echo $slideTitle; ?>">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <div class="field-meta">
+                                <label for="o:block[__blockIndex__][o:data][__attachmentIndex__][caption]">
+                                    Caption
+                                </label>
+                                <a href="#" class="expand" aria-label="Collapse" title="Collapse"></a>
+                                <div class="collapsible">
+                                    <div class="field-description">Title for Carousel Slide, if blank title of collection will be used.</div>
+                                </div>
+                            </div>
+                            <div class="inputs">
+                                <input type="text" name="o:block[__blockIndex__][o:data][__attachmentIndex__][caption]" value="<?php echo $caption; ?>">
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" class="asset" name="o:block[__blockIndex__][o:data][__attachmentIndex__][id]" value="<?php echo $assetId; ?>">
+                </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+        <button id="slide-asset" type="button" class="add-asset-attachment" data-sidebar-content-url="<?php echo $escape($this->url('admin/default', ['controller' => 'asset', 'action' => 'sidebar-select'])); ?>"><?php echo $translate('Add slide'); ?></button>
+        <p class="slide-info">To add a slide, first select an image asset to associate with the slide and then choose an item set and caption.</p>
+    </div>
+</div>
