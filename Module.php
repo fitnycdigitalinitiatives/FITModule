@@ -19,9 +19,6 @@ use Laminas\Session\Container;
 use FITModule\Form\ConfigForm;
 use Aws\DynamoDb\DynamoDbClient;
 use Aws\DynamoDb\Marshaler;
-use Omeka\Entity\Item;
-use Omeka\Entity\Media;
-use Omeka\Api\Exception\NotFoundException;
 
 class Module extends AbstractModule
 {
@@ -71,8 +68,6 @@ class Module extends AbstractModule
         $acl->allow(null, [
             'FITModule\Controller\Redirect',
             'FITModule\Controller\Site\SiteLogin',
-            'FITModule\Controller\IiifSearch\v1\IiifSearch',
-            // 'FITModule\Controller\IiifSearch\v2\IiifSearch'
         ]);
     }
 
@@ -99,12 +94,6 @@ class Module extends AbstractModule
             'iiif_secret_key' => $settings->get('fit_module_iiif_secret_key'),
             'aws_dynamodb_table' => $settings->get('fit_module_aws_dynamodb_table'),
             'aws_dynamodb_table_region' => $settings->get('fit_module_aws_dynamodb_table_region'),
-            'solr_hostname' => $settings->get('fit_module_solr_hostname'),
-            'solr_port' => $settings->get('fit_module_solr_port'),
-            'solr_path' => $settings->get('fit_module_solr_path'),
-            'solr_connection' => $settings->get('fit_module_solr_connection'),
-            'solr_login' => $settings->get('fit_module_solr_login'),
-            'solr_password' => $settings->get('fit_module_solr_password'),
         ]);
         return $renderer->formCollection($form);
     }
@@ -127,12 +116,6 @@ class Module extends AbstractModule
         $settings->set('fit_module_iiif_secret_key', $formData['iiif_secret_key']);
         $settings->set('fit_module_aws_dynamodb_table', $formData['aws_dynamodb_table']);
         $settings->set('fit_module_aws_dynamodb_table_region', $formData['aws_dynamodb_table_region']);
-        $settings->set('fit_module_solr_hostname', $formData['solr_hostname']);
-        $settings->set('fit_module_solr_port', $formData['solr_port']);
-        $settings->set('fit_module_solr_path', $formData['solr_path']);
-        $settings->set('fit_module_solr_connection', $formData['solr_connection']);
-        $settings->set('fit_module_solr_login', $formData['solr_login']);
-        $settings->set('fit_module_solr_password', $formData['solr_password']);
         return true;
     }
 
@@ -202,36 +185,6 @@ class Module extends AbstractModule
             'Omeka\Api\Adapter\MediaAdapter',
             'api.update.post',
             [$this, 'updateVisibility']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Api\Adapter\ItemAdapter',
-            'api.create.post',
-            [$this, 'indexOCR']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Api\Adapter\ItemAdapter',
-            'api.update.post',
-            [$this, 'indexOCR']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Api\Adapter\MediaAdapter',
-            'api.create.post',
-            [$this, 'indexOCR']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Api\Adapter\MediaAdapter',
-            'api.update.post',
-            [$this, 'indexOCR']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Api\Adapter\ItemAdapter',
-            'api.delete.pre',
-            [$this, 'deleteOCRindex']
-        );
-        $sharedEventManager->attach(
-            'Omeka\Api\Adapter\MediaAdapter',
-            'api.delete.pre',
-            [$this, 'deleteOCRindex']
         );
         // Attach to restricted site setting to the site settings form
         $sharedEventManager->attach(
@@ -499,87 +452,6 @@ class Module extends AbstractModule
                 } catch (Exception $e) {
                     throw new \Exception("Unable to write visibility to DynamoDB. Please contact an administrator. " . $e->getMessage(), 1);
                 }
-            }
-        }
-    }
-
-    /**
-     * Index OCR attached to remote compound objects.
-     *
-     * @param Event $event
-     */
-    public function indexOCR(Event $event)
-    {
-        $settings = $this->getServiceLocator()->get('Omeka\Settings');
-        if ($settings->get('fit_module_solr_connection')) {
-            $response = $event->getParam('response');
-            $entity = $response->getContent();
-            $mediaEntityList = [];
-            $mediaIdList = [];
-            if ($entity instanceof Item) {
-                $mediaEntityList = $entity->getMedia();
-            } elseif ($entity instanceof Media) {
-                $mediaEntityList = [$entity];
-            }
-
-            foreach ($mediaEntityList as $mediaEntity) {
-                if (($mediaEntity->getIngester() == 'remoteCompoundObject') && ($data = $mediaEntity->getData()) && (array_key_exists('indexed', $data)) && (!$data['indexed']) && $data['components']) {
-                    foreach ($data['components'] as $component) {
-                        if ($component['ocr']) {
-                            $mediaIdList[] = $mediaEntity->getId();
-                            break;
-                        }
-                    }
-                }
-            }
-            if ($mediaIdList) {
-                $jobArgs = [
-                    'mediaIdList' => $mediaIdList,
-                ];
-                $jobDispatcher = $this->getServiceLocator()->get(\Omeka\Job\Dispatcher::class);
-                $jobDispatcher->dispatch('FITModule\Job\IndexOcr', $jobArgs);
-            }
-        }
-    }
-
-    /**
-     * Deleted indexed OCR attached to remote compound objects.
-     *
-     * @param Event $event
-     */
-    public function deleteOCRindex(Event $event)
-    {
-        $serviceLocator = $this->getServiceLocator();
-        $settings = $serviceLocator->get('Omeka\Settings');
-        if ($settings->get('fit_module_solr_connection')) {
-            $request = $event->getParam('request');
-            $api = $serviceLocator->get('Omeka\ApiManager');
-            try {
-                $resource = $api->read($request->getResource(), $request->getId())->getContent();
-            } catch (NotFoundException $e) {
-                return;
-            }
-
-            $mediaList = [];
-            $mediaIdList = [];
-            if ($resource->getControllerName() == 'item') {
-                $mediaList = $resource->media();
-            } elseif ($resource->getControllerName() == 'media') {
-                $mediaList = [$resource];
-            }
-
-            foreach ($mediaList as $media) {
-                // Check if the media was indexed
-                if (($media->ingester() == 'remoteCompoundObject') && ($data = $media->mediaData()) && (array_key_exists('indexed', $data)) && ($data['indexed'])) {
-                    $mediaIdList[] = $media->id();
-                }
-            }
-            if ($mediaIdList) {
-                $jobArgs = [
-                    'mediaIdList' => $mediaIdList,
-                ];
-                $jobDispatcher = $this->getServiceLocator()->get(\Omeka\Job\Dispatcher::class);
-                $jobDispatcher->dispatch('FITModule\Job\DeleteOCRindex', $jobArgs);
             }
         }
     }

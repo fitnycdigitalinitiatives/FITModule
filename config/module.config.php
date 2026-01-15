@@ -7,8 +7,6 @@ use Laminas\Router\Http;
 return [
     'controllers' => [
         'invokables' => [
-            'FITModule\Controller\IiifSearch\v1\IiifSearch' => Controller\IiifSearch\v1\IiifSearchController::class,
-            // 'FITModule\Controller\IiifSearch\v2\IiifSearch' => Controller\IiifSearch\v2\IiifSearchController::class,
             'FITModule\Controller\Redirect' => Controller\RedirectController::class,
             'Omeka\Controller\Site\Index' => Controller\Site\IndexController::class,
         ],
@@ -97,62 +95,6 @@ return [
     ],
     'router' => [
         'routes' => [
-            'iiif-search-1' => [
-                'type' => 'Literal',
-                'options' => [
-                    'route' => '/iiif-search-1',
-                    'defaults' => [
-                        '__NAMESPACE__' => 'FITModule\Controller\IiifSearch\v1',
-                        'controller' => 'IiifSearchController',
-                        'action' => 'index',
-                    ],
-                ],
-                'may_terminate' => true,
-                'child_routes' => [
-                    'media' => [
-                        'type' => 'Segment',
-                        'options' => [
-                            'route' => '/media/:media-id',
-                            'defaults' => [
-                                '__NAMESPACE__' => 'FITModule\Controller\IiifSearch\v1',
-                                'controller' => 'IiifSearchController',
-                                'action' => 'search',
-                            ],
-                        ],
-                        'constraints' => [
-                            'media-id' => '\d+',
-                        ]
-                    ],
-                ],
-            ],
-            // 'iiif-search-2' => [
-            //     'type' => 'Literal',
-            //     'options' => [
-            //         'route' => '/iiif-search-2',
-            //         'defaults' => [
-            //             '__NAMESPACE__' => 'FITModule\Controller\IiifSearch\v2',
-            //             'controller' => 'IiifSearchController',
-            //             'action' => 'index',
-            //         ],
-            //     ],
-            //     'may_terminate' => true,
-            //     'child_routes' => [
-            //         'media' => [
-            //             'type' => 'Segment',
-            //             'options' => [
-            //                 'route' => '/media/:media-id',
-            //                 'defaults' => [
-            //                     '__NAMESPACE__' => 'FITModule\Controller\IiifSearch\v2',
-            //                     'controller' => 'IiifSearchController',
-            //                     'action' => 'search',
-            //                 ],
-            //             ],
-            //             'constraints' => [
-            //                 'media-id' => '\d+',
-            //             ]
-            //         ],
-            //     ],
-            // ],
             'site' => [
                 'child_routes' => [
                     'iiif-viewer' => [
