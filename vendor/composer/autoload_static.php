@@ -66,7 +66,7 @@ class ComposerStaticInitc5356c8ad607bd20f35975543c8306f6
         ),
         'Mimey\\' => 
         array (
-            0 => __DIR__ . '/..' . '/ralouphie/mimey/src',
+            0 => __DIR__ . '/..' . '/xantios/mimey/src',
         ),
         'JmesPath\\' => 
         array (

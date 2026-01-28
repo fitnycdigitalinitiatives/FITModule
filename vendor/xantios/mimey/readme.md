@@ -3,12 +3,11 @@ Mimey
 
 PHP package for converting file extensions to MIME types and vice versa.
 
-[![Build Status](https://travis-ci.org/ralouphie/mimey.svg?branch=master)](https://travis-ci.org/ralouphie/mimey)
-[![Coverage Status](https://coveralls.io/repos/ralouphie/mimey/badge.svg?branch=master&service=github)](https://coveralls.io/github/ralouphie/mimey?branch=master)
-[![Code Climate](https://codeclimate.com/github/ralouphie/mimey/badges/gpa.svg)](https://codeclimate.com/github/ralouphie/mimey)
-[![Latest Stable Version](https://img.shields.io/packagist/v/ralouphie/mimey.svg)](https://packagist.org/packages/ralouphie/mimey)
-[![Downloads per Month](https://img.shields.io/packagist/dm/ralouphie/mimey.svg)](https://packagist.org/packages/ralouphie/mimey)
-[![License](https://img.shields.io/packagist/l/ralouphie/mimey.svg)](https://packagist.org/packages/ralouphie/mimey)
+[![Build Status](https://www.travis-ci.com/Xantios/mimey.svg?branch=master)](https://travis-ci.org/xantios/mimey)
+[![Maintainability](https://api.codeclimate.com/v1/badges/1f8e322d2c73a16a1830/maintainability)](https://codeclimate.com/github/Xantios/mimey/)
+[![Latest Stable Version](https://img.shields.io/packagist/v/xantios/mimey.svg)](https://packagist.org/packages/xantios/mimey)
+[![Downloads per Month](https://img.shields.io/packagist/dm/xantios/mimey.svg)](https://packagist.org/packages/xantios/mimey)
+[![License](https://img.shields.io/packagist/l/xantios/mimey.svg)](https://packagist.org/packages/ralouphie/mimey)
 
 This package uses [httpd][]'s [mime.types][] to generate a mapping of file extension to MIME type and the other way around.
 
@@ -39,7 +38,7 @@ It's rare, but some extensions have multiple MIME types:
 $mimes->getAllMimeTypes('wmz'); // array('application/x-ms-wmz', 'application/x-msmetafile')
 ```
 
-However, there are many MIME types have multiple extensions:
+However, there are many MIME types that have multiple extensions:
 
 ```php
 // Get all extensions for a MIME type:
@@ -97,10 +96,22 @@ $builder = \Mimey\MimeMappingBuilder::load($cache_file_path);
 $mimes = new \Mimey\MimeTypes($builder->getMapping());
 ```
 
+#### Programmatically or manually add custom type mappings
+
+You can rename the included `mime.types.custom.example` to `mime.types.custom` and recompile. the custom entries always take precedence over built-in defitions.
+
+#### Updating (advanced)
+
+In case there is a update in the httpd defined types you can run `bin/pull.php` in this repo to pull new mime files and compile them
+
 ## Install
 
 Compatible with PHP >= 5.4.
 
 ```
-composer require ralouphie/mimey
+composer require xantios/mimey
 ```
+
+## Credits
+
+Original version created by rodolfoberrios

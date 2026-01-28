@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => '__root__',
-        'pretty_version' => 'dev-master',
-        'version' => 'dev-master',
-        'reference' => '85eda3f47802aed7cc8f7cab2c6918df5a92797a',
+        'pretty_version' => '1.0.0+no-version-set',
+        'version' => '1.0.0.0',
+        'reference' => null,
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -11,9 +11,9 @@
     ),
     'versions' => array(
         '__root__' => array(
-            'pretty_version' => 'dev-master',
-            'version' => 'dev-master',
-            'reference' => '85eda3f47802aed7cc8f7cab2c6918df5a92797a',
+            'pretty_version' => '1.0.0+no-version-set',
+            'version' => '1.0.0.0',
+            'reference' => null,
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -112,15 +112,6 @@
             'aliases' => array(),
             'dev_requirement' => false,
         ),
-        'ralouphie/mimey' => array(
-            'pretty_version' => '2.1.0',
-            'version' => '2.1.0.0',
-            'reference' => '8f74e6da73f9df7bd965e4e123f3d8fb9acb89ba',
-            'type' => 'library',
-            'install_path' => __DIR__ . '/../ralouphie/mimey',
-            'aliases' => array(),
-            'dev_requirement' => false,
-        ),
         'symfony/deprecation-contracts' => array(
             'pretty_version' => 'v2.5.1',
             'version' => '2.5.1.0',
@@ -136,6 +127,15 @@
             'reference' => '9344f9cb97f3b19424af1a21a3b0e75b0a7d8d7e',
             'type' => 'library',
             'install_path' => __DIR__ . '/../symfony/polyfill-mbstring',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'xantios/mimey' => array(
+            'pretty_version' => 'v2.2.0',
+            'version' => '2.2.0.0',
+            'reference' => '8cb6f0c29b8eadde38777ed947847f4253c00b60',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../xantios/mimey',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
