@@ -6,12 +6,17 @@ $(document).ready(function () {
         const authorization = currentViewer.data('authorization');
         const canvas = currentViewer.data('canvas');
         const miradorConfig = currentViewer.data('options');
-        loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, miradorConfig);
+        const defaultSearchQuery = currentViewer.data('search');
+        loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, miradorConfig, defaultSearchQuery);
     });
 
-    function loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, miradorConfig) {
+    function loadViewer(currentViewer, currentViewerID, manifest, authorization, canvas, miradorConfig, defaultSearchQuery) {
         miradorConfig['id'] = currentViewerID;
         miradorConfig['windows'] = [{ manifestId: manifest }];
+        if (defaultSearchQuery) {
+            miradorConfig['windows'][0]['defaultSearchQuery'] = defaultSearchQuery;
+            miradorConfig['window']['switchCanvasOnSearch'] = false;
+        }
 
         if (currentViewer.closest('.mirador-dark-theme').length > 0) {
             miradorConfig['selectedTheme'] = 'dark';
@@ -28,7 +33,7 @@ $(document).ready(function () {
                 'Authorization': `Bearer ${authorization}`
             };
         } else {
-            miradorConfig['osdConfig']['crossOriginPolicy'] = 'Anonymous'
+            miradorConfig['osdConfig']['crossOriginPolicy'] = 'Anonymous';
         }
         if (canvas) {
             miradorConfig['windows'][0]['canvasId'] = canvas;
@@ -41,6 +46,17 @@ $(document).ready(function () {
                     // Element is visible
                     if (!thisViewer) {
                         thisViewer = Mirador.viewer(miradorConfig);
+                        // Check if default search query has been set to switch switchCanvasOnSearch back to true
+                        if (defaultSearchQuery) {
+                            const unsubscribe = thisViewer.store.subscribe(() => {
+                                if (Object.keys(thisViewer.store.getState()['viewers'])[0] && thisViewer.store.getState()['viewers'][Object.keys(thisViewer.store.getState()['viewers'])[0]]) {
+                                    unsubscribe();
+                                    const miradorConfigUpdated = structuredClone(miradorConfig);
+                                    miradorConfigUpdated['window']['switchCanvasOnSearch'] = true;
+                                    thisViewer.store.dispatch(Mirador.actions.updateConfig(miradorConfigUpdated));
+                                }
+                            })
+                        }
                     }
                 }
                 else {

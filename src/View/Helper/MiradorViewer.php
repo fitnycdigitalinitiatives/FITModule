@@ -13,7 +13,7 @@ class MiradorViewer extends AbstractHelper
     /**
      * View Helper for rendering Mirador Viewer with authetication option to start at specific canvas
      */
-    public function __invoke(AbstractResourceEntityRepresentation $resource, $canvasID = '', array $options = [])
+    public function __invoke(AbstractResourceEntityRepresentation $resource, $canvasID = '', array $options = [], $defaultSearchQuery = '')
     {
         $view = $this->getView();
         $defaultConfig = [
@@ -156,6 +156,6 @@ class MiradorViewer extends AbstractHelper
         $view->headLink()->appendStylesheet($view->assetUrl('css/mirador.css', 'FITModule'));
         $view->headScript()->appendFile('https://unpkg.com/mirador@3.4.3/dist/mirador.min.js', 'text/javascript');
         $view->headScript()->appendFile($view->assetUrl('js/mirador.js', 'FITModule'), 'text/javascript');
-        return sprintf('<div class="mirador-viewer-frame"><div class="mirador-viewer" id="mirador-%s" data-manifest="%s" data-authorization="%s" data-canvas="%s" data-options=\'%s\'></div></div>', $uniqueID, $manifestId, $authorization, $canvas, json_encode($defaultConfig));
+        return sprintf('<div class="mirador-viewer-frame"><div class="mirador-viewer" id="mirador-%s" data-manifest="%s" data-authorization="%s" data-canvas="%s" data-options=\'%s\' data-search=\'%s\'></div></div>', $uniqueID, $manifestId, $authorization, $canvas, json_encode($defaultConfig), $defaultSearchQuery);
     }
 }
