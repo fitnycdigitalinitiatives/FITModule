@@ -47,17 +47,30 @@ $(document).ready(function () {
                     if (!thisViewer) {
                         thisViewer = Mirador.viewer(miradorConfig);
                         // Check if default search query has been set to switch switchCanvasOnSearch back to true
-                        // if (defaultSearchQuery) {
-                        //     counter = 0;
+                        // if (defaultSearchQuery && canvas) {
                         //     const unsubscribe = thisViewer.store.subscribe(() => {
                         //         let thisState = thisViewer.store.getState();
                         //         console.log(thisState);
-                        //         if (Object.keys(thisState['viewers'])[0] && thisState['viewers'][Object.keys(thisState['viewers'])[0]]) {
-                        //             console.log('ready');
-                        //             unsubscribe();
-                        //             thisState['config']['window']['switchCanvasOnSearch'] = true;
-                        //             thisViewer.store.dispatch(Mirador.actions.updateConfig(thisState['config']));
-                        //             console.log(thisState);
+                        //         if (Object.keys(thisState['searches'])[0]) {
+                        //             let searcWindowKey = Object.keys(thisState['searches'])[0];
+                        //             if (Object.keys(thisState['searches'][searcWindowKey])[0]) {
+                        //                 let searchSubwindowKey = Object.keys(thisState['searches'][searcWindowKey])[0];
+                        //                 if (Object.keys(thisState['searches'][searcWindowKey][searchSubwindowKey]['data'])[0]) {
+                        //                     let searchEndpoint = Object.keys(thisState['searches'][searcWindowKey][searchSubwindowKey]['data'])[0];
+                        //                     if ((thisState['searches'][searcWindowKey][searchSubwindowKey]['data'][searchEndpoint]['isFetching'] == false) && ('json' in thisState['searches'][searcWindowKey][searchSubwindowKey]['data'][searchEndpoint])) {
+                        //                         unsubscribe();
+                        //                         for (const resource of thisState['searches'][searcWindowKey][searchSubwindowKey]['data'][searchEndpoint]['json']['resources']) {
+                        //                             if (resource['on'].includes(canvas)) {
+                        //                                 console.log(resource['on']);
+                        //                                 thisViewer.store.dispatch(Mirador.actions.setContentSearchCurrentAnnotation(searcWindowKey, searchSubwindowKey, resource['@id']));
+                        //                                 console.log(thisViewer.store.getState());
+                        //                                 break;
+                        //                             }
+                        //                         }
+                        //                     }
+
+                        //                 }
+                        //             }
                         //         }
                         //     })
                         // }
