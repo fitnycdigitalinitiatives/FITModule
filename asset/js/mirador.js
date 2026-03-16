@@ -45,7 +45,7 @@ $(document).ready(function () {
                 if (entry.isIntersecting) {
                     // Element is visible
                     if (!thisViewer) {
-                        thisViewer = Mirador.viewer(miradorConfig);
+                        thisViewer = Mirador.viewer(miradorConfig, [...textOverlayPlugin]);
                     }
                 }
                 else {

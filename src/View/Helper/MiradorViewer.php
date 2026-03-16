@@ -114,6 +114,11 @@ class MiradorViewer extends AbstractHelper
                     'search' => true,
                     'layers' => false,
                 ];
+                $defaultConfig['window']['textOverlay'] = [
+                    'enabled' => true,
+                    'selectable' => true,
+                    'visible' => false,
+                ];
             }
             $uniqueID = $mediaId;
             $authorization = '';
@@ -154,7 +159,8 @@ class MiradorViewer extends AbstractHelper
             }
         }
         $view->headLink()->appendStylesheet($view->assetUrl('css/mirador.css', 'FITModule'));
-        $view->headScript()->appendFile('https://unpkg.com/mirador@3.4.3/dist/mirador.min.js', 'text/javascript');
+        // $view->headScript()->appendFile('https://unpkg.com/mirador@3.4.3/dist/mirador.min.js', 'text/javascript');
+        $view->headScript()->appendFile($view->assetUrl('js/mirador-vendor/mirador-text-overlay-bundle.min.js', 'FITModule'), 'text/javascript');
         $view->headScript()->appendFile($view->assetUrl('js/mirador.js', 'FITModule'), 'text/javascript');
         return sprintf('<div class="mirador-viewer-frame"><div class="mirador-viewer" id="mirador-%s" data-manifest="%s" data-authorization="%s" data-canvas="%s" data-options=\'%s\' data-search=\'%s\'></div></div>', $uniqueID, $manifestId, $authorization, $canvas, json_encode($defaultConfig), $defaultSearchQuery);
     }
