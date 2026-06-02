@@ -1,0 +1,43 @@
+<?php
+$translate = $this->plugin('translate');
+$escape = $this->plugin('escapeHtml');
+?>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-4">
+            <h2>
+                <?php echo $escape($this->pageTitle); ?>
+            </h2>
+            <?php echo $this->pageText; ?>
+        </div>
+        <div class="col-xl-6">
+            <div id="grid" class="container-fluid my-4 my-lg-5 <?php echo $this->resourceType; ?>">
+                <?php if ($this->heading): ?>
+                    <h2 class="mb-4 mb-lg-5"><?php echo $this->heading; ?></h2>
+                <?php endif; ?>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-4 align-items-center" id="grid-row">
+                    <?php
+                    foreach ($this->attachments as $attachment):
+                        $item = $attachment->item();
+                        $media = $attachment->media() ?: $item->primaryMedia();
+                        $title = $item->displayTitle();
+
+                    ?>
+                        <div class="col grid-item-container">
+                            <div class="card border-0 grid-item bg-transparent">
+                                <div class="card-img rounded-0" title="<?php echo $title; ?>">
+                                    <?php echo $this->thumbnail($media, 'medium', ['class' => 'w-100 rounded-0 border border-2 border-white object-fit-cover', 'alt' => $title]); ?>
+                                </div>
+                                <div class="card-body">
+                                    <h3 class="grid-item-title">
+                                        <?php echo $title; ?>
+                                    </h3>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

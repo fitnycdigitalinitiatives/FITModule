@@ -27,9 +27,16 @@ return [
             'itemSetShowcaseHeroCarousel' => Site\BlockLayout\ItemSetShowcaseHeroCarousel::class,
             'assetHero' => Site\BlockLayout\AssetHero::class,
             'designersBrowse' => Site\BlockLayout\DesignersBrowse::class,
+            'exhibitSectionPage' => Site\BlockLayout\ExhibitSectionPage::class,
         ],
         'factories' => [
             'archiveOnDemandAbout' => Service\BlockLayout\ArchiveOnDemandAboutFactory::class,
+            'welcomeJumbotron' => Service\BlockLayout\WelcomeJumbotronFactory::class,
+            'exhibitLanding' => Service\BlockLayout\ExhibitLandingFactory::class,
+            'exhibitBasic' => Service\BlockLayout\ExhibitBasicFactory::class,
+            'exhibitBasicGrid' => Service\BlockLayout\ExhibitBasicGridFactory::class,
+            'exhibitBrowsePreview' => Service\BlockLayout\ExhibitBrowsePreviewFactory::class,
+            'exhibitTextOnly' => Service\BlockLayout\ExhibitTextOnlyFactory::class,
         ],
     ],
     'media_ingesters' => [

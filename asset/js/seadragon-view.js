@@ -30,7 +30,7 @@ $(document).ready(function () {
 
   });
 
-  function loadViewer(currentViewer, currentViewerID, iiifEndpoint, authtoken, thumbnail, expiration) {
+  window.loadViewer = function (currentViewer, currentViewerID, iiifEndpoint, authtoken, thumbnail, expiration) {
     const options = {
       id: currentViewerID,
       showNavigator: true,

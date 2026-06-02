@@ -1,0 +1,24 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+?>
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-xl-4">
+            <h2>
+                <?php echo $escape($this->pageTitle); ?>
+            </h2>
+            <?php echo $this->pageText; ?>
+        </div>
+        <div class="col-xl-6">
+            <?php
+            foreach ($this->attachments as $attachment):
+                $item = $attachment->item();
+                $media = $attachment->media() ?: $item->primaryMedia();
+            ?>
+                <?php if ($media): ?>
+                    <?php echo $media->render(); ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,11 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+?>
+<div class="container p-5 border border-black border-2">
+    <h2 class="text-center display-2">
+        <?php echo $escape($header); ?>
+    </h2>
+    <div class="col-lg-8 mx-auto fs-5">
+        <?php echo $html; ?>
+    </div>
+</div>

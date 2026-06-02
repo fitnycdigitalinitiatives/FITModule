@@ -21,6 +21,9 @@ $(document).ready(function () {
         if (currentViewer.closest('.mirador-dark-theme').length > 0) {
             miradorConfig['selectedTheme'] = 'dark';
         };
+        if (window.matchMedia("(max-width: 575px)").matches) {
+            miradorConfig['thumbnailNavigation']['defaultPosition'] = 'off';
+        }
 
         if (authorization) {
             miradorConfig['requests'] = {

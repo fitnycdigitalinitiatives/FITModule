@@ -1,0 +1,17 @@
+<?php
+$escape = $this->plugin('escapeHtml');
+?>
+<div class="container p-5 border border-black border-2">
+    <h2 class="text-center display-2">
+        <?php echo $escape($this->pageTitle); ?>
+    </h2>
+    <h3 class="text-center">
+        <?php echo $escape($this->pageSubtitle); ?>
+    </h3>
+    <div class="col-lg-8 mx-auto fs-5">
+        <?php echo $this->html; ?>
+    </div>
+    <?php if ($this->backgroundImageURL): ?>
+        <div id="exhibition_background" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('<?php echo $this->backgroundImageURL; ?>');"></div>
+    <?php endif; ?>
+</div>
