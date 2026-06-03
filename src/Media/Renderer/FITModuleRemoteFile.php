@@ -101,23 +101,26 @@ class FITModuleRemoteFile implements RendererInterface
         $vimeoID = array_key_exists('vimeoID', $media->mediaData()) ? $media->mediaData()['vimeoID'] : '';
         $googledriveID = array_key_exists('GoogleDriveID', $media->mediaData()) ? $media->mediaData()['GoogleDriveID'] : '';
         $accessURL = array_key_exists('access', $media->mediaData()) ? $media->mediaData()['access'] : '';
+        $title = (strtolower(trim($media->displayTitle())) != 'video') ? $media->displayTitle() : $media->item()->displayTitle();
 
         if ($youtubeID != '') {
             $url = sprintf('https://www.youtube.com/embed/%s?enablejsapi=1', $youtubeID);
             $embed = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
-                <iframe class="embed-responsive-item youtube" src="%s" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item youtube" src="%s" title="%s" allowfullscreen></iframe>
               </div>',
-                $url
+                $url,
+                $title
             );
             return $embed;
         } elseif ($vimeoID != '') {
             $url = sprintf('https://player.vimeo.com/video/%s?api=1', $vimeoID);
             $embed = sprintf(
                 '<div class="embed-responsive embed-responsive-video">
-                <iframe class="embed-responsive-item vimeo" src="%s" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item vimeo" src="%s" title="%s" allowfullscreen></iframe>
               </div>',
-                $url
+                $url,
+                $title
             );
             return $embed;
         }
@@ -199,7 +202,7 @@ class FITModuleRemoteFile implements RendererInterface
     public function remote_pdf(PhpRenderer $view, MediaRepresentation $media, $accessURL = '')
     {
         $view->headLink()->appendStylesheet($view->assetUrl('css/pdf.css', 'FITModule'));
-        $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.2.6/pdfobject.min.js', 'text/javascript');
+        $view->headScript()->appendFile('//cdnjs.cloudflare.com/ajax/libs/pdfobject/2.3.1/pdfobject.min.js', 'text/javascript');
         $pdfURL = $view->s3presigned($accessURL);
         $thumbnail = $view->thumbnail($media, 'medium');
         $title = $media->displayTitle();
