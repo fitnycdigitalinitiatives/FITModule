@@ -129,6 +129,20 @@ return [
                             ]
                         ],
                     ],
+                    'redirect_exhibit' => [
+                        'type' => 'Segment',
+                        'options' => [
+                            'route' => '/exhibits/show/:slug',
+                            'defaults' => [
+                                '__NAMESPACE__' => 'FITModule\Controller',
+                                'controller' => 'Redirect',
+                                'action' => 'exhibit',
+                            ],
+                            'constraints' => [
+                                'slug' => '[a-zA-Z0-9_-]+',
+                            ]
+                        ],
+                    ],
                     'site-login' => [
                         'type' => 'Segment',
                         'options' => [

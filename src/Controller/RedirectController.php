@@ -1,4 +1,5 @@
 <?php
+
 namespace FITModule\Controller;
 
 use Laminas\Mvc\Controller\AbstractActionController;
@@ -13,10 +14,13 @@ class RedirectController extends AbstractActionController
             $site = $this->currentSite();
             $siteSlug = $site->slug();
             // Check if this is a valid site for a redirect
-            if ($siteSlug == 'archiveondemand') {
+            if ($siteSlug == 'archiveondemand' || $siteSlug == 'sparcdigital') {
                 switch ($siteSlug) {
                     case 'archiveondemand':
                         $metadataTerm = 'fitcore:aodlegacy';
+                        break;
+                    case 'sparcdigital':
+                        $metadataTerm = 'fitcore:sparcdigitallegacy';
                         break;
                 }
                 $api = $this->api();
@@ -41,6 +45,25 @@ class RedirectController extends AbstractActionController
                     } else {
                         throw new NotFoundException("Unable to find this item.");
                     }
+                }
+            }
+        }
+        throw new NotFoundException("Invalid Page");
+    }
+    public function exhibitAction()
+    {
+        if ($slug = $this->params('slug')) {
+            $site = $this->currentSite();
+            $siteSlug = $site->slug();
+            // Check if this is a valid site for a redirect
+            if ($siteSlug == 'sparcdigital') {
+                $api = $this->api();
+                $this_page = $api->search('site_pages', ['slug' => $slug, 'site_id' => $site->id(), 'limit' => 1])->getContent();
+                if ($this_page) {
+                    return $this->redirect()->toRoute('site/page', [
+                        'site-slug' => $siteSlug,
+                        'page-slug' => $slug,
+                    ])->setStatusCode(Response::STATUS_CODE_301);
                 }
             }
         }
