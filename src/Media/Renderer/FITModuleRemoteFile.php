@@ -174,7 +174,7 @@ class FITModuleRemoteFile implements RendererInterface
             $ext = pathinfo($accessURL, PATHINFO_EXTENSION);
             $mimes = new \Mimey\MimeTypes;
             if (strpos($mimes->getMimeType($ext), 'audio') === 0) {
-                $poster = 'poster="' . $view->assetUrl('img/Speaker_Icon.svg', 'FITModule') . '"';
+                $poster = 'poster="' . $view->assetUrl('img/volume-up.svg', 'FITModule') . '"';
             } else {
                 $thumbnailTag = $view->thumbnail($media, 'medium');
                 $doc = new \DOMDocument();

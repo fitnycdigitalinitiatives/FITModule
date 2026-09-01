@@ -97,6 +97,7 @@ return [
                 'Still Image' => ['thumbnails/image.png', 'Omeka'],
                 'Moving Image' => ['thumbnails/video.png', 'Omeka'],
                 'Sound' => ['thumbnails/audio.png', 'Omeka'],
+                'Agent' => ['thumbnails/person-fill.svg', 'FITModule'],
             ],
         ],
     ],
