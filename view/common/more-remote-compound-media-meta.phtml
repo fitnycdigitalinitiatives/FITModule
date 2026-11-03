@@ -48,10 +48,10 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
                             </a>
                         </div>
                         <div class="get_presigned">
-                            <button class="button" id="download" data-file-type="<?php echo $key; ?>">
+                            <button class="button" id="download" data-filetype="<?php echo $key; ?>">
                                 <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
                             </button>
-                            <button class="button" id="url" data-file-type="<?php echo $key; ?>">
+                            <button class="button url-sidebar" data-filetype="<?php echo $key; ?>">
                                 <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
                                         access</span></i>
                             </button>
@@ -140,10 +140,10 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
                                 </a>
                             </div>
                             <div class="get_presigned">
-                                <button class="button" id="download" data-file-type="access-<?php echo $key; ?>">
+                                <button class="button" id="download" data-filetype="access-<?php echo $key; ?>">
                                     <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
                                 </button>
-                                <button class="button" id="url" data-file-type="access-<?php echo $key; ?>">
+                                <button class="button url-sidebar" data-filetype="access-<?php echo $key; ?>">
                                     <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
                                             access</span></i>
                                 </button>
@@ -168,10 +168,10 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
                                 </a>
                             </div>
                             <div class="get_presigned">
-                                <button class="button" id="download" data-file-type="ocr-<?php echo $key; ?>">
+                                <button class="button" id="download" data-filetype="ocr-<?php echo $key; ?>">
                                     <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
                                 </button>
-                                <button class="button" id="url" data-file-type="ocr-<?php echo $key; ?>">
+                                <button class="button url-sidebar" data-filetype="ocr-<?php echo $key; ?>">
                                     <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
                                             access</span></i>
                                 </button>
@@ -231,3 +231,23 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
         <?php endforeach; ?>
     </div>
 <?php endif; ?>
+<div id="presigned-sidebar" class="sidebar" tabindex="-1">
+    <a href="#" class="sidebar-close o-icon-close"><span class="screen-reader-text">Close</span></a>
+    <div class="sidebar-content">
+        <label for="presigned-expiration">Set Expiration for Temporary Link</label>
+        <div class="input-group">
+            <select id="presigned-expiration">
+                <option value="60" selected>1 Hour</option>
+                <option value="180">3 Hours</option>
+                <option value="360">6 Hours</option>
+                <option value="720">12 Hours</option>
+                <option value="1440">24 Hours</option>
+            </select>
+            <button class="button" id="url" data-filetype="">
+                <i class="fas fa-link" title="Get link for temporary access"><span class="sr-only">Generate link</span></i>
+            </button>
+        </div>
+        <div id="presigned-result">
+        </div>
+    </div>
+</div>

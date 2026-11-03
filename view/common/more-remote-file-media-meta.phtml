@@ -41,16 +41,16 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
             </a>
           </div>
           <div class="get_presigned">
-            <button class="button" id="download" data-file-type="<?php echo $key; ?>">
+            <button class="button" id="download" data-filetype="<?php echo $key; ?>">
               <i class="fas fa-cloud-download-alt fa-lg" title="Download file"><span class="sr-only">Download file</span></i>
             </button>
-            <button class="button" id="url" data-file-type="<?php echo $key; ?>">
+            <button class="button url-sidebar" data-filetype="<?php echo $key; ?>">
               <i class="fas fa-link fa-lg" title="Get link for temporary access"><span class="sr-only">Get link for temporary
                   access</span></i>
             </button>
             <?php if (isset($_POST['presigned'])): ?>
               <?php if ($_POST['presigned'] == $key): ?>
-                <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value), array_key_exists('download', $_POST) ? true : false); ?>">
+                <div id="presigned" data-<?php echo $key; ?>-presigned="<?php echo $this->s3presigned($escape($value), array_key_exists('download', $_POST) ? true : false, "", array_key_exists('duration', $_POST) ? (int)$_POST['duration'] : null); ?>">
                 </div>
               <?php endif; ?>
             <?php endif; ?>
@@ -80,3 +80,24 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
     </div>
   <?php endif; ?>
 <?php endforeach; ?>
+
+<div id="presigned-sidebar" class="sidebar" tabindex="-1">
+  <a href="#" class="sidebar-close o-icon-close"><span class="screen-reader-text">Close</span></a>
+  <div class="sidebar-content">
+    <label for="presigned-expiration">Set Expiration for Temporary Link</label>
+    <div class="input-group">
+      <select id="presigned-expiration">
+        <option value="60" selected>1 Hour</option>
+        <option value="180">3 Hours</option>
+        <option value="360">6 Hours</option>
+        <option value="720">12 Hours</option>
+        <option value="1440">24 Hours</option>
+      </select>
+      <button class="button" id="url" data-filetype="">
+        <i class="fas fa-link" title="Get link for temporary access"><span class="sr-only">Generate link</span></i>
+      </button>
+    </div>
+    <div id="presigned-result">
+    </div>
+  </div>
+</div>

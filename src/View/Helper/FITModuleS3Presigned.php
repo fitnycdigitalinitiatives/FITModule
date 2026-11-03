@@ -1,4 +1,5 @@
 <?php
+
 namespace FITModule\View\Helper;
 
 use Laminas\View\Helper\AbstractHelper;
@@ -13,7 +14,7 @@ class FITModuleS3Presigned extends AbstractHelper
     /**
      * Return a presigned URL for S3 object.
      */
-    public function __invoke($url, $download = false, $title = "")
+    public function __invoke($url, $download = false, $title = "", int $duration = 180)
     {
         if (strpos($url, 'amazonaws') !== false) {
             $parsed_url = parse_url($url);
@@ -57,7 +58,8 @@ class FITModuleS3Presigned extends AbstractHelper
                     }
                 }
                 $cmd = $s3Client->getCommand('GetObject', $params);
-                $request = $s3Client->createPresignedRequest($cmd, '+180 minutes');
+                $expires = "+{$duration} minutes";
+                $request = $s3Client->createPresignedRequest($cmd, $expires);
                 $presignedUrl = (string) $request->getUri();
                 return $presignedUrl;
             } else {
