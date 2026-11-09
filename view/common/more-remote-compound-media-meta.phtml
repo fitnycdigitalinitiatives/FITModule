@@ -37,7 +37,7 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
         <?php if ($key != 'components'): ?>
             <div class="meta-group more-meta-group">
                 <?php if ($key == "archival" || $key == "mets" || $key == "pdf"): ?>
-                    <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
+                    <?php if ($this->userIsAllowed('Omeka\Entity\Media', 'create')): ?>
                         <h4>
                             <?php echo $labels[$key]; ?>
                         </h4>
@@ -127,7 +127,7 @@ if (class_exists(\IiifPresentation\v3\ControllerPlugin\IiifPresentation::class))
                         <?php endif; ?>
                     <?php endif; ?>
                 <?php endif; ?>
-                <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
+                <?php if ($this->userIsAllowed('Omeka\Entity\Media', 'create')): ?>
                     <?php if ($access): ?>
                         <div class="component-meta">
                             <h6>

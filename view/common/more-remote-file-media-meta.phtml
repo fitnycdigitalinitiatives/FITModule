@@ -30,7 +30,7 @@ if ((strpos($media->mediaType(), 'image') === 0) && ($access) && ($iiifEndpoint)
   <?php if ($value): ?>
     <div class="meta-group more-meta-group">
       <?php if ($key == "access" || $key == "archival" || $key == "mets" || $key == "captions"): ?>
-        <?php if ($this->userIsAllowed('Omeka\Entity\Site', 'create')): ?>
+        <?php if ($this->userIsAllowed('Omeka\Entity\Media', 'create')): ?>
           <h4>
             <?php echo $labels[$key]; ?>
           </h4>
